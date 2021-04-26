@@ -216,6 +216,16 @@ Font.print = function(s, x=20, y=320)
 	//print "Kern applied to " + kernCount + "/" + (s.len-1) + " pairs"
 end function
 
+// Print the given string to gfx, centered horizontally on the given x.
+Font.printCentered = function(s, x=480, y=320)
+	self.print s, x - self.width(s)/2, y
+end function
+
+// Print the given string to gfx, right-aligned on x.
+Font.printRight = function(s, x=940, y=320)
+	self.print s, x - self.width(s), y
+end function
+
 // Return the width of the given string in this font.
 Font.width = function(s)
 	sum = 0
