@@ -43,7 +43,7 @@ disp.fog.color = color.clear
 display(3).mode = displayMode.pixel
 disp.uiPixel = display(3)
 disp.uiPixel.clear color.clear
-gfx = disp.uiPixel
+globals.gfx = disp.uiPixel
 
 // disp.uiSprites: a SpriteDisplay for UI elements, including
 // a custom mouse cursor, buttons, etc.
