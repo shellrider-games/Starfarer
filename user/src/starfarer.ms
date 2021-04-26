@@ -14,10 +14,10 @@ starfarer.init = function()
         end function
 
         //Process all available input
-        processInput = function
+        processInput = function()
         while key.available
             k = key.get
-            disp.text.print code(k) //print keycode for debugging purposes.
+            text.print code(k) //print keycode for debugging purposes.
             if k == char(27) or k == "q" then
                 cleanup
                 exit

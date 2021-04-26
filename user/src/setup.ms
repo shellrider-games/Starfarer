@@ -60,7 +60,7 @@ disp.curtain.color = color.clear
 // disp.text: the standard text display.  We probably won't ever
 // use this in the game, except for debugging.
 display(0).mode = displayMode.text
-text = display(0)
+globals.text = display(0) // map text globally
 disp.text = text  // just an alias
 text.color = color.orange
 text.backColor = color.clear
