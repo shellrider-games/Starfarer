@@ -49,7 +49,7 @@ AnimSet.make = function(sheet)
 	for dir in range(0, 3)
 		result.idle.push getAnim(sheet, 3-dir, 0, 1)
 		result.walk.push getAnim(sheet, 3-dir, 1, 2)
-		result.walk[-1].fps = 2
+		result.walk[-1].fps = 1
 	end for
 	return result
 end function
