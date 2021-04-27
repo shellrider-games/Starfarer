@@ -69,11 +69,17 @@ The ship is composed of a hull, which defines the empty layout and amount of dam
 - food replicator
 - weapons of various sorts (each hull has certain weapon slots)
 - shield generator
-- life support (generates O2)
-- transporters
+- life support (generates breathable air)
+- transporter pad
 - holodeck (provides entertainment)
+- spacesuit locker
+- med bay
 
-Any equipment can break down, either through normal wear & tear or as a result of combat.  Other problems you may need to deal with include:
-- fires
-- evacuation (loss of air due to hull breach or open door)
+Any equipment can break down, either through normal wear & tear or as a result of combat.  Fires may break out, and need to be extinguished.  If a hull breach (or open outer door) occurs, air is lost very rapidly in that area and any areas of the ship connected to it by open doors; to fix the problem the breach must be sealed, and then the life support system given time to refill the air.  If life support breaks down, air will go bad more slowly wherever crewmembers are breathing.
+
+## Trade
+
+## Combat
+
+## Encounters/Events
 
