@@ -95,8 +95,8 @@ loadFonts = function()
 		if fontFile[-4:] != ".bmf" then continue
 		showProgress "Loading fonts (" + (fontFile - ".bmf") + ")"
 		loadFont fontFile
-	end for	
-end function	
+	end for
+end function
 loadFonts
 gfx.clear color.clear
 
