@@ -16,51 +16,44 @@ display(7).mode = displayMode.pixel
 disp.background = display(7)
 disp.background.clear color.black
 
-// disp.shipTiles: the TileDisplay we use for the ships.
-display(6).mode = displayMode.tile
-disp.shipTiles = display(6)
-disp.shipTiles.tileSet = null  // ToDo!
-disp.shipTiles.cellSize = 20
-disp.shipTiles.clear
-
-// disp.shipSprites: a SpriteDisplay for characters and objects
-// that appear on or around the ships.
-display(5).mode = displayMode.sprite
-disp.shipSprites = display(5)
+// disp.shipSprites: a SpriteDisplay for ship maps, plus 
+// characters and objects that appear on or around the ships.
+display(6).mode = displayMode.sprite
+disp.shipSprites = display(6)
 disp.shipSprites.clear
 
 // disp.fog: a solid-color display that appears over the ship
 // and its sprites, which we can use to show hide the ship
 // (and background) intermittently due to dust clouds, sensor
 // malfunctions, etc.
-display(4).mode = displayMode.solidColor
-disp.fog = display(4)
+display(5).mode = displayMode.solidColor
+disp.fog = display(5)
 disp.fog.color = color.clear
 
 // disp.uiPixel: a PixelDisplay for UI elements, including ship
 // controls, status displays, event dialogs, etc.
 // This is also the default gfx display.
-display(3).mode = displayMode.pixel
-disp.uiPixel = display(3)
+display(4).mode = displayMode.pixel
+disp.uiPixel = display(4)
 disp.uiPixel.clear color.clear
 globals.gfx = disp.uiPixel
 
 // disp.uiSprites: a SpriteDisplay for UI elements, including
 // a custom mouse cursor, buttons, etc.
-display(2).mode = displayMode.sprite
-disp.uiSprites = display(2)
+display(3).mode = displayMode.sprite
+disp.uiSprites = display(3)
 disp.uiSprites.clear
 
 // disp.curtain: a solid-color overlay used for fading to black,
 // flashing red to show damage, etc.
-display(1).mode = displayMode.solidColor
-disp.curtain = display(1)
+display(2).mode = displayMode.solidColor
+disp.curtain = display(2)
 disp.curtain.color = color.clear
 
 // disp.text: the standard text display.  We probably won't ever
 // use this in the game, except for debugging.
-display(0).mode = displayMode.text
-globals.text = display(0) // map text globally
+display(1).mode = displayMode.text
+globals.text = display(1) // map text globally
 disp.text = text  // just an alias
 text.color = color.orange
 text.backColor = color.clear
