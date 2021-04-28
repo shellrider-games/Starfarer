@@ -1,5 +1,7 @@
 
 ship = new shipModel.Ship
+
+ship.directory = file.curdir
 ship.init 10,14
 
 ship.digRoom 0,0,10,7

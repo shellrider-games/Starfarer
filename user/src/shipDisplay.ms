@@ -11,6 +11,28 @@ import "spriteControllers"
 Door = new spriteControllers.Animated
 Door.tint = color.blue
 
+Door.make = function(x, y, addToDisplay=true)
+	noob = new Door
+	noob.x = x; noob.y = y
+	
+	// clone the animations, so they don't share state with the base class
+	noob.openAnim = Door.openAnim.clone
+	noob.closeAnim = Door.closeAnim.clone
+
+	noob.close
+	if addToDisplay then disp.shipSprites.sprites.push noob
+	
+	return noob
+end function
+
+Door.open = function()
+	self.play self.openAnim
+end function
+
+Door.close = function()
+	self.play self.closeAnim
+end function
+
 addSprite = function(image, x, y, baseClass)
 	if baseClass == null then baseClass = Sprite
 	if image isa string then image = file.loadImage(image)
@@ -43,28 +65,15 @@ init = function()
 	Door.closeAnim.loop = false
 	Door.play Door.closeAnim
 	Door.update
-	
-	// instantiate a Door, just for testing
-	d = new Door
-	d.x = 260; d.y = 316
-	disp.shipSprites.sprites.push d
-	globals.door = d // for testing!
-	
-	// ToD:
-	// We need some sort of data file (perhaps in GRFON format?) that defines
-	// where things are in the map: walkable squares, doors, etc.  Then we
-	// can instantiate a door for each place there should be one, and maybe
-	// plop down a few crates or equipment panels after that.
-	//
-	// Note that even though it's just a giant image, our maps are very much
-	// based on a (20-pixel) grid.  So all map coordinates should be given
-	// in grid cells, not pixels.
 end function
 
 // demo: test/demonstrate this module on its own.
-demo = function()
+demo = function()	
+	// instantiate a Door
+	d = Door.make(260, 316)
+
 	for i in range(10)
-		door.update
+		d.update
 		wait 0.2
 	end for
 end function
