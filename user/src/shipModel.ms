@@ -30,8 +30,10 @@ Cell.col = 0				// column within its ship map
 Cell.row = 0				// row within its ship map
 Cell.air = 100				// air quality, from 0 (vacuum) - 100 (fine)
 Cell.fire = 0				// on fire? 0 (nope) to 100 (raging inferno)
-Cell.above = Wall			// wall or door on the top (north) side of this cell
-Cell.right = Wall			// wall or door on the right (east) side of this cell
+Cell.above = null			// wall or door on the top (north) side of this cell
+Cell.right = null			// wall or door on the right (east) side of this cell
+Cell.below = null			// wall or door on the bottom (south) side of this cell
+Cell.left = null			// wall or door on the left (west) side of this cell
 
 // Cell.walkable: returns whether an agent can step into this cell.
 Cell.walkable = function()
@@ -70,8 +72,6 @@ Ship.digRoom = function(left, bottom, width, height)
 		for row in range(bottom, bottom+height-1)
 			c = new Cell
 			c.col = col; c.row = row
-			if col < left+width-1 then c.right = null
-			if row < bottom+height-1 then c.above = null
 			self.map[col][row] = c
 		end for
 	end for
@@ -117,6 +117,118 @@ Ship.print = function()
 	end for
 	text.delimiter = char(13)
 	print
+end function
+
+Ship.printWallsLeft = function()
+	text.delimiter = " "
+	print "Left"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].left != null then
+				print "|"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.printWallsRight = function()
+	text.delimiter = " "
+	print "Right"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].right != null then
+				print "|"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.printWallsAbove = function()
+	text.delimiter = " "
+	print "Above"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].above != null then
+				print "-"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.printWallsBelow = function()
+	text.delimiter = " "
+	print "Below"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].below != null then
+				print "_"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.drawBottomWalls = function(left,bottom,length)
+	for col in range(left,left+length-1)
+		wall = new Wall
+		self.map[col][bottom].below = wall
+		if bottom > 0 and self.map[col][bottom-1] != null then self.map[col][bottom-1].above = wall
+	end for
+end function
+
+Ship.drawTopWalls = function(left,bottom,length)
+	for col in range(left,left+length-1)
+		wall = new Wall
+		self.map[col][bottom].above = wall
+		if bottom < self.rows-1 and self.map[col][bottom+1] != null then self.map[col][bottom+1].below = wall
+	end for
+end function
+
+Ship.drawLeftWalls = function(left,bottom,length)
+	for row in range(bottom,bottom+length-1)
+		wall = new Wall
+		self.map[left][row].left = wall
+		if left > 0 and self.map[left-1][row] != null then self.map[left-1][row].right = wall
+	end for
+end function
+
+Ship.drawRightWalls = function(left,bottom,length)
+	for row in range(bottom,bottom+length-1)
+		wall = new Wall
+		self.map[left][row].right = wall
+		if left < self.columns-1 and self.map[left+1][row] != null then self.map[left+1][row].left = wall
+	end for
 end function
 
 demo = function()
