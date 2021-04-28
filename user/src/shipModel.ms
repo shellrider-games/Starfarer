@@ -30,8 +30,10 @@ Cell.col = 0				// column within its ship map
 Cell.row = 0				// row within its ship map
 Cell.air = 100				// air quality, from 0 (vacuum) - 100 (fine)
 Cell.fire = 0				// on fire? 0 (nope) to 100 (raging inferno)
-Cell.above = Wall			// wall or door on the top (north) side of this cell
-Cell.right = Wall			// wall or door on the right (east) side of this cell
+Cell.above = null			// wall or door on the top (north) side of this cell
+Cell.right = null			// wall or door on the right (east) side of this cell
+Cell.below = null			// wall or door on the bottom (south) side of this cell
+Cell.left = null			// wall or door on the left (west) side of this cell
 
 // Cell.walkable: returns whether an agent can step into this cell.
 Cell.walkable = function()
@@ -70,8 +72,6 @@ Ship.digRoom = function(left, bottom, width, height)
 		for row in range(bottom, bottom+height-1)
 			c = new Cell
 			c.col = col; c.row = row
-			if col < left+width-1 then c.right = null
-			if row < bottom+height-1 then c.above = null
 			self.map[col][row] = c
 		end for
 	end for
