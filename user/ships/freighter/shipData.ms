@@ -30,3 +30,5 @@ ship.placeRightWalls 2,7,7
 ship.placeRightWalls 5,7,5
 ship.placeRightWalls 8,7,7
 ship.placeRightWalls 9,0,7
+
+ship.place 4, 6, NORTH, new Door

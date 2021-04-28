@@ -15,12 +15,12 @@ Item.blocksWalking = true
 // Wall: an ordinary wall between cells.  Considered unbreachable.
 Wall = {}
 Wall.name = "wall"
-Wall.isOpen = false
+Wall.isOpen = false		// walls should ALWAYS be closed
 
 // Door: a wall that can open and close.
 Door = {}
 Door.name = "door"
-Door.isOpen = true
+Door.isOpen = false		// closed by default, but can be opened!
 
 // Cell class: information about one map cell, including whether it is
 // walkable, what equipment or cargo is there, whether it is on fire,
@@ -118,41 +118,25 @@ end function
 
 Ship.placeBottomWalls = function(left, bottom, length)
 	for col in range(left,left+length-1)
-		wall = new Wall
-		self.map[col][bottom].walls[SOUTH] = wall
-		if bottom > 0 and self.map[col][bottom-1] != null then 
-			self.map[col][bottom-1].walls[NORTH] = wall
-		end if
+		self.place col, bottom, SOUTH, new Wall
 	end for
 end function
 
 Ship.placeTopWalls = function(left, bottom, length)
 	for col in range(left,left+length-1)
-		wall = new Wall
-		self.map[col][bottom].walls[NORTH] = wall
-		if bottom < self.rows-1 and self.map[col][bottom+1] != null then 
-			self.map[col][bottom+1].walls[SOUTH] = wall
-		end if
+		self.place col, bottom, NORTH, new Wall
 	end for
 end function
 
 Ship.placeLeftWalls = function(left, bottom, length)
 	for row in range(bottom,bottom+length-1)
-		wall = new Wall
-		self.map[left][row].walls[WEST] = wall
-		if left > 0 and self.map[left-1][row] != null then
-			self.map[left-1][row].walls[EAST] = wall
-		end if
+		self.place left, row, WEST, new Wall
 	end for
 end function
 
 Ship.placeRightWalls = function(left, bottom, length)
 	for row in range(bottom,bottom+length-1)
-		wall = new Wall
-		self.map[left][row].walls[EAST] = wall
-		if left < self.columns-1 and self.map[left+1][row] != null then
-			self.map[left+1][row].walls[WEST] = wall
-		end if
+		self.place left, row, EAST, new Wall
 	end for
 end function
 
@@ -219,7 +203,7 @@ Ship.draw = function()
 		if wallOrDoor isa Wall then
 			gfx.line x1, y1, x2, y2, color.gray
 		else if wallOrDoor.isOpen then
-			gfx.line x1, y1, x2, y2, color.green
+			gfx.line x1, y1, x2, y2, color.aqua
 		else
 			gfx.line x1, y1, x2, y2, color.red
 		end if
