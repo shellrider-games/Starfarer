@@ -1,35 +1,32 @@
-cd "/usr/src"
-import "shipModel"
-cd "/usr"
 
-self = new shipModel.Ship
-self.init(10,14)
+ship = new shipModel.Ship
+ship.init 10,14
 
-self.digRoom(0,0,10,7)
-self.digRoom(1,7,2,7)
-self.digRoom(3,7,3,5)
-self.digRoom(6,7,3,3)
-self.digRoom(7,10,2,4)
+ship.digRoom 0,0,10,7
+ship.digRoom 1,7,2,7
+ship.digRoom 3,7,3,5
+ship.digRoom 6,7,3,3
+ship.digRoom 7,10,2,4
 
-self.drawBottomWalls(0,0,10)
-self.drawBottomWalls(0,4,3)
-self.drawBottomWalls(6,4,4)
-self.drawBottomWalls(3,7,1)
-self.drawBottomWalls(5,7,1)
-
-self.drawTopWalls(2,11,4)
-self.drawTopWalls(8,6,2)
-self.drawTopWalls(6,9,2)
-self.drawTopWalls(0,6,1)
-self.drawTopWalls(1,13,2)
-self.drawTopWalls(7,13,2)
-
-self.drawLeftWalls(0,0,7)
-self.drawLeftWalls(1,7,7)
-self.drawLeftWalls(4,0,4)
-self.drawLeftWalls(7,10,4)
-
-self.drawRightWalls(2,7,7)
-self.drawRightWalls(5,7,5)
-self.drawRightWalls(8,7,7)
-self.drawRightWalls(9,0,7)
+ship.placeBottomWalls 0,0,10
+//ship.placeBottomWalls 0,4,3
+//ship.placeBottomWalls 6,4,4
+//ship.placeBottomWalls 3,7,1
+//ship.placeBottomWalls 5,7,1
+//
+//ship.placeTopWalls 2,11,4
+//ship.placeTopWalls 8,6,2
+//ship.placeTopWalls 6,9,2
+//ship.placeTopWalls 0,6,1
+//ship.placeTopWalls 1,13,2
+//ship.placeTopWalls 7,13,2
+//
+//ship.placeLeftWalls 0,0,7
+//ship.placeLeftWalls 1,7,7
+//ship.placeLeftWalls 4,0,4
+//ship.placeLeftWalls 7,10,4
+//
+//ship.placeRightWalls 2,7,7
+//ship.placeRightWalls 5,7,5
+//ship.placeRightWalls 8,7,7
+//ship.placeRightWalls 9,0,7

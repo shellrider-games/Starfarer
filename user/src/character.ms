@@ -4,14 +4,9 @@
 // Characters are sprites that can face in any of 4 directions, and have simple
 // animations for walking around, "working", etc.
 
+import "constants"
 import "qa"
 import "spriteControllers"
-
-// Directions
-N = 0
-E = 1
-S = 2
-W = 3
 
 // Other constants
 frameSize = 16		// width and height of each frame in the sprite sheet
@@ -56,7 +51,7 @@ end function
 
 Character = new spriteControllers.Animated
 Character.anims = AnimSet.make(defaultSheet)
-Character.facing = S
+Character.facing = SOUTH
 Character.walking = false
 
 Character.update = function(dt=0.1)
@@ -87,16 +82,16 @@ demo = function()
 		c.update
 		c.walking = true
 		if key.axis("Horizontal") < 0 then
-			c.facing = W
+			c.facing = WEST
 			c.x = c.x - 1
 		else if key.axis("Horizontal") > 0 then
-			c.facing = E
+			c.facing = EAST
 			c.x = c.x + 1
 		else if key.axis("Vertical") > 0 then
-			c.facing = N
+			c.facing = NORTH
 			c.y = c.y + 1
 		else if key.axis("Vertical") < 0 then
-			c.facing = S
+			c.facing = SOUTH
 			c.y = c.y - 1
 		else
 			c.walking = false

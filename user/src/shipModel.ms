@@ -2,6 +2,7 @@
 // NPC ship).  It contains everything we need to know about its layout,
 // equipment, and current status.
 
+import "constants"
 import "qa"
 import "listUtil"
 
@@ -30,22 +31,22 @@ Cell.col = 0				// column within its ship map
 Cell.row = 0				// row within its ship map
 Cell.air = 100				// air quality, from 0 (vacuum) - 100 (fine)
 Cell.fire = 0				// on fire? 0 (nope) to 100 (raging inferno)
-Cell.above = null			// wall or door on the top (north) side of this cell
-Cell.right = null			// wall or door on the right (east) side of this cell
-Cell.below = null			// wall or door on the bottom (south) side of this cell
-Cell.left = null			// wall or door on the left (west) side of this cell
+Cell.walls = null			// list of wall or door in each direction (NORTH, etc.)
+
+Cell.make = function(col, row)
+	noob = new Cell
+	noob.col = col; noob.row = row
+	noob.walls = [null, null, null, null]
+	return noob
+end function
 
 // Cell.walkable: returns whether an agent can step into this cell.
 Cell.walkable = function()
 	return self.contents == null or not self.contents.blocksWalking
 end function
 
-Cell.canExitUp = function()
-	return self.above == null or self.above.isOpen
-end function
-
-Cell.canExitRight = function()
-	return self.right == null or self.right.isOpen
+Cell.canExitInDir = function(direction)
+	return self.walls[direction] == null or self.walls[direction].isOpen
 end function
 
 // Ship: everything there is to know about a ship.
@@ -70,9 +71,7 @@ end function
 Ship.digRoom = function(left, bottom, width, height)
 	for col in range(left, left+width-1)
 		for row in range(bottom, bottom+height-1)
-			c = new Cell
-			c.col = col; c.row = row
-			self.map[col][row] = c
+			self.map[col][row] = Cell.make(col, row)
 		end for
 	end for
 end function
@@ -95,14 +94,11 @@ Ship.walkableNeighbors = function(colRow)
 	result = []
 	col = colRow[0]; row = colRow[1]
 	c = self.map[col][row]
-	if c.canExitUp and self.walkable([col, row+1]) then result.push [col, row+1]
-	if c.canExitRight and self.walkable([col+1, row]) then result.push [col+1, row]
-	if self.walkable([col, row-1]) and self.map[col][row-1].canExitUp then
-		result.push [col, row-1]
-	end if
-	if self.walkable([col-1, row]) and self.map[col-1][row].canExitRight then
-		result.push [col-1, row]
-	end if
+	for dir in DIRECTIONS
+		if not c.canExitInDir(dir) then continue
+		nextPos = [col + constants.dx(dir), row + constants.dy(dir)]
+		if self.walkable(nextPos) then result.push nextPos
+	end for
 	return result
 end function
 
@@ -119,16 +115,17 @@ Ship.print = function()
 	print
 end function
 
-Ship.printWallsLeft = function()
+Ship.printWalls = function(dir, wallChar = null)
 	text.delimiter = " "
 	print "Left"
 	print char(13)
 	for row in range(self.rows-1, 0)
 		for col in self.columnRange
-			if self.map[col][row] == null then 
+			cell = self.map[col][row]
+			if cell == null then 
 				print "X"
-			else if self.map[col][row].left != null then
-				print "|"
+			else if cell.walls[dir] != null then
+				if wallChar then print wallChar else print cell.walls[dir].name[0]
 			else
 				print "."
 			end if
@@ -137,107 +134,76 @@ Ship.printWallsLeft = function()
 	end for
 	text.delimiter = char(13)
 	print
+end function
+
+Ship.printWallsLeft = function()
+	self.printWalls WEST, "|"
 end function
 
 Ship.printWallsRight = function()
-	text.delimiter = " "
-	print "Right"
-	print char(13)
-	for row in range(self.rows-1, 0)
-		for col in self.columnRange
-			if self.map[col][row] == null then 
-				print "X"
-			else if self.map[col][row].right != null then
-				print "|"
-			else
-				print "."
-			end if
-		end for
-		print char(13)
-	end for
-	text.delimiter = char(13)
-	print
+	self.printWalls EAST, "|"
 end function
 
 Ship.printWallsAbove = function()
-	text.delimiter = " "
-	print "Above"
-	print char(13)
-	for row in range(self.rows-1, 0)
-		for col in self.columnRange
-			if self.map[col][row] == null then 
-				print "X"
-			else if self.map[col][row].above != null then
-				print "-"
-			else
-				print "."
-			end if
-		end for
-		print char(13)
-	end for
-	text.delimiter = char(13)
-	print
+	self.printWalls NORTH, "-"
 end function
 
 Ship.printWallsBelow = function()
-	text.delimiter = " "
-	print "Below"
-	print char(13)
-	for row in range(self.rows-1, 0)
-		for col in self.columnRange
-			if self.map[col][row] == null then 
-				print "X"
-			else if self.map[col][row].below != null then
-				print "_"
-			else
-				print "."
-			end if
-		end for
-		print char(13)
-	end for
-	text.delimiter = char(13)
-	print
+	self.printWalls SOUTH, "-"
 end function
 
-Ship.drawBottomWalls = function(left,bottom,length)
+Ship.placeBottomWalls = function(left, bottom, length)
 	for col in range(left,left+length-1)
 		wall = new Wall
-		self.map[col][bottom].below = wall
-		if bottom > 0 and self.map[col][bottom-1] != null then self.map[col][bottom-1].above = wall
+		self.map[col][bottom].walls[SOUTH] = wall
+		if bottom > 0 and self.map[col][bottom-1] != null then 
+			self.map[col][bottom-1].walls[NORTH] = wall
+		end if
 	end for
 end function
 
-Ship.drawTopWalls = function(left,bottom,length)
+Ship.placeTopWalls = function(left, bottom, length)
 	for col in range(left,left+length-1)
 		wall = new Wall
-		self.map[col][bottom].above = wall
-		if bottom < self.rows-1 and self.map[col][bottom+1] != null then self.map[col][bottom+1].below = wall
+		self.map[col][bottom].walls[NORTH] = wall
+		if bottom < self.rows-1 and self.map[col][bottom+1] != null then 
+			self.map[col][bottom+1].wells[SOUTH] = wall
+		end if
 	end for
 end function
 
-Ship.drawLeftWalls = function(left,bottom,length)
+Ship.placeLeftWalls = function(left, bottom, length)
 	for row in range(bottom,bottom+length-1)
 		wall = new Wall
-		self.map[left][row].left = wall
-		if left > 0 and self.map[left-1][row] != null then self.map[left-1][row].right = wall
+		self.map[left][row].walls[WEST] = wall
+		if left > 0 and self.map[left-1][row] != null then
+			self.map[left-1][row].walls[EAST] = wall
+		end if
 	end for
 end function
 
-Ship.drawRightWalls = function(left,bottom,length)
+Ship.placeRightWalls = function(left, bottom, length)
 	for row in range(bottom,bottom+length-1)
 		wall = new Wall
-		self.map[left][row].right = wall
-		if left < self.columns-1 and self.map[left+1][row] != null then self.map[left+1][row].left = wall
+		self.map[left][row].walls[EAST] = wall
+		if left < self.columns-1 and self.map[left+1][row] != null then
+			self.map[left+1][row].walls[WEST] = wall
+		end if
 	end for
 end function
 
 demo = function()
-	outer.s = new Ship
-	s.init 10,6
-	s.digRoom 4,1, 3,2
+	// for our demo, we'll load the "freighter" ship we're building for the prototype
+	dir = pwd
+	globals.shipModel = outer
+	cd "/usr/ships/freighter"
+	import "shipData"
+	cd dir
+
+	s = shipData.ship
 	s.print
-	print "Neighbors of [4,1]: " + s.walkableNeighbors([4,1])
-	print "Neighbors of [5,1]: " + s.walkableNeighbors([5,1])
+	print "Neighbors of [1,7]: " + s.walkableNeighbors([1,7])
+	print "Neighbors of [5,11]: " + s.walkableNeighbors([5,11])
 end function
 
 if locals == globals then demo
