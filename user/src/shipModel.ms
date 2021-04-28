@@ -116,6 +116,10 @@ Ship.place = function(col, row, direction, wallOrDoor)
 	end if
 end function
 
+Ship.placeDoor = function(col, row, direction)
+	self.place col, row, direction, new Door
+end function
+
 Ship.placeBottomWalls = function(left, bottom, length)
 	for col in range(left,left+length-1)
 		self.place col, bottom, SOUTH, new Wall
