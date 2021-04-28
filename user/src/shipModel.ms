@@ -119,22 +119,117 @@ Ship.print = function()
 	print
 end function
 
-Ship.drawBottomWalls = function(bottom,left,length)
-	for row in range(left,length)
+Ship.printWallsLeft = function()
+	text.delimiter = " "
+	print "Left"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].left != null then
+				print "|"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.printWallsRight = function()
+	text.delimiter = " "
+	print "Right"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].right != null then
+				print "|"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.printWallsAbove = function()
+	text.delimiter = " "
+	print "Above"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].above != null then
+				print "-"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.printWallsBelow = function()
+	text.delimiter = " "
+	print "Below"
+	print char(13)
+	for row in range(self.rows-1, 0)
+		for col in self.columnRange
+			if self.map[col][row] == null then 
+				print "X"
+			else if self.map[col][row].below != null then
+				print "_"
+			else
+				print "."
+			end if
+		end for
+		print char(13)
+	end for
+	text.delimiter = char(13)
+	print
+end function
+
+Ship.drawBottomWalls = function(left,bottom,length)
+	for col in range(left,left+length-1)
 		wall = new Wall
-		self.map[bottom][row].below = wall
-		if bottom > 0 and self.map[bottom-1][row] != null then self.map[bottom-1][row].above = wall
+		self.map[col][bottom].below = wall
+		if bottom > 0 and self.map[col][bottom-1] != null then self.map[col][bottom-1].above = wall
 	end for
 end function
 
-Ship.drawTopWalls = function(bottom,left,length)
-	for row in range(left,length)
+Ship.drawTopWalls = function(left,bottom,length)
+	for col in range(left,left+length-1)
 		wall = new Wall
-		self.map[bottom][row].above = wall
-		if bottom < self.columns-1 and self.map[bottom+1][row] != null then self.map[bottom+1][row].below = wall
+		self.map[col][bottom].above = wall
+		if bottom < self.rows-1 and self.map[col][bottom+1] != null then self.map[col][bottom+1].below = wall
 	end for
 end function
 
+Ship.drawLeftWalls = function(left,bottom,length)
+	for row in range(bottom,bottom+length-1)
+		wall = new Wall
+		self.map[left][row].left = wall
+		if left > 0 and self.map[left-1][row] != null then self.map[left-1][row].right = wall
+	end for
+end function
+
+Ship.drawRightWalls = function(left,bottom,length)
+	for row in range(bottom,bottom+length-1)
+		wall = new Wall
+		self.map[left][row].right = wall
+		if left < self.columns-1 and self.map[left+1][row] != null then self.map[left+1][row].left = wall
+	end for
+end function
 
 demo = function()
 	outer.s = new Ship
