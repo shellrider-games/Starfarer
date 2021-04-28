@@ -67,15 +67,6 @@ Ship.init = function(columns, rows)
 	self.map = list.init2d(columns, rows)
 end function
 
-// Ship.digRoom: clear a room on the map.
-Ship.digRoom = function(left, bottom, width, height)
-	for col in range(left, left+width-1)
-		for row in range(bottom, bottom+height-1)
-			self.map[col][row] = Cell.make(col, row)
-		end for
-	end for
-end function
-
 // Ship.walkable: return whether an agent can step in the given
 // position (given as a [column, row] list).  In other words: is the
 // given position in bounds, and a walkable Cell?
@@ -101,6 +92,74 @@ Ship.walkableNeighbors = function(colRow)
 	end for
 	return result
 end function
+
+//----------------------------------------------------------------------
+// Ship setup methods: these are used to prepare a ship map.
+//----------------------------------------------------------------------
+
+// Ship.digRoom: clear a room on the map.
+Ship.digRoom = function(left, bottom, width, height)
+	for col in range(left, left+width-1)
+		for row in range(bottom, bottom+height-1)
+			self.map[col][row] = Cell.make(col, row)
+		end for
+	end for
+end function
+
+Ship.place = function(col, row, direction, wallOrDoor)
+	self.map[col][row].walls[direction] = wallOrDoor
+	nextCol = col + constants.dx(direction)
+	nextRow = row + constants.dy(direction)
+	if self.walkable([nextCol, nextRow]) then
+		nextDir = constants.inverseDir(direction)
+		self.map[nextCol][nextRow].walls[nextDir] = wallOrDoor
+	end if
+end function
+
+Ship.placeBottomWalls = function(left, bottom, length)
+	for col in range(left,left+length-1)
+		wall = new Wall
+		self.map[col][bottom].walls[SOUTH] = wall
+		if bottom > 0 and self.map[col][bottom-1] != null then 
+			self.map[col][bottom-1].walls[NORTH] = wall
+		end if
+	end for
+end function
+
+Ship.placeTopWalls = function(left, bottom, length)
+	for col in range(left,left+length-1)
+		wall = new Wall
+		self.map[col][bottom].walls[NORTH] = wall
+		if bottom < self.rows-1 and self.map[col][bottom+1] != null then 
+			self.map[col][bottom+1].walls[SOUTH] = wall
+		end if
+	end for
+end function
+
+Ship.placeLeftWalls = function(left, bottom, length)
+	for row in range(bottom,bottom+length-1)
+		wall = new Wall
+		self.map[left][row].walls[WEST] = wall
+		if left > 0 and self.map[left-1][row] != null then
+			self.map[left-1][row].walls[EAST] = wall
+		end if
+	end for
+end function
+
+Ship.placeRightWalls = function(left, bottom, length)
+	for row in range(bottom,bottom+length-1)
+		wall = new Wall
+		self.map[left][row].walls[EAST] = wall
+		if left < self.columns-1 and self.map[left+1][row] != null then
+			self.map[left+1][row].walls[WEST] = wall
+		end if
+	end for
+end function
+
+//----------------------------------------------------------------------
+// Ship debug methods: these are used to display info about a ship,
+// in text or graphical form.  Not meant for actual gameplay.
+//----------------------------------------------------------------------
 
 Ship.print = function()
 	text.delimiter = " "
@@ -152,47 +211,44 @@ Ship.printWallsBelow = function()
 	self.printWalls SOUTH, "-"
 end function
 
-Ship.placeBottomWalls = function(left, bottom, length)
-	for col in range(left,left+length-1)
-		wall = new Wall
-		self.map[col][bottom].walls[SOUTH] = wall
-		if bottom > 0 and self.map[col][bottom-1] != null then 
-			self.map[col][bottom-1].walls[NORTH] = wall
+Ship.draw = function()
+	gfx.clear
+	
+	drawWall = function(wallOrDoor, x1, y1, x2, y2)
+		if wallOrDoor == null then return
+		if wallOrDoor isa Wall then
+			gfx.line x1, y1, x2, y2, color.gray
+		else if wallOrDoor.isOpen then
+			gfx.line x1, y1, x2, y2, color.green
+		else
+			gfx.line x1, y1, x2, y2, color.red
 		end if
+	end function
+	
+	for col in self.columnRange
+		x = col * CELLSIZE
+		for row in self.rowRange
+			y = row * CELLSIZE
+			cell = self.map[col][row]
+			if cell == null then
+				gfx.line x+2, y+2, x+CELLSIZE-4, y+CELLSIZE-4, color.gray
+				gfx.line x+2, y+CELLSIZE-4, x+CELLSIZE-4, y+2, color.gray
+			else
+				gfx.fillRect x+1, y+1, CELLSIZE-2, CELLSIZE-2, "#EEEEEE"
+				gfx.drawRect x, y, CELLSIZE, CELLSIZE, color.white
+				drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y
+				drawWall cell.walls[WEST], x, y, x, y+CELLSIZE
+				drawWall cell.walls[NORTH], x, y+CELLSIZE-1, x+CELLSIZE, y+CELLSIZE-1
+				drawWall cell.walls[EAST], x+CELLSIZE-1, y, x+CELLSIZE-1, y+CELLSIZE
+			end if
+		end for
 	end for
 end function
 
-Ship.placeTopWalls = function(left, bottom, length)
-	for col in range(left,left+length-1)
-		wall = new Wall
-		self.map[col][bottom].walls[NORTH] = wall
-		if bottom < self.rows-1 and self.map[col][bottom+1] != null then 
-			self.map[col][bottom+1].wells[SOUTH] = wall
-		end if
-	end for
-end function
-
-Ship.placeLeftWalls = function(left, bottom, length)
-	for row in range(bottom,bottom+length-1)
-		wall = new Wall
-		self.map[left][row].walls[WEST] = wall
-		if left > 0 and self.map[left-1][row] != null then
-			self.map[left-1][row].walls[EAST] = wall
-		end if
-	end for
-end function
-
-Ship.placeRightWalls = function(left, bottom, length)
-	for row in range(bottom,bottom+length-1)
-		wall = new Wall
-		self.map[left][row].walls[EAST] = wall
-		if left < self.columns-1 and self.map[left+1][row] != null then
-			self.map[left+1][row].walls[WEST] = wall
-		end if
-	end for
-end function
 
 demo = function()
+	clear
+	
 	// for our demo, we'll load the "freighter" ship we're building for the prototype
 	dir = pwd
 	globals.shipModel = outer
@@ -200,10 +256,10 @@ demo = function()
 	import "shipData"
 	cd dir
 
-	s = shipData.ship
-	s.print
-	print "Neighbors of [1,7]: " + s.walkableNeighbors([1,7])
-	print "Neighbors of [5,11]: " + s.walkableNeighbors([5,11])
+	globals.ship = shipData.ship
+	ship.draw
+	print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
+	print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
 end function
 
 if locals == globals then demo

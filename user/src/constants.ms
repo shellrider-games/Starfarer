@@ -23,3 +23,11 @@ end function
 dy = function(dir)
 	return (dir == NORTH) - (dir == SOUTH)
 end function
+
+inverseDir = function(dir)
+	return [SOUTH, WEST, NORTH, EAST][dir]
+end function
+
+// Graphical/layout constants
+globals.CELLSIZE = 20		// size of one map cell, in pixels
+
