@@ -119,6 +119,23 @@ Ship.print = function()
 	print
 end function
 
+Ship.drawBottomWalls = function(bottom,left,length)
+	for row in range(left,length)
+		wall = new Wall
+		self.map[bottom][row].below = wall
+		if bottom > 0 and self.map[bottom-1][row] != null then self.map[bottom-1][row].above = wall
+	end for
+end function
+
+Ship.drawTopWalls = function(bottom,left,length)
+	for row in range(left,length)
+		wall = new Wall
+		self.map[bottom][row].above = wall
+		if bottom < self.columns-1 and self.map[bottom+1][row] != null then self.map[bottom+1][row].below = wall
+	end for
+end function
+
+
 demo = function()
 	outer.s = new Ship
 	s.init 10,6
