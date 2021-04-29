@@ -5,17 +5,23 @@ cd "/usr/src"
 import "constants"
 import "setup"
 import "shipModel"
+import "shipDisplay"
 
-// We'll directly load the freighter ship type for now:
-cd "../ships/freighter"
-import "shipData"
-playerShip = shipData.ship
-cd "/usr/src"
 
 Starfarer = {}
 
 Starfarer.init = function()
-
+	// We'll directly load the freighter ship type for now:
+	cd "../ships/freighter"
+	import "shipData"
+	globals.playerShip = shipData.ship
+	cd "/usr/src"
+	
+	// And render that thing!
+	self.renderer = new shipDisplay.Renderer
+	self.renderer.renderShip playerShip
+	
+	self.mouseWasDown = false
 end function
 
 // cleanup before exit.
@@ -24,16 +30,19 @@ Starfarer.cleanup = function()
 	key.clear
 end function
 
-//Process all available input
+// Handle a mouse click at the given position
+Starfarer.handleClick = function(pos)
+	mapPos = self.renderer.screenToMapPosition(pos)
+	print "You clicked " + mapPos
+end function
+
+// Process all available input
 Starfarer.processInput = function()
-	while key.available
-		k = key.get
-		text.print code(k) //print keycode for debugging purposes.
-		if k == char(27) or k == "q" then
-			self.cleanup
-			exit
-		end if
-	end while
+	mouseIsDown = mouse.button
+	if mouseIsDown and not self.mouseWasDown then
+		self.handleClick mouse
+	end if
+	self.mouseWasDown = mouseIsDown
 end function
 
 // Start Game/Main loop

@@ -8,13 +8,6 @@ import "listUtil"
 import "qa"
 import "spriteControllers"
 
-//CONSTANTS
-PLAYER_SHIP_RENDER_X = 240
-PLAYER_SHIP_RENDER_Y = 320
-
-//current ship image
-playerShipImage = null
-
 // Door (sprite subclass)
 Door = new spriteControllers.Animated
 Door.tint = color.aqua
@@ -85,24 +78,37 @@ init = function()
 	Door.update
 end function
 
+// Renderer: a class that exists to render a ship onto the display.  We may
+// have multiple ships on screen at some point; each will get its own Renderer.
+Renderer = {}
+Renderer.ship = null		// the shipModel we are rendering
+Renderer.x = 240			// horizontal center of the ship on screen
+Renderer.y = 320			// vertical center of the ship on screen
+
 // renderShip: load the given ship model onto the display.
-renderShip = function(ship)
-	// load the ship map
-	outer.playerShipImage = file.loadImage(file.child(ship.directory, "map.png"))
-	addSprite playerShipImage, PLAYER_SHIP_RENDER_X, PLAYER_SHIP_RENDER_Y
+Renderer.renderShip = function(ship)
+	// store our ship model
+	self.ship = ship
+	
+	// load the ship map, and calculate our graphics offset
+	playerShipImage = file.loadImage(file.child(ship.directory, "map.png"))
+	addSprite playerShipImage, self.x, self.y
+	self.mapZeroZero = {
+		"x": self.x - playerShipImage.width/2 + ship.offset[0] * CELLSIZE,
+	    "y": self.y - playerShipImage.height/2 + ship.offset[1] * CELLSIZE }
 	
 	// load the doors and any items (ship contents)
 	for row in ship.rowRange
 		for col in ship.columnRange
-			renderDoors ship.map[col][row]
-			renderContents ship.map[col][row]
+			self.renderDoors ship.map[col][row]
+			self.renderContents ship.map[col][row]
 		end for
 	end for
 end function
 
-addDoor = function(doorModel, cell, direction)
+Renderer.addDoor = function(doorModel, cell, direction)
 	d = new Door
-	pos = mapPositionToScreenPosition(cell)
+	pos = self.mapToScreenPosition(cell)
 	d.x = pos.x + CELLSIZE/2 * ((direction == EAST) - (direction == WEST))
 	d.y = pos.y + CELLSIZE/2 * ((direction == NORTH) - (direction == SOUTH))
 	d.rotation = 90 * (direction == NORTH or direction == SOUTH)
@@ -115,34 +121,29 @@ end function
 // Note that each cell is only responsible for rendering the doors above and to
 // the right, except for row 0 and column 0, which must also handle doors below
 // and to the left respectively.
-renderDoors = function(cell)
+Renderer.renderDoors = function(cell)
 	if cell == null then return
 	for dir in range(0,3)
-		if cell.walls[dir] isa shipModel.Door then addDoor cell.walls[dir], cell, dir
+		if cell.walls[dir] isa shipModel.Door then self.addDoor cell.walls[dir], cell, dir
 	end for
 end function
 
-// renderCell: render the contents of the given cell to our display.
+// renderContents: render the contents of the given cell to our display.
 // That generally means creating or placing sprites for items.
-renderContents = function(cell)
+Renderer.renderContents = function(cell)
 	if cell == null or cell.contents == null then return
 	if cell.contents.sprite == null then
 		cell.contents.sprite = new Item
 	else
 		disp.shipSprites.sprites.remove cell.contents.sprite
 	end if
-	pos = mapPositionToScreenPosition(cell)
+	pos = self.mapToScreenPosition(cell)
 	cell.contents.sprite.x = pos.x
 	cell.contents.sprite.y = pos.y
 	disp.shipSprites.sprites.push cell.contents.sprite
 end function
 
-mapZeroZero = function()
-	return {"x": PLAYER_SHIP_RENDER_X - playerShipImage.width/2 + shipData.ship.offset[0] * globals.CELLSIZE,
-	        "y": PLAYER_SHIP_RENDER_Y - playerShipImage.height/2 + shipData.ship.offset[1] * globals.CELLSIZE}
-end function
-
-screenPositionToMapPosition = function(point)
+Renderer.screenToMapPosition = function(point)
 	if point isa map then
 		x = point.x
 		y = point.y
@@ -150,12 +151,12 @@ screenPositionToMapPosition = function(point)
 		x = point[0]
 		y = point[0]
 	end if	
-	mapStartPoint = mapZeroZero
-	return {"col": floor((x - mapStartPoint.x)/globals.CELLSIZE), 
-	        "row": floor((y - mapStartPoint.y)/globals.CELLSIZE)}
+	mapStartPoint = self.mapZeroZero
+	return {"col": floor((x - mapStartPoint.x)/CELLSIZE), 
+	        "row": floor((y - mapStartPoint.y)/CELLSIZE)}
 end function
 
-mapPositionToScreenPosition = function(point)
+Renderer.mapToScreenPosition = function(point)
 	if point isa map then
 		x = point.col
 		y = point.row
@@ -163,11 +164,12 @@ mapPositionToScreenPosition = function(point)
 		x = point[0]
 		y = point[1]
 	end if
-	return {"x": mapZeroZero.x+x*globals.CELLSIZE+globals.CELLSIZE/2, 
-	        "y": mapZeroZero.y+y*globals.CELLSIZE+globals.CELLSIZE/2}
+	mapStartPoint = self.mapZeroZero
+	return {"x": mapStartPoint.x + x*CELLSIZE + CELLSIZE/2, 
+	        "y": mapStartPoint.y + y*CELLSIZE + CELLSIZE/2}
 end function
 
-putItem = function(ship, item, point)
+Renderer.putItem = function(ship, item, point)
 	targetCell = ship.getCell(point)
 	if targetCell == null then return	// out of bounds
 	if targetCell.contents != null then return;	// already occupied
@@ -180,9 +182,8 @@ putItem = function(ship, item, point)
 		end for
 	end for
 	targetCell.contents = item
-	renderContents targetCell
+	self.renderContents targetCell
 end function
-
 
 updateSprites = function(dt = 0.1)
 	for s in disp.shipSprites.sprites
@@ -197,31 +198,25 @@ demo = function()
 	currentDirectory = pwd
 	cd "/usr/ships/freighter"
 	import "shipData"
-	globals.shipData = shipData
 	cd currentDirectory
-	renderShip shipData.ship
-//	crateOne = new shipModel.Item; crateOne.init
-//	crateTwo = new shipModel.Item; crateTwo.init
-//	crateThree = new shipModel.Item; crateThree.init
-//
-//	putItem shipData.ship, crateOne,[3,0]
-//	putItem shipData.ship, crateTwo,[7,7]
-//	putItem shipData.ship, crateThree,[0,0]
+	ship = shipData.ship
+	rend = new Renderer
+	rend.renderShip ship
 
 	import "character"
 	globals.character = character
 	crewmember = new character.Character
-	crewmember.setPosition(mapPositionToScreenPosition([4,6]))
+	crewmember.setPosition(rend.mapToScreenPosition([4,6]))
 	disp.shipSprites.sprites.push crewmember
 	while not key.pressed("escape")
 		if mouse.button then
 			text.clear
-			print shipData.ship.getCell(screenPositionToMapPosition(mouse))
+			print ship.getCell(rend.screenToMapPosition(mouse))
 			wait 0.25
 		end if
 		if mouse.button(1) then
 			crate = new shipModel.Item
-			putItem shipData.ship, crate, screenPositionToMapPosition(mouse)
+			rend.putItem ship, crate, rend.screenToMapPosition(mouse)
 		end if
 		crewmember.update
 		updateSprites
