@@ -110,7 +110,7 @@ mapPositionToscreenPosition = function(point)
 end function
 
 putItem = function(ship, item, point)
-	if ship.getCell(point).contents == null then
+	if ship.getCell(point) != null and ship.getCell(point).contents == null then
 		for col in range(0,ship.columns-1)
 			for row in range(0,ship.rows-1)
 				if ship.getCell([col,row]) != null and ship.getCell([col,row]).contents != null and ship.getCell([col,row]).contents == item then 
