@@ -222,7 +222,7 @@ Ship.draw = function()
 	
 	drawWall = function(wallOrDoor, x1, y1, x2, y2)
 		if wallOrDoor == null then return
-		if wallOrDoor isa Wall then
+		if wallOrDoor isa shipModel.Wall then
 			gfx.line x1, y1, x2, y2, color.gray
 		else if wallOrDoor.isOpen then
 			gfx.line x1, y1, x2, y2, color.aqua
