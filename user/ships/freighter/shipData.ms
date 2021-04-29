@@ -35,4 +35,19 @@ ship.placeRightWalls 5,7,5
 ship.placeRightWalls 8,7,7
 ship.placeRightWalls 9,0,7
 
+ship.placeDoor 3, 3, NORTH
+ship.placeDoor 5, 3, NORTH
 ship.placeDoor 4, 6, NORTH
+ship.placeDoor 1, 6, NORTH
+ship.placeDoor 7, 6, NORTH
+ship.placeDoor 1, 11, NORTH
+ship.placeDoor 8, 9, NORTH
+ship.placeDoor 2, 9, EAST
+
+// And for prototyping purposes: let's start out with some items, too.
+ship.map[0][0].contents = new shipModel.Item
+ship.map[1][0].contents = new shipModel.Item
+ship.map[1][1].contents = new shipModel.Item
+ship.map[9][2].contents = new shipModel.Item
+
+

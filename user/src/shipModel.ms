@@ -6,19 +6,12 @@ import "constants"
 import "qa"
 import "listUtil"
 
-CRATE_IMAGE = file.loadImage("/usr/pics/crate.png")
-
 // Item: represents anything that can be placed in (or removed from)
 // a map cell.
 Item = {}
 Item.name = "item"
 Item.blocksWalking = true
-
-Item.init = function()
-	self.sprite = new Sprite
-	self.sprite.image = CRATE_IMAGE
-end function
-
+Item.sprite = null		// (filled in by shipDisplay as needed)
 
 // Wall: an ordinary wall between cells.  Considered unbreachable.
 Wall = {}
@@ -103,11 +96,13 @@ Ship.walkableNeighbors = function(colRow)
 	return result
 end function
 
+// Get a cell from our map, if it exists and is in bounds.
+// The parameter may be either a [col,row] list, or a map containing "col" and "row" keys.
 Ship.getCell = function(coordinates)
 	cell = null
 	if coordinates isa map then
-		x = coordinates.x
-		y = coordinates.y
+		x = coordinates.col
+		y = coordinates.row
 	else
 		x = coordinates[0]
 		y = coordinates[1]
@@ -251,6 +246,9 @@ Ship.draw = function()
 				drawWall cell.walls[WEST], x, y, x, y+CELLSIZE
 				drawWall cell.walls[NORTH], x, y+CELLSIZE-1, x+CELLSIZE, y+CELLSIZE-1
 				drawWall cell.walls[EAST], x+CELLSIZE-1, y, x+CELLSIZE-1, y+CELLSIZE
+				if cell.contents != null then
+					gfx.fillRect x+3, y+3, CELLSIZE-6, CELLSIZE-6, color.yellow
+				end if
 			end if
 		end for
 	end for
@@ -268,9 +266,9 @@ demo = function()
 	cd dir
 
 	globals.ship = shipData.ship
-	//ship.draw
-	//print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
-	//print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
+	ship.draw
+	print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
+	print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
 end function
 
 if locals == globals then demo
