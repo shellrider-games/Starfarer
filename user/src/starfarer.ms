@@ -44,6 +44,8 @@ Starfarer.processInput = function()
 		self.handleClick mouse
 	end if
 	self.mouseWasDown = mouseIsDown
+	disp.background.scrollX = gfx.width - (mouse.x*.05)
+	disp.background.scrollY = gfx.height - (mouse.y*.05)
 end function
 
 // Start Game/Main loop

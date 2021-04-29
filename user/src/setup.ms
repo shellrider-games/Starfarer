@@ -14,7 +14,8 @@ globals.disp = {}
 // final background of the game
 display(7).mode = displayMode.pixel
 disp.background = display(7)
-disp.background.clear color.black
+disp.background.clear color.black, 1920, 1280
+disp.background.drawImage(file.loadImage("/usr/pics/stars.png"), 0, 0)
 
 // disp.shipSprites: a SpriteDisplay for ship maps, plus 
 // characters and objects that appear on or around the ships.
