@@ -6,11 +6,19 @@ import "constants"
 import "qa"
 import "listUtil"
 
+CRATE_IMAGE = file.loadImage("/usr/pics/crate.png")
+
 // Item: represents anything that can be placed in (or removed from)
 // a map cell.
 Item = {}
 Item.name = "item"
 Item.blocksWalking = true
+
+Item.init = function()
+	self.sprite = new Sprite
+	self.sprite.image = CRATE_IMAGE
+end function
+
 
 // Wall: an ordinary wall between cells.  Considered unbreachable.
 Wall = {}

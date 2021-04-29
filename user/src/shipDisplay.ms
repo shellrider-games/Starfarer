@@ -104,9 +104,24 @@ mapPositionToscreenPosition = function(point)
 		y = point.y
 	else
 		x = point[0]
-		y = point[0]
+		y = point[1]
 	end if
 	return {"x": mapZeroZero.x+x*globals.CELLSIZE+globals.CELLSIZE/2, "y": mapZeroZero.y+y*globals.CELLSIZE+globals.CELLSIZE/2}
+end function
+
+putItem = function(ship, item, point)
+	if ship.getCell(point) != null and ship.getCell(point).contents == null then
+		for col in range(0,ship.columns-1)
+			for row in range(0,ship.rows-1)
+				if ship.getCell([col,row]) != null and ship.getCell([col,row]).contents != null and ship.getCell([col,row]).contents == item then 
+					ship.getCell([col,row]).contents = null
+				end if
+			end for
+		end for
+		ship.getCell(point).contents = item
+		item.sprite.x = mapPositionToscreenPosition(point).x; item.sprite.y = mapPositionToscreenPosition(point).y
+		if disp.shipSprites.sprites.indexOf(item.sprite) == null then disp.shipSprites.sprites.push item.sprite
+	end if
 end function
 
 // demo: test/demonstrate this module on its own.
@@ -119,6 +134,15 @@ demo = function()
 	globals.shipData = shipData
 	cd currentDirectory
 	renderShip shipData.ship
+	crateOne = new shipModel.Item; crateOne.init
+	crateTwo = new shipModel.Item; crateTwo.init
+	crateThree = new shipModel.Item; crateThree.init
+
+
+	putItem(shipData.ship, crateOne,[3,0])
+	putItem(shipData.ship, crateTwo,[7,7])
+	putItem(shipData.ship, crateThree,[0,0])
+
 	import "character"
 	globals.character = character
 	crewmember = new character.Character
@@ -129,6 +153,10 @@ demo = function()
 			text.clear
 			print shipData.ship.getCell(screenPositionToMapPosition(mouse))
 			wait 0.25
+		end if
+		if mouse.button(1) then
+			crate = new shipModel.Item; crate.init
+			putItem(shipData.ship, crate, screenPositionToMapPosition(mouse))
 		end if
 		crewmember.update
 	end while
