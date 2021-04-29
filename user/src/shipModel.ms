@@ -54,6 +54,8 @@ Ship = {}
 Ship.maxHp = 20			// hull points (basically ship health)
 Ship.hp = Ship.maxHp
 Ship.jumpFuel = 5		// how many jumps we can make before refueling
+Ship.directory = null   // where is the shipdata located
+Ship.mapOffset = [0,0]  // x,y offset for map image
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -245,9 +247,9 @@ demo = function()
 	cd dir
 
 	globals.ship = shipData.ship
-	ship.draw
-	print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
-	print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
+	//ship.draw
+	//print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
+	//print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
 end function
 
 if locals == globals then demo

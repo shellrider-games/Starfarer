@@ -8,6 +8,9 @@ import "listUtil"
 import "qa"
 import "spriteControllers"
 
+PLAYER_SHIP_RENDER_X = 240
+PLAYER_SHIP_RENDER_Y = 320
+
 Door = new spriteControllers.Animated
 Door.tint = color.blue
 
@@ -49,7 +52,7 @@ end function
 init = function()
 	// clear the sprite display, and load the ship background
 	disp.shipSprites.clear
-	outer.ship = addSprite("/usr/ships/falcon/image.png", 200, 320)	
+	//outer.ship = addSprite("/usr/ships/falcon/image.png", 200, 320)	
 	
 	// prepare the Door sprite subclass
 	doorSheet = file.loadImage("/usr/pics/doors.png")
@@ -67,15 +70,25 @@ init = function()
 	Door.update
 end function
 
+renderShip = function(ship)
+	currentDirectory = pwd
+	cd ship.directory
+	
+	mapImage = file.loadImage("map.png")
+	addSprite(mapImage,PLAYER_SHIP_RENDER_X,PLAYER_SHIP_RENDER_Y)
+
+	cd currentDirectory
+end function
+
 // demo: test/demonstrate this module on its own.
 demo = function()	
-	// instantiate a Door
-	d = Door.make(260, 316)
-
-	for i in range(10)
-		d.update
-		wait 0.2
-	end for
+	import "shipModel"
+	globals.shipModel = shipModel
+	currentDirectory = pwd
+	cd "/usr/ships/freighter"
+	import "shipData"
+	cd currentDirectory
+	renderShip shipData.ship
 end function
 
 init
