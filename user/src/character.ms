@@ -65,6 +65,17 @@ Character.update = function(dt=0.1)
 	self.curAnim.applyTo self, dt
 end function
 
+Character.setPosition = function(point)
+	if point isa map then
+		x = point.x
+		y = point.y
+	else
+		x = point[0]
+		y = point[0]
+	end if
+	self.x = x; self.y = y
+end function
+
 demo = function()
 	//clear
 	display(4).mode = displayMode.sprite

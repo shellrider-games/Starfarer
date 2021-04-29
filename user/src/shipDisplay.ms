@@ -8,9 +8,11 @@ import "listUtil"
 import "qa"
 import "spriteControllers"
 
+//CONSTANTS
 PLAYER_SHIP_RENDER_X = 240
 PLAYER_SHIP_RENDER_Y = 320
 
+//current ship image
 playerShipImage = null
 
 Door = new spriteControllers.Animated
@@ -80,6 +82,10 @@ renderShip = function(ship)
 	cd currentDirectory
 end function
 
+mapZeroZero = function()
+	return {"x": PLAYER_SHIP_RENDER_X - playerShipImage.width/2 + shipData.ship.offset[0] * globals.CELLSIZE,"y": PLAYER_SHIP_RENDER_Y - playerShipImage.height/2 + shipData.ship.offset[1] * globals.CELLSIZE}
+end function
+
 screenPositionToMapPosition = function(point)
 	if point isa map then
 		x = point.x
@@ -88,8 +94,19 @@ screenPositionToMapPosition = function(point)
 		x = point[0]
 		y = point[0]
 	end if	
-	mapStartPoint = {"x": PLAYER_SHIP_RENDER_X - playerShipImage.width/2 + shipData.ship.offset[0] * globals.CELLSIZE,"y": PLAYER_SHIP_RENDER_Y - playerShipImage.height/2 + shipData.ship.offset[1] * globals.CELLSIZE}
+	mapStartPoint = mapZeroZero
 	return {"x": floor((x - mapStartPoint.x)/globals.CELLSIZE), "y": floor((y - mapStartPoint.y)/globals.CELLSIZE)}
+end function
+
+mapPositionToscreenPosition = function(point)
+	if point isa map then
+		x = point.x
+		y = point.y
+	else
+		x = point[0]
+		y = point[0]
+	end if
+	return {"x": mapZeroZero.x+x*globals.CELLSIZE+globals.CELLSIZE/2, "y": mapZeroZero.y+y*globals.CELLSIZE+globals.CELLSIZE/2}
 end function
 
 // demo: test/demonstrate this module on its own.
@@ -102,12 +119,18 @@ demo = function()
 	globals.shipData = shipData
 	cd currentDirectory
 	renderShip shipData.ship
+	import "character"
+	globals.character = character
+	crewmember = new character.Character
+	crewmember.setPosition(mapPositionToscreenPosition([4,6]))
+	disp.shipSprites.sprites.push crewmember
 	while not key.pressed("escape")
 		if mouse.button then
 			text.clear
 			print shipData.ship.getCell(screenPositionToMapPosition(mouse))
 			wait 0.25
 		end if
+		crewmember.update
 	end while
 end function
 
