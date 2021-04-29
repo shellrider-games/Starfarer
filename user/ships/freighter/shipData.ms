@@ -3,6 +3,7 @@ ship = new shipModel.Ship
 
 ship.directory = file.curdir
 ship.init 10,14
+ship.offset = [1,2]
 
 ship.digRoom 0,0,10,7
 ship.digRoom 1,7,2,7

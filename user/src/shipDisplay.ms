@@ -11,6 +11,8 @@ import "spriteControllers"
 PLAYER_SHIP_RENDER_X = 240
 PLAYER_SHIP_RENDER_Y = 320
 
+playerShipImage = null
+
 Door = new spriteControllers.Animated
 Door.tint = color.blue
 
@@ -73,11 +75,21 @@ end function
 renderShip = function(ship)
 	currentDirectory = pwd
 	cd ship.directory
-	
-	mapImage = file.loadImage("map.png")
-	addSprite(mapImage,PLAYER_SHIP_RENDER_X,PLAYER_SHIP_RENDER_Y)
-
+	outer.playerShipImage = file.loadImage("map.png")
+	addSprite(playerShipImage,PLAYER_SHIP_RENDER_X,PLAYER_SHIP_RENDER_Y)
 	cd currentDirectory
+end function
+
+screenPositionToMapPosition = function(point)
+	if point isa map then
+		x = point.x
+		y = point.y
+	else
+		x = point[0]
+		y = point[0]
+	end if	
+	mapStartPoint = {"x": PLAYER_SHIP_RENDER_X - playerShipImage.width/2 + shipData.ship.offset[0] * globals.CELLSIZE,"y": PLAYER_SHIP_RENDER_Y - playerShipImage.height/2 + shipData.ship.offset[1] * globals.CELLSIZE}
+	return {"x": floor((x - mapStartPoint.x)/globals.CELLSIZE), "y": floor((y - mapStartPoint.y)/globals.CELLSIZE)}
 end function
 
 // demo: test/demonstrate this module on its own.
@@ -87,8 +99,16 @@ demo = function()
 	currentDirectory = pwd
 	cd "/usr/ships/freighter"
 	import "shipData"
+	globals.shipData = shipData
 	cd currentDirectory
 	renderShip shipData.ship
+	while not key.pressed("escape")
+		if mouse.button then
+			text.clear
+			print shipData.ship.getCell(screenPositionToMapPosition(mouse))
+			wait 0.25
+		end if
+	end while
 end function
 
 init

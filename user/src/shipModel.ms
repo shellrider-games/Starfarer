@@ -95,6 +95,19 @@ Ship.walkableNeighbors = function(colRow)
 	return result
 end function
 
+Ship.getCell = function(coordinates)
+	cell = null
+	if coordinates isa map then
+		x = coordinates.x
+		y = coordinates.y
+	else
+		x = coordinates[0]
+		y = coordinates[1]
+	end if
+	if x >= 0 and x < self.columns and y >= 0 and y < self.rows then cell = self.map[x][y]
+	return cell
+end function
+
 //----------------------------------------------------------------------
 // Ship setup methods: these are used to prepare a ship map.
 //----------------------------------------------------------------------
