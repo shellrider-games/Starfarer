@@ -8,6 +8,13 @@ import "listUtil"
 import "qa"
 import "spriteControllers"
 
+//CONSTANTS
+PLAYER_SHIP_RENDER_X = 240
+PLAYER_SHIP_RENDER_Y = 320
+
+//current ship image
+playerShipImage = null
+
 Door = new spriteControllers.Animated
 Door.tint = color.blue
 
@@ -49,7 +56,7 @@ end function
 init = function()
 	// clear the sprite display, and load the ship background
 	disp.shipSprites.clear
-	outer.ship = addSprite("/usr/ships/falcon/image.png", 200, 320)	
+	//outer.ship = addSprite("/usr/ships/falcon/image.png", 200, 320)	
 	
 	// prepare the Door sprite subclass
 	doorSheet = file.loadImage("/usr/pics/doors.png")
@@ -67,15 +74,64 @@ init = function()
 	Door.update
 end function
 
+renderShip = function(ship)
+	currentDirectory = pwd
+	cd ship.directory
+	outer.playerShipImage = file.loadImage("map.png")
+	addSprite(playerShipImage,PLAYER_SHIP_RENDER_X,PLAYER_SHIP_RENDER_Y)
+	cd currentDirectory
+end function
+
+mapZeroZero = function()
+	return {"x": PLAYER_SHIP_RENDER_X - playerShipImage.width/2 + shipData.ship.offset[0] * globals.CELLSIZE,"y": PLAYER_SHIP_RENDER_Y - playerShipImage.height/2 + shipData.ship.offset[1] * globals.CELLSIZE}
+end function
+
+screenPositionToMapPosition = function(point)
+	if point isa map then
+		x = point.x
+		y = point.y
+	else
+		x = point[0]
+		y = point[0]
+	end if	
+	mapStartPoint = mapZeroZero
+	return {"x": floor((x - mapStartPoint.x)/globals.CELLSIZE), "y": floor((y - mapStartPoint.y)/globals.CELLSIZE)}
+end function
+
+mapPositionToscreenPosition = function(point)
+	if point isa map then
+		x = point.x
+		y = point.y
+	else
+		x = point[0]
+		y = point[0]
+	end if
+	return {"x": mapZeroZero.x+x*globals.CELLSIZE+globals.CELLSIZE/2, "y": mapZeroZero.y+y*globals.CELLSIZE+globals.CELLSIZE/2}
+end function
+
 // demo: test/demonstrate this module on its own.
 demo = function()	
-	// instantiate a Door
-	d = Door.make(260, 316)
-
-	for i in range(10)
-		d.update
-		wait 0.2
-	end for
+	import "shipModel"
+	globals.shipModel = shipModel
+	currentDirectory = pwd
+	cd "/usr/ships/freighter"
+	import "shipData"
+	globals.shipData = shipData
+	cd currentDirectory
+	renderShip shipData.ship
+	import "character"
+	globals.character = character
+	crewmember = new character.Character
+	crewmember.setPosition(mapPositionToscreenPosition([4,6]))
+	disp.shipSprites.sprites.push crewmember
+	while not key.pressed("escape")
+		if mouse.button then
+			text.clear
+			print shipData.ship.getCell(screenPositionToMapPosition(mouse))
+			wait 0.25
+		end if
+		crewmember.update
+	end while
 end function
 
 init
