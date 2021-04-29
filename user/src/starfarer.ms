@@ -33,6 +33,7 @@ end function
 // Handle a mouse click at the given position
 Starfarer.handleClick = function(pos)
 	mapPos = self.renderer.screenToMapPosition(pos)
+	text.clear
 	print "You clicked " + mapPos
 end function
 
@@ -48,8 +49,14 @@ end function
 // Start Game/Main loop
 Starfarer.start = function()
 	//Main Loop
+	curTime = time
 	while true
+		lastTime = curTime
+		curTime = time
+		dt = curTime - lastTime
+		
 		self.processInput
+		shipDisplay.update dt
 		yield
 	end while
 end function

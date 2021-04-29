@@ -185,7 +185,7 @@ Renderer.putItem = function(ship, item, point)
 	self.renderContents targetCell
 end function
 
-updateSprites = function(dt = 0.1)
+update = function(dt = 0.1)
 	for s in disp.shipSprites.sprites
 		s.update dt
 	end for
@@ -219,7 +219,7 @@ demo = function()
 			rend.putItem ship, crate, rend.screenToMapPosition(mouse)
 		end if
 		crewmember.update
-		updateSprites
+		update
 		yield
 	end while
 	key.clear
