@@ -42,7 +42,7 @@ ship.placeDoor 1, 6, NORTH
 ship.placeDoor 7, 6, NORTH
 ship.placeDoor 1, 11, NORTH
 ship.placeDoor 8, 9, NORTH
-ship.placeDoor 2, 9, EAST
+ship.placeDoor 2, 10, EAST
 
 // And for prototyping purposes: let's start out with some items, too.
 ship.map[0][0].contents = new shipModel.Item
