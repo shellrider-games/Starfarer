@@ -54,29 +54,45 @@ Character = new spriteControllers.Animated
 Character.anims = AnimSet.make(defaultSheet)
 Character.facing = SOUTH
 Character.walking = false
-Character.speed = 1
+Character.speed = 20  // walking speed, in pixels/sec
 Character.path = []
 
+// Move the character towards the given screen position, moving no more than the 
+// given amount (distance, in pixels).  Return true if we moved, or false if we
+// were already there.
+Character.moveTowards = function(screenPos, amount)
+	if screenPos.x == self.x and screenPos.y == self.y then return false
+	self.turnToFaceScreenPos screenPos
+	return mathUtil.moveTowardsXY(self, screenPos, amount)
+end function
+
 Character.update = function(dt=0.1)
+	// follow our path
 	if self.path then
 		self.walking = true
-		moved = mathUtil.moveTowardsXY(self, renderer.mapToScreenPosition(self.path[0]), self.speed)
+		moved = self.moveTowards(renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		if not moved then
 			self.path = self.path[1:]
 			if self.path then
-				mathUtil.moveTowardsXY(self, renderer.mapToScreenPosition(self.path[0]), self.speed)
+				self.moveTowards renderer.mapToScreenPosition(self.path[0]), self.speed * dt
 			end if
 		end if
 	else
 		self.walking = false
 	end if
+
 	// make sure we're playing the right animation
 	if self.walking then a = self.anims.walk[self.facing] else a = self.anims.idle[self.facing]
 	if not self.curAnim or self.curAnim.frames != a.frames then
 		self.curAnim = a.clone
 	end if
+
 	// and apply the animation to this sprite
 	self.curAnim.applyTo self, dt
+end function
+
+Character.turnToFaceScreenPos = function(pos)
+	self.facing = constants.dirFromDelta(pos.y - self.y, pos.x - self.x)
 end function
 
 Character.setPosition = function(point)
