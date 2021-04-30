@@ -7,6 +7,7 @@
 import "constants"
 import "qa"
 import "spriteControllers"
+import "mathUtil"
 
 // Other constants
 frameSize = 16		// width and height of each frame in the sprite sheet
@@ -14,12 +15,12 @@ frameSize = 16		// width and height of each frame in the sprite sheet
 defaultSheet = file.loadImage("/usr/pics/pixelguy.png")
 
 // functions to get a delta X and Y given a facing direction
-dx = function(dir)
-	return [0, 1, 0, -1][dir]
-end function
-dy = function(dir)
-	return [1, 0, -1, 0][dir]
-end function
+// dx = function(dir)
+// 	return [0, 1, 0, -1][dir]
+// end function
+// dy = function(dir)
+// 	return [1, 0, -1, 0][dir]
+// end function
 
 getAnim = function(sheet, row=0, fromCol=0, count=1)
 	frames = []
@@ -53,14 +54,27 @@ Character = new spriteControllers.Animated
 Character.anims = AnimSet.make(defaultSheet)
 Character.facing = SOUTH
 Character.walking = false
+Character.speed = 1
+Character.path = []
 
 Character.update = function(dt=0.1)
+	if self.path then
+		self.walking = true
+		moved = mathUtil.moveTowardsXY(self, renderer.mapToScreenPosition(self.path[0]), self.speed)
+		if not moved then
+			self.path = self.path[1:]
+			if self.path then
+				mathUtil.moveTowardsXY(self, renderer.mapToScreenPosition(self.path[0]), self.speed)
+			end if
+		end if
+	else
+		self.walking = false
+	end if
 	// make sure we're playing the right animation
 	if self.walking then a = self.anims.walk[self.facing] else a = self.anims.idle[self.facing]
 	if not self.curAnim or self.curAnim.frames != a.frames then
 		self.curAnim = a.clone
 	end if
-	
 	// and apply the animation to this sprite
 	self.curAnim.applyTo self, dt
 end function
@@ -74,6 +88,10 @@ Character.setPosition = function(point)
 		y = point[0]
 	end if
 	self.x = x; self.y = y
+end function
+
+Character.getPosition = function()
+	return [self.x,self.y]
 end function
 
 demo = function()

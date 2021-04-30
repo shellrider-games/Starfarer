@@ -13,6 +13,8 @@
 //	endPos: a [col,row] target position to reach
 findPath = function(ship, startPos, endPos)
 	// A* + Heuristics pathfinding implementation
+	if startPos isa map then startPos = [startPos.col,startPos.row]
+	if endPos isa map then endPos = [endPos.col,endPos.row]
 
 	//True distance function for diagnanols
 	heuristic = function(endPos, nextPos)

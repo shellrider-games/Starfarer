@@ -149,7 +149,7 @@ Renderer.screenToMapPosition = function(point)
 		y = point.y
 	else
 		x = point[0]
-		y = point[0]
+		y = point[1]
 	end if	
 	mapStartPoint = self.mapZeroZero
 	return {"col": floor((x - mapStartPoint.x)/CELLSIZE), 
@@ -188,6 +188,9 @@ end function
 update = function(dt = 0.1)
 	for s in disp.shipSprites.sprites
 		s.update dt
+	end for
+	for m in globals.playerShip.minions
+		m.update(dt)
 	end for
 end function
 

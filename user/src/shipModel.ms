@@ -21,7 +21,7 @@ Wall.isOpen = false		// walls should ALWAYS be closed
 // Door: a wall that can open and close.
 Door = {}
 Door.name = "door"
-Door.isOpen = false		// closed by default, but can be opened!
+Door.isOpen = true		// closed by default, but can be opened! *** Set to open for testing.
 
 // Cell class: information about one map cell, including whether it is
 // walkable, what equipment or cargo is there, whether it is on fire,
@@ -57,6 +57,7 @@ Ship.hp = Ship.maxHp
 Ship.jumpFuel = 5		// how many jumps we can make before refueling
 Ship.directory = null   // where is the shipdata located
 Ship.mapOffset = [0,0]  // x,y offset for map image
+Ship.minions = []		// living things on a ship
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
