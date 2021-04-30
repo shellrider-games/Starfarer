@@ -92,6 +92,13 @@ Ship.walkableNeighbors = function(colRow)
 		if not c.canExitInDir(dir) then continue
 		nextPos = [col + constants.dx(dir), row + constants.dy(dir)]
 		if self.walkable(nextPos) then result.push nextPos
+		directionToRight = (dir+1)%4
+		directionToLeft = (dir-1)%4
+		if not c.canExitInDir(directionToRight) then continue
+		adjacentCells = [self.map[nextPos[0]][nextPos[1]],self.map[col + constants.dx(directionToRight)][row + constants.dy(directionToRight)]]
+		if not (adjacentCells[0].canExitInDir(directionToRight) and adjacentCells[1].canExitInDir(dir)) then continue
+		diagonalNextPos = [nextPos[0] + constants.dx(directionToRight), nextPos[1] + constants.dy(directionToRight)]
+		if self.walkable(diagonalNextPos) then result.push diagonalNextPos
 	end for
 	return result
 end function
