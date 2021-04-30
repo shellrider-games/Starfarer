@@ -14,10 +14,11 @@
 findPath = function(ship, startPos, endPos)
 	// A* + Heuristics pathfinding implementation
 
-	//Basic Manhattan distance, assumes distance to any neighboring cell = 1
-	//can change to pythagorean later if needed but sqrt is slower
+	//True distance function for diagnanols
 	heuristic = function(endPos, nextPos)
-		return abs(endPos[0] - nextPos[0]) + abs(endPos[1]-nextPos[1])
+	    a = endPos[0] - nextPos[0]
+		b = endPos[1] - nextPos[1]
+		return sqrt(a^2+b^2)
 	end function
 
 
@@ -35,7 +36,7 @@ findPath = function(ship, startPos, endPos)
 		end if
 		
 		for nextCellPos in ship.walkableNeighbors(current)
-			cost = cellCosts[current] + 1
+			cost = cellCosts[current] + heuristic(nextCellPos, current)
 			if not cellCosts.hasIndex(nextCellPos) or cost < cellCosts[nextCellPos] then
 				cellCosts[nextCellPos] = cost
 				i = 0
@@ -43,7 +44,7 @@ findPath = function(ship, startPos, endPos)
 					if check[i][1] > cost then break
 					i = i + 1
 				end while
-				check.insert i, [nextCellPos, cost + heuristic(endPos, nextCellPos)]
+				check.insert i, [nextCellPos, cost]
 				camefrom[nextCellPos] = current
 			end if
 		end for
