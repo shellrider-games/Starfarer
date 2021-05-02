@@ -176,21 +176,7 @@ Ship.removeCargo = function()
 end function
 
 Ship.update = function(dt)
-	// Check for minions about to pass through doors; open them.
-	// Any doors previously opened for a minion, let them close.
-	for m in self.minions
-		if not m.path then continue
-		dx = m.path[0][0] - m.col; dy = m.path[0][1] - m.row
-		if not dx and not dy then continue
-		dir = round(constants.dirFromDelta(dy, dx))
-		d = self.map[m.col][m.row].walls[dir]
-		if d != m.usingDoor then
-			//text.row = 25; print m.name + " is now using " + d + " at " + m.col + ", " + m.row + " with dx " + dx + ", dy " + dy + " dir " + dir
-			if m.usingDoor then m.usingDoor.userDone m
-			if d then d.openForUser m
-			m.usingDoor = d
-		end if			
-	end for
+
 end function
 
 //----------------------------------------------------------------------

@@ -26,7 +26,7 @@ Starfarer.init = function()
 	//give us a character
 	minion = new character.Character
 	minion.setPosition self.renderer.mapToScreenPosition([2,2])
-	globals.playerShip.minions.push minion
+	minion.boardShip playerShip
 	disp.shipSprites.sprites.push minion
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false

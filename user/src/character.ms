@@ -52,6 +52,7 @@ end function
 
 Character = new spriteControllers.Animated
 Character.name = "Arthur"
+Character.ship = null		// CAREFUL: circular reference; be sure to break when done
 Character.anims = AnimSet.make(defaultSheet)
 Character.facing = SOUTH
 Character.walking = false
@@ -60,6 +61,11 @@ Character.path = []
 Character.usingDoor = null
 Character.col = 0			// horizontal position within the ship
 Character.row = 0			// vertical position within the ship
+
+Character.boardShip = function(ship)
+	self.ship = ship
+	ship.minions.push self
+end function
 
 // Move the character towards the given screen position, moving no more than the 
 // given amount (distance, in pixels).  Return true if we moved, or false if we
@@ -76,8 +82,25 @@ Character.update = function(dt=0.1)
 		self.walking = true
 		moved = self.moveTowards(renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		if not moved then
+			// We've reached the cell we were immediately walking towards.
+			// If we passed through a door, we're done with it now.
+			if self.usingDoor then
+				self.usingDoor.userDone self
+				self.usingDoor = null
+			end if
+			// Move to the next step of the path.
 			self.path = self.path[1:]
 			if self.path then
+				// If we're about to step through a door, open it.
+				if self.ship != null then
+					dir = constants.dirFromDelta(self.path[0][1]-self.row, self.path[0][0]-self.col)
+					d = self.ship.map[self.col][self.row].walls[dir]
+					if d isa Door then
+						d.openForUser self
+						self.usingDoor = d
+					end if
+				end if
+				// Then actually move a bit.
 				self.moveTowards renderer.mapToScreenPosition(self.path[0]), self.speed * dt
 			end if
 		end if
@@ -130,7 +153,7 @@ demo = function()
 	
 	print "Use arrow keys or d-pad to move the character."
 	while not key.pressed("escape")
-		c.update
+		c.update null
 		c.walking = true
 		if key.axis("Horizontal") < 0 then
 			c.facing = WEST
