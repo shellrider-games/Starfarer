@@ -206,6 +206,8 @@ demo = function()
 	rend = new Renderer
 	rend.renderShip ship
 
+	globals.playerShip = ship
+
 	import "character"
 	globals.character = character
 	crewmember = new character.Character
