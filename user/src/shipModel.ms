@@ -33,6 +33,7 @@ Cell.row = 0				// row within its ship map
 Cell.air = 100				// air quality, from 0 (vacuum) - 100 (fine)
 Cell.fire = 0				// on fire? 0 (nope) to 100 (raging inferno)
 Cell.walls = null			// list of wall or door in each direction (NORTH, etc.)
+Cell.type = Celltype.STANDARD
 
 Cell.make = function(col, row)
 	noob = new Cell
@@ -253,7 +254,12 @@ Ship.draw = function()
 				gfx.line x+2, y+2, x+CELLSIZE-4, y+CELLSIZE-4, color.gray
 				gfx.line x+2, y+CELLSIZE-4, x+CELLSIZE-4, y+2, color.gray
 			else
-				gfx.fillRect x+1, y+1, CELLSIZE-2, CELLSIZE-2, "#EEEEEE"
+				if cell.type == Celltype.CARGO_EXCHANGE then 
+					cellcolor = color.lime
+				else
+					cellcolor = "#EEEEEE"
+				end if
+				gfx.fillRect x+1, y+1, CELLSIZE-2, CELLSIZE-2, cellcolor
 				gfx.drawRect x, y, CELLSIZE, CELLSIZE, color.white
 				drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y
 				drawWall cell.walls[WEST], x, y, x, y+CELLSIZE

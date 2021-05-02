@@ -38,3 +38,6 @@ end function
 // Graphical/layout constants
 globals.CELLSIZE = 20		// size of one map cell, in pixels
 
+globals.Celltype = {}
+Celltype.STANDARD = 0
+Celltype.CARGO_EXCHANGE = 1
