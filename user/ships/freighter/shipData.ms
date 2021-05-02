@@ -49,9 +49,9 @@ ship.getCell([0,2]).type = Celltype.CARGO_EXCHANGE
 ship.getCell([9,1]).type = Celltype.CARGO_EXCHANGE
 
 // And for prototyping purposes: let's start out with some items, too.
-ship.map[0][0].contents = new shipModel.Item
-ship.map[1][0].contents = new shipModel.Item
-ship.map[1][1].contents = new shipModel.Item
-ship.map[9][2].contents = new shipModel.Item
+ship.map[0][0].contents = new Item
+ship.map[1][0].contents = new Item
+ship.map[1][1].contents = new Item
+ship.map[9][2].contents = new Item
 
 

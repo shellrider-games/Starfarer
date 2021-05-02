@@ -6,13 +6,10 @@
 if not globals.hasIndex("setup") then import "setup"
 import "listUtil"
 import "qa"
+import "spriteUtil"
 import "spriteControllers"
 if not globals.hasIndex("Door") then import "door"
-
-// Item (sprite subclass)
-Item = new Sprite
-Item.image = file.loadImage("/usr/pics/crate.png")
-Item.update = function(dt); end function
+if not globals.hasIndex("Item") then import "item"
 
 // addSprite: Helper method to create and add a sprite from an image
 addSprite = function(image, x, y, baseClass)
@@ -64,6 +61,15 @@ Renderer.renderShip = function(ship)
 			self.renderContents ship.map[col][row]
 		end for
 	end for
+	
+	// load the minions
+	for m in ship.minions
+		pos = self.mapToScreenPosition(m)
+		m.x = pos.x; m.y = pos.y
+		disp.shipSprites.sprites.removeVal m
+		disp.shipSprites.sprites.push m
+		print "Loaded minion at " + m.getMapPos + " to " + pos
+	end for
 end function
 
 Renderer.placeDoor = function(door, cell, direction)
@@ -90,15 +96,11 @@ end function
 // That generally means creating or placing sprites for items.
 Renderer.renderContents = function(cell)
 	if cell == null or cell.contents == null then return
-	if cell.contents.sprite == null then
-		cell.contents.sprite = new Item
-	else
-		disp.shipSprites.sprites.remove cell.contents.sprite
-	end if
+	item = cell.contents
+	disp.shipSprites.sprites.removeVal item
 	pos = self.mapToScreenPosition(cell)
-	cell.contents.sprite.x = pos.x
-	cell.contents.sprite.y = pos.y
-	disp.shipSprites.sprites.push cell.contents.sprite
+	item.x = pos.x; item.y = pos.y
+	disp.shipSprites.sprites.push item
 end function
 
 Renderer.screenToMapPosition = function(point)

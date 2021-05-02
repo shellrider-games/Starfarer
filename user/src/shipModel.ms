@@ -6,13 +6,7 @@ import "constants"
 import "qa"
 import "listUtil"
 if not globals.hasIndex("Door") then import "door"
-
-// Item: represents anything that can be placed in (or removed from)
-// a map cell.
-Item = {}
-Item.name = "item"
-Item.blocksWalking = true
-Item.sprite = null		// (filled in by shipDisplay as needed)
+if not globals.hasIndex("Item") then import "item"
 
 // Wall: an ordinary wall between cells.  Considered unbreachable.
 Wall = {}
@@ -127,17 +121,17 @@ Ship.getCell = function(coordinates)
 	return cell
 end function
 
-//Boolean value that is true if cell at [col][row] is a cargo exchange cell and is empty
+// Boolean value that is true if cell at [col][row] is a cargo exchange cell and is empty
 Ship.isFreeCargoCell = function(col, row)
 	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents == null
 end function
 
-//Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
+// Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
 Ship.isFullCargoCell = function(col, row)
 	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents != null
 end function
 
-//Returns a list of all currently free cargo cells on the ship
+// Returns a list of all currently free cargo cells on the ship
 Ship.getFreeCargoExchangeCells = function()
 	result = []
 	for col in self.columnRange
@@ -173,6 +167,14 @@ Ship.removeCargo = function()
 		fullCargoCells[0].contents = null
 	end if
 	return removedItem
+end function
+
+// Find the minion (if any) at a given row and column (position map).
+Ship.minionAt = function(mapPos)
+	for m in self.minions
+		if m.col == mapPos.col and m.row == mapPos.row then return m
+	end for
+	return null
 end function
 
 Ship.update = function(dt)

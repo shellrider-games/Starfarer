@@ -6,6 +6,7 @@
 
 import "constants"
 import "qa"
+import "spriteUtil"
 import "spriteControllers"
 import "mathUtil"
 
@@ -56,6 +57,7 @@ Character.ship = null		// CAREFUL: circular reference; be sure to break when don
 Character.anims = AnimSet.make(defaultSheet)
 Character.facing = SOUTH
 Character.walking = false
+Character.carrying = null	// Item we are currently carrying
 Character.speed = 30		// walking speed, in pixels/sec
 Character.path = []
 Character.usingDoor = null
@@ -124,13 +126,40 @@ Character.update = function(dt=0.1)
 
 	// and apply the animation to this sprite
 	self.curAnim.applyTo self, dt
+	
+	// if carrying an item, update its position relative to this character
+	if self.carrying then
+		self.carrying.scale = 0.75
+		dist = CELLSIZE * 0.4
+		self.carrying.x = self.x + dist * constants.dx(self.facing)
+		self.carrying.y = self.y + dist * constants.dy(self.facing)
+		myIdx = disp.shipSprites.sprites.indexOf(self)
+		if self.facing == NORTH then
+			// position item just under the character
+			self.carrying.positionAtIndex disp.shipSprites, myIdx-1
+		else
+			// position item just on top of the character
+			self.carrying.positionAtIndex disp.shipSprites, myIdx+1
+		end if
+	end if
 end function
 
 Character.turnToFaceScreenPos = function(pos)
-	self.facing = constants.dirFromDelta(pos.y - self.y, pos.x - self.x)
+	self.facing = round(constants.dirFromDelta(pos.y - self.y, pos.x - self.x)) % 4
 end function
 
-Character.setPosition = function(point)
+// Pick up the given Item.  If this character is already next to the item,
+// it will pick it up immediately.  If not, it will path-find to it, and
+// then pick it up once it's next to it.
+Character.pickUp = function(item)
+	// ToDo: check positions.
+	// For now, just do it!
+	self.carrying = item
+	disp.shipSprites.sprites.removeVal item
+	disp.shipSprites.sprites.push item
+end function
+
+Character.setScreenPos = function(point)
 	if point isa map then
 		x = point.x
 		y = point.y
@@ -141,8 +170,20 @@ Character.setPosition = function(point)
 	self.x = x; self.y = y
 end function
 
-Character.getPosition = function()
+Character.getScreenPos = function()
 	return [self.x,self.y]
+end function
+
+Character.setMapPos = function(pos)
+	if pos isa map then
+		self.col = pos.col; self.row = pos.row		
+	else
+		self.col = pos[0]; self.row = pos[1]
+	end if
+end function
+
+Character.getMapPos = function()
+	return {"row": self.row, "col":self.col}
 end function
 
 demo = function()

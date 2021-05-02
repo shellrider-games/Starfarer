@@ -2,6 +2,7 @@
 // 
 
 cd "/usr/src"
+import "listUtil"
 import "constants"
 import "setup"
 import "shipModel"
@@ -18,16 +19,18 @@ Starfarer.init = function()
 	globals.playerShip = shipData.ship
 	cd "/usr/src"
 
+	// give us a character
+	minion = new character.Character
+	minion.setMapPos [2, 2]
+	minion.boardShip playerShip
+
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
 	self.renderer.renderShip playerShip
 	globals.renderer = self.renderer
 	
-	//give us a character
-	minion = new character.Character
-	minion.setPosition self.renderer.mapToScreenPosition([2,2])
-	minion.boardShip playerShip
-	disp.shipSprites.sprites.push minion
+
+
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
 end function
@@ -39,30 +42,52 @@ Starfarer.cleanup = function()
 end function
 
 Starfarer.selectedMinion = []
+
 // Handle a mouse click at the given position
 Starfarer.handlePrimaryClick = function(pos)
 	mapPos = self.renderer.screenToMapPosition(pos)
-	for minion in globals.playerShip.minions
-		minionCell = self.renderer.screenToMapPosition(minion.getPosition)
-		if mapPos.col == minionCell.col and mapPos.row == minionCell.row then
-			if key.pressed("left shift") then
-				self.selectedMinion.push minion
-			else
-				self.selectedMinion = [minion]
-			end if
+	
+	// If we click a minion, toggle its selection status.
+	m = playerShip.minionAt(mapPos)
+	if m != null then
+		if self.selectedMinion.contains(m) then
+			self.selectedMinion.removeVal m
 		else
-			if not key.pressed("left shift") then
-				self.selectedMinion = []
+			// with left-shift, add to selection; otherwise replace selection
+			if key.pressed("left shift") then
+				self.selectedMinion.push m
+			else
+				self.selectedMinion = [m]
 			end if
 		end if
+		return
+	end if
+	
+	// If we click anywhere else, and don't have a selected minion, ignore it.
+	if not self.selectedMinion then return
+	m = self.selectedMinion[0]
+	
+	// If we click an Item, have the selected minion pick it up.
+	cell = playerShip.getCell(mapPos)
+	if cell == null then return
+	item = cell.contents
+	if item != null then
+		m.pickUp item
+		return
+	end if
+	
+	// If we click anywhere else, just send our minion(s) there.
+	for m in self.selectedMinion
+		m.path = pathfinding.findPath(playerShip, m, mapPos)
 	end for
+	
 end function
 
 Starfarer.handleSecondaryClick = function(pos)
 	mapPos = self.renderer.screenToMapPosition(pos)
 	if playerShip.walkable([mapPos.col,mapPos.row]) then
 		for minion in self.selectedMinion
-			minion.path = pathfinding.findPath(playerShip, self.renderer.screenToMapPosition(minion.getPosition), mapPos)
+			minion.path = pathfinding.findPath(playerShip, minion, mapPos)
 		end for	
 	end if
 end function

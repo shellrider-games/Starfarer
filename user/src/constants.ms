@@ -28,11 +28,11 @@ end function
 // that corresponds to the given delta position.  If you want a cardinal direction,
 // just round() the result.
 dirFromDelta = function(dy, dx)
-	return atan(dy, dx) * 2/pi
+	return ((atan(dy, dx) * 2/pi) + 4) % 4
 end function
 
 inverseDir = function(dir)
-	return [WEST, SOUTH, EAST, NORTH][dir]
+	return (dir + 2) % 4
 end function
 
 // Graphical/layout constants
