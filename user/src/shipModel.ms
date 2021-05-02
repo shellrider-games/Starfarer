@@ -152,6 +152,16 @@ Ship.getFullCargoExchangeCells = function()
 	return result
 end function
 
+Ship.findItemCell = function(item)
+	for col in self.columnRange
+		for row in self.rowRange
+			cell = self.map[col][row]
+			if cell != null and cell.contents == item then return cell
+		end for
+	end for
+	return null
+end function
+
 Ship.addCargo = function(item)
 	if item isa Item then
 		freeCargoCells = self.getFreeCargoExchangeCells
@@ -175,6 +185,19 @@ Ship.minionAt = function(mapPos)
 		if m.col == mapPos.col and m.row == mapPos.row then return m
 	end for
 	return null
+end function
+
+Ship.noteItemPickedUp = function(item, byWhom)
+	cell = self.findItemCell(item)
+	if cell != null then cell.contents = null
+end function
+
+Ship.noteItemDropped = function(item, byWhom)
+	// the item should go into the map cell the character is facing.
+	col = byWhom.col + constants.dx(byWhom.facing)
+	row = byWhom.row + constants.dy(byWhom.facing)
+	cell = self.getCell([col, row])
+	if cell != null then cell.contents = item
 end function
 
 Ship.update = function(dt)

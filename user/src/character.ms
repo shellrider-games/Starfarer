@@ -110,6 +110,9 @@ Character.update = function(dt=0.1)
 			if self.path then
 				self.openDoorIfNeeded
 				self.moveTowards renderer.mapToScreenPosition(self.path[0]), self.speed * dt
+			else
+				// We've reached the end of our path.
+				self.dropItem
 			end if
 		end if
 		newPos = renderer.screenToMapPosition(self)
@@ -157,6 +160,18 @@ Character.pickUp = function(item)
 	self.carrying = item
 	disp.shipSprites.sprites.removeVal item
 	disp.shipSprites.sprites.push item
+	self.ship.noteItemPickedUp item, self
+end function
+
+// Drop the item we're carrying into the cell we are currently facing.
+Character.dropItem = function()
+	item = self.carrying
+	if item == null then return
+	item.scale = 1
+	item.x = self.x + CELLSIZE * constants.dx(self.facing)
+	item.y = self.y + CELLSIZE * constants.dy(self.facing)
+	self.carrying = null
+	self.ship.noteItemDropped item, self
 end function
 
 Character.setScreenPos = function(point)
