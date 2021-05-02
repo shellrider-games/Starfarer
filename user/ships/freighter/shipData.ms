@@ -44,6 +44,10 @@ ship.placeDoor 1, 11, NORTH
 ship.placeDoor 8, 9, NORTH
 ship.placeDoor 2, 10, EAST
 
+ship.getCell([0,1]).type = Celltype.CARGO_EXCHANGE
+ship.getCell([0,2]).type = Celltype.CARGO_EXCHANGE
+ship.getCell([9,1]).type = Celltype.CARGO_EXCHANGE
+
 // And for prototyping purposes: let's start out with some items, too.
 ship.map[0][0].contents = new shipModel.Item
 ship.map[1][0].contents = new shipModel.Item

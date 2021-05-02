@@ -11,27 +11,46 @@ import "spriteControllers"
 // Door (sprite subclass)
 Door = new spriteControllers.Animated
 Door.tint = color.aqua
+Door.curUsers = null	// list of Characters currently holding the door open
 
-Door.make = function(x, y, addToDisplay=true)
+Door.make = function(x, y, model, addToDisplay=true)
 	noob = new Door
 	noob.x = x; noob.y = y
+	noob.model = model	// the shipModel.Door we represent
+	noob.curUsers = []
 	
 	// clone the animations, so they don't share state with the base class
 	noob.openAnim = Door.openAnim.clone
 	noob.closeAnim = Door.closeAnim.clone
 
-	noob.close
+	model.sprite = noob
+	if model.isOpen then noob.open else noob.close
+	noob.update 1
 	if addToDisplay then disp.shipSprites.sprites.push noob
-	
+
 	return noob
 end function
 
 Door.open = function()
 	self.play self.openAnim
+	self.model.isOpen = true
+	//print "Opening door"
 end function
 
 Door.close = function()
 	self.play self.closeAnim
+	self.model.isOpen = false
+	//print "Closing door"
+end function
+
+Door.openForUser = function(user)
+	self.curUsers.push user
+	if not self.model.isOpen then self.open
+end function
+
+Door.userDone = function(user)
+	self.curUsers.remove user
+	if self.model.isOpen then self.close
 end function
 
 // Item (sprite subclass)
@@ -107,14 +126,11 @@ Renderer.renderShip = function(ship)
 end function
 
 Renderer.addDoor = function(doorModel, cell, direction)
-	d = new Door
 	pos = self.mapToScreenPosition(cell)
-	d.x = pos.x + CELLSIZE/2 * ((direction == EAST) - (direction == WEST))
-	d.y = pos.y + CELLSIZE/2 * ((direction == NORTH) - (direction == SOUTH))
+	x = pos.x + CELLSIZE/2 * ((direction == EAST) - (direction == WEST))
+	y = pos.y + CELLSIZE/2 * ((direction == NORTH) - (direction == SOUTH))
+	d = Door.make(x, y, doorModel)
 	d.rotation = 90 * (direction == NORTH or direction == SOUTH)
-	if doorModel.isOpen then d.play Door.openAnim else d.play Door.closeAnim
-	d.update 1
-	disp.shipSprites.sprites.push d
 end function
 
 // renderDoors: render the doors of the given cell to our display as Door sprites.
@@ -124,7 +140,9 @@ end function
 Renderer.renderDoors = function(cell)
 	if cell == null then return
 	for dir in range(0,3)
-		if cell.walls[dir] isa shipModel.Door then self.addDoor cell.walls[dir], cell, dir
+		if cell.walls[dir] isa shipModel.Door and not cell.walls[dir].sprite then
+			self.addDoor cell.walls[dir], cell, dir
+		end if
 	end for
 end function
 
@@ -169,13 +187,13 @@ Renderer.mapToScreenPosition = function(point)
 	        "y": mapStartPoint.y + y*CELLSIZE + CELLSIZE/2}
 end function
 
-Renderer.putItem = function(ship, item, point)
-	targetCell = ship.getCell(point)
+Renderer.putItem = function(item, point)
+	targetCell = self.ship.getCell(point)
 	if targetCell == null then return	// out of bounds
 	if targetCell.contents != null then return;	// already occupied
-	for col in ship.columnRange
-		for row in ship.rowRange
-			cell = ship.getCell([col,row])
+	for col in self.ship.columnRange
+		for row in self.ship.rowRange
+			cell = self.ship.getCell([col,row])
 			if cell != null and cell.contents == item then 
 				cell.contents = null
 			end if
@@ -185,12 +203,11 @@ Renderer.putItem = function(ship, item, point)
 	self.renderContents targetCell
 end function
 
+// Update the whole ship display (and all sprites on it).
 update = function(dt = 0.1)
+	// update all sprites in the shipSprites layer on the screen
 	for s in disp.shipSprites.sprites
 		s.update dt
-	end for
-	for m in globals.playerShip.minions
-		m.update(dt)
 	end for
 end function
 
@@ -221,10 +238,11 @@ demo = function()
 		end if
 		if mouse.button(1) then
 			crate = new shipModel.Item
-			rend.putItem ship, crate, rend.screenToMapPosition(mouse)
+			rend.putItem crate, rend.screenToMapPosition(mouse)
 		end if
 		crewmember.update
 		update
+		ship.update
 		yield
 	end while
 	key.clear

@@ -17,11 +17,14 @@ Item.sprite = null		// (filled in by shipDisplay as needed)
 Wall = {}
 Wall.name = "wall"
 Wall.isOpen = false		// walls should ALWAYS be closed
+Wall.canOpen = false	// and cannot be opened, even by the crew
 
 // Door: a wall that can open and close.
 Door = {}
 Door.name = "door"
-Door.isOpen = true		// closed by default, but can be opened! *** Set to open for testing.
+Door.isOpen = false		// closed by default...
+Door.canOpen = true		// but can be opened!
+Door.sprite = null		// filled in by shipDisplay
 
 // Cell class: information about one map cell, including whether it is
 // walkable, what equipment or cargo is there, whether it is on fire,
@@ -33,6 +36,7 @@ Cell.row = 0				// row within its ship map
 Cell.air = 100				// air quality, from 0 (vacuum) - 100 (fine)
 Cell.fire = 0				// on fire? 0 (nope) to 100 (raging inferno)
 Cell.walls = null			// list of wall or door in each direction (NORTH, etc.)
+Cell.type = Celltype.STANDARD
 
 Cell.make = function(col, row)
 	noob = new Cell
@@ -46,8 +50,13 @@ Cell.walkable = function()
 	return self.contents == null or not self.contents.blocksWalking
 end function
 
-Cell.canExitInDir = function(direction)
-	return self.walls[direction] == null or self.walls[direction].isOpen
+// Cell.canExitInDir: return whether a character could exit this cell
+// in the given direction.  If assumeDoorsOpen is true, then assume
+// any door that can be opened, will be opened.
+Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
+	if self.walls[direction] == null then return true	// no door/wall
+	d = self.walls[direction]
+	return d.isOpen or (assumeDoorsOpen and d.canOpen)
 end function
 
 // Ship: everything there is to know about a ship.
@@ -122,6 +131,72 @@ Ship.getCell = function(coordinates)
 	end if
 	if x >= 0 and x < self.columns and y >= 0 and y < self.rows then cell = self.map[x][y]
 	return cell
+end function
+
+//Boolean value that is true if cell at [col][row] is a cargo exchange cell and is empty
+Ship.isFreeCargoCell = function(col, row)
+	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents == null
+end function
+
+//Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
+Ship.isFullCargoCell = function(col, row)
+	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents != null
+end function
+
+//Returns a list of all currently free cargo cells on the ship
+Ship.getFreeCargoExchangeCells = function()
+	result = []
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.isFreeCargoCell(col, row) then result.push self.getCell([col,row])
+		end for
+	end for
+	return result
+end function
+
+Ship.getFullCargoExchangeCells = function()
+	result = []
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.isFullCargoCell(col, row) then result.push self.getCell([col,row])
+		end for
+	end for
+	return result
+end function
+
+Ship.addCargo = function(item)
+	if item isa Item then
+		freeCargoCells = self.getFreeCargoExchangeCells
+		if freeCargoCells.len > 0 then freeCargoCells[0].contents = item
+	end if
+end function
+
+Ship.removeCargo = function()
+	removedItem = null
+	fullCargoCells = self.getFullCargoExchangeCells
+	if fullCargoCells.len > 0 then
+		removedItem = fullCargoCells[0].contents
+		fullCargoCells[0].contents = null
+	end if
+	return removedItem
+end function
+
+Ship.update = function(dt)
+	// Check for minions about to pass through doors; open them.
+	// Any doors previously opened for a minion, let them close.
+	for m in self.minions
+		if not m.path then continue
+		dx = m.path[0][0] - m.col; dy = m.path[0][1] - m.row
+		if not dx and not dy then continue
+		dir = round(constants.dirFromDelta(dy, dx))
+		d = self.map[m.col][m.row].walls[dir]
+		if d != m.usingDoor then
+			//text.row = 25; print m.name + " is now using " + d + " at " + m.col + ", " + m.row + " with dx " + dx + ", dy " + dy + " dir " + dir
+			if m.usingDoor then m.usingDoor.sprite.userDone m
+			if d then d.sprite.openForUser m
+			m.usingDoor = d
+		end if			
+	end for
 end function
 
 //----------------------------------------------------------------------
@@ -253,7 +328,12 @@ Ship.draw = function()
 				gfx.line x+2, y+2, x+CELLSIZE-4, y+CELLSIZE-4, color.gray
 				gfx.line x+2, y+CELLSIZE-4, x+CELLSIZE-4, y+2, color.gray
 			else
-				gfx.fillRect x+1, y+1, CELLSIZE-2, CELLSIZE-2, "#EEEEEE"
+				if cell.type == Celltype.CARGO_EXCHANGE then 
+					cellcolor = color.lime
+				else
+					cellcolor = "#EEEEEE"
+				end if
+				gfx.fillRect x+1, y+1, CELLSIZE-2, CELLSIZE-2, cellcolor
 				gfx.drawRect x, y, CELLSIZE, CELLSIZE, color.white
 				drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y
 				drawWall cell.walls[WEST], x, y, x, y+CELLSIZE
@@ -282,6 +362,27 @@ demo = function()
 	ship.draw
 	print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
 	print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.addCargo(new Item)
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.addCargo(new Item)
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.addCargo(new Item)
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.removeCargo
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.removeCargo
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
 end function
 
 if locals == globals then demo
