@@ -5,6 +5,7 @@
 import "constants"
 import "qa"
 import "listUtil"
+if not globals.hasIndex("Door") then import "door"
 
 // Item: represents anything that can be placed in (or removed from)
 // a map cell.
@@ -18,13 +19,6 @@ Wall = {}
 Wall.name = "wall"
 Wall.isOpen = false		// walls should ALWAYS be closed
 Wall.canOpen = false	// and cannot be opened, even by the crew
-
-// Door: a wall that can open and close.
-Door = {}
-Door.name = "door"
-Door.isOpen = false		// closed by default...
-Door.canOpen = true		// but can be opened!
-Door.sprite = null		// filled in by shipDisplay
 
 // Cell class: information about one map cell, including whether it is
 // walkable, what equipment or cargo is there, whether it is on fire,
@@ -192,8 +186,8 @@ Ship.update = function(dt)
 		d = self.map[m.col][m.row].walls[dir]
 		if d != m.usingDoor then
 			//text.row = 25; print m.name + " is now using " + d + " at " + m.col + ", " + m.row + " with dx " + dx + ", dy " + dy + " dir " + dir
-			if m.usingDoor then m.usingDoor.sprite.userDone m
-			if d then d.sprite.openForUser m
+			if m.usingDoor then m.usingDoor.userDone m
+			if d then d.openForUser m
 			m.usingDoor = d
 		end if			
 	end for
@@ -223,7 +217,7 @@ Ship.place = function(col, row, direction, wallOrDoor)
 end function
 
 Ship.placeDoor = function(col, row, direction)
-	self.place col, row, direction, new Door
+	self.place col, row, direction, Door.make
 end function
 
 Ship.placeBottomWalls = function(left, bottom, length)

@@ -7,51 +7,7 @@ if not globals.hasIndex("setup") then import "setup"
 import "listUtil"
 import "qa"
 import "spriteControllers"
-
-// Door (sprite subclass)
-Door = new spriteControllers.Animated
-Door.tint = color.aqua
-Door.curUsers = null	// list of Characters currently holding the door open
-
-Door.make = function(x, y, model, addToDisplay=true)
-	noob = new Door
-	noob.x = x; noob.y = y
-	noob.model = model	// the shipModel.Door we represent
-	noob.curUsers = []
-	
-	// clone the animations, so they don't share state with the base class
-	noob.openAnim = Door.openAnim.clone
-	noob.closeAnim = Door.closeAnim.clone
-
-	model.sprite = noob
-	if model.isOpen then noob.open else noob.close
-	noob.update 1
-	if addToDisplay then disp.shipSprites.sprites.push noob
-
-	return noob
-end function
-
-Door.open = function()
-	self.play self.openAnim
-	self.model.isOpen = true
-	//print "Opening door"
-end function
-
-Door.close = function()
-	self.play self.closeAnim
-	self.model.isOpen = false
-	//print "Closing door"
-end function
-
-Door.openForUser = function(user)
-	self.curUsers.push user
-	if not self.model.isOpen then self.open
-end function
-
-Door.userDone = function(user)
-	self.curUsers.remove user
-	if self.model.isOpen then self.close
-end function
+if not globals.hasIndex("Door") then import "door"
 
 // Item (sprite subclass)
 Item = new Sprite
@@ -80,21 +36,6 @@ end function
 init = function()
 	// clear the sprite display, and load the ship background
 	disp.shipSprites.clear
-	
-	// prepare the Door sprite subclass
-	doorSheet = file.loadImage("/usr/pics/doors.png")
-	frames = []
-	for i in range(0,3)
-		frames.push doorSheet.getImage(i*4, 0, 4, doorSheet.height)
-	end for
-	Door.openAnim = spriteControllers.newAnimation(frames)
-	Door.openAnim.loop = false
-	frames = [] + frames
-	frames.reverse
-	Door.closeAnim = spriteControllers.newAnimation(frames)
-	Door.closeAnim.loop = false
-	Door.play Door.closeAnim
-	Door.update
 end function
 
 // Renderer: a class that exists to render a ship onto the display.  We may
@@ -125,23 +66,22 @@ Renderer.renderShip = function(ship)
 	end for
 end function
 
-Renderer.addDoor = function(doorModel, cell, direction)
+Renderer.placeDoor = function(door, cell, direction)
 	pos = self.mapToScreenPosition(cell)
-	x = pos.x + CELLSIZE/2 * ((direction == EAST) - (direction == WEST))
-	y = pos.y + CELLSIZE/2 * ((direction == NORTH) - (direction == SOUTH))
-	d = Door.make(x, y, doorModel)
-	d.rotation = 90 * (direction == NORTH or direction == SOUTH)
+	door.x = pos.x + CELLSIZE/2 * ((direction == EAST) - (direction == WEST))
+	door.y = pos.y + CELLSIZE/2 * ((direction == NORTH) - (direction == SOUTH))
+	door.rotation = 90 * (direction == NORTH or direction == SOUTH)
+	if disp.shipSprites.sprites.indexOf(door) == null then
+		disp.shipSprites.sprites.push door
+	end if
 end function
 
-// renderDoors: render the doors of the given cell to our display as Door sprites.
-// Note that each cell is only responsible for rendering the doors above and to
-// the right, except for row 0 and column 0, which must also handle doors below
-// and to the left respectively.
+// renderDoors: load the doors of the given cell to our display.
 Renderer.renderDoors = function(cell)
 	if cell == null then return
 	for dir in range(0,3)
-		if cell.walls[dir] isa shipModel.Door and not cell.walls[dir].sprite then
-			self.addDoor cell.walls[dir], cell, dir
+		if cell.walls[dir] isa Door then
+			self.placeDoor cell.walls[dir], cell, dir
 		end if
 	end for
 end function
