@@ -130,6 +130,11 @@ Ship.isFreeCargoCell = function(col, row)
 	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents == null
 end function
 
+//Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
+Ship.isFullCargoCell = function(col, row)
+	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents != null
+end function
+
 //Returns a list of all currently free cargo cells on the ship
 Ship.getFreeCargoExchangeCells = function()
 	result = []
@@ -141,11 +146,31 @@ Ship.getFreeCargoExchangeCells = function()
 	return result
 end function
 
+Ship.getFullCargoExchangeCells = function()
+	result = []
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.isFullCargoCell(col, row) then result.push self.getCell([col,row])
+		end for
+	end for
+	return result
+end function
+
 Ship.addCargo = function(item)
 	if item isa Item then
 		freeCargoCells = self.getFreeCargoExchangeCells
 		if freeCargoCells.len > 0 then freeCargoCells[0].contents = item
 	end if
+end function
+
+Ship.removeCargo = function()
+	removedItem = null
+	fullCargoCells = self.getFullCargoExchangeCells
+	if fullCargoCells.len > 0 then
+		removedItem = fullCargoCells[0].contents
+		fullCargoCells[0].contents = null
+	end if
+	return removedItem
 end function
 //----------------------------------------------------------------------
 // Ship setup methods: these are used to prepare a ship map.
@@ -321,6 +346,14 @@ demo = function()
 	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
 	wait 1
 	ship.addCargo(new Item)
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.removeCargo
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.removeCargo
 	ship.draw
 	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
 end function
