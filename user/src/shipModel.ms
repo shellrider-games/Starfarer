@@ -125,6 +125,28 @@ Ship.getCell = function(coordinates)
 	return cell
 end function
 
+//Boolean value that is true if cell at [col][row] is a cargo exchange cell and is empty
+Ship.isFreeCargoCell = function(col, row)
+	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents == null
+end function
+
+//Returns a list of all currently free cargo cells on the ship
+Ship.getFreeCargoExchangeCells = function()
+	result = []
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.isFreeCargoCell(col, row) then result.push self.getCell([col,row])
+		end for
+	end for
+	return result
+end function
+
+Ship.addCargo = function(item)
+	if item isa Item then
+		freeCargoCells = self.getFreeCargoExchangeCells
+		if freeCargoCells.len > 0 then freeCargoCells[0].contents = item
+	end if
+end function
 //----------------------------------------------------------------------
 // Ship setup methods: these are used to prepare a ship map.
 //----------------------------------------------------------------------
@@ -288,6 +310,19 @@ demo = function()
 	ship.draw
 	print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
 	print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.addCargo(new Item)
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.addCargo(new Item)
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	wait 1
+	ship.addCargo(new Item)
+	ship.draw
+	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
 end function
 
 if locals == globals then demo

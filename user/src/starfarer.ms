@@ -100,9 +100,3 @@ end function
 game = new Starfarer
 game.init
 game.start
-
-
-
-
-
-
