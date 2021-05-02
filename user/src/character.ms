@@ -76,10 +76,25 @@ Character.moveTowards = function(screenPos, amount)
 	return mathUtil.moveTowardsXY(self, screenPos, amount)
 end function
 
+// Look at the next step in our path.  If that goes through a door, open it.
+Character.openDoorIfNeeded = function()
+	if not self.path or not self.ship then return
+
+	dir = constants.dirFromDelta(self.path[0][1]-self.row, self.path[0][0]-self.col)
+	d = self.ship.map[self.col][self.row].walls[dir]
+	if d isa Door then
+		d.openForUser self
+		self.usingDoor = d
+	end if
+end function
+
 Character.update = function(dt=0.1)
 	// follow our path
 	if self.path then
-		self.walking = true
+		if not self.walking then
+			self.walking = true
+			self.openDoorIfNeeded
+		end if
 		moved = self.moveTowards(renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		if not moved then
 			// We've reached the cell we were immediately walking towards.
@@ -91,16 +106,7 @@ Character.update = function(dt=0.1)
 			// Move to the next step of the path.
 			self.path = self.path[1:]
 			if self.path then
-				// If we're about to step through a door, open it.
-				if self.ship != null then
-					dir = constants.dirFromDelta(self.path[0][1]-self.row, self.path[0][0]-self.col)
-					d = self.ship.map[self.col][self.row].walls[dir]
-					if d isa Door then
-						d.openForUser self
-						self.usingDoor = d
-					end if
-				end if
-				// Then actually move a bit.
+				self.openDoorIfNeeded
 				self.moveTowards renderer.mapToScreenPosition(self.path[0]), self.speed * dt
 			end if
 		end if
