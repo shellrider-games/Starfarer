@@ -155,8 +155,11 @@ end function
 // it will pick it up immediately.  If not, it will path-find to it, and
 // then pick it up once it's next to it.
 Character.pickUp = function(item)
-	// ToDo: check positions.
+	// ToDo: check positions.  If the item is not right next to us,
+	// then plot a path to it an empty space next to it (not through a wall),
+	// and then remember to pick it up when we get there.
 	// For now, just do it!
+	self.turnToFaceScreenPos item
 	self.carrying = item
 	disp.shipSprites.sprites.removeVal item
 	disp.shipSprites.sprites.push item

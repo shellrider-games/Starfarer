@@ -77,6 +77,10 @@ Starfarer.handlePrimaryClick = function(pos)
 	end if
 	
 	// If we click anywhere else, just send our minion(s) there.
+	// ToDo: if we are carrying something, then path to an empty spot
+	// NEXT TO the spot clicked, path to that, and then drop the item
+	// we're carrying in the spot clicked.  (Maybe just tell the minion
+	// to do drop the item at mapPos, and let it work out the details.)
 	for m in self.selectedMinion
 		m.path = pathfinding.findPath(playerShip, m, mapPos)
 	end for
