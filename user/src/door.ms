@@ -3,7 +3,7 @@
 // of a shipModel, but it's also a Sprite that can be loaded by shipDisplay.
 
 if not globals.hasIndex("spriteControllers") then import "spriteControllers"
-
+if not globals.hasIndex("sounds") then import "sounds"
 
 // Door: a wall that can open and close.
 Door = spriteControllers.Animated
@@ -21,22 +21,22 @@ Door.make = function()
 	noob.openAnim = Door.openAnim.clone
 	noob.closeAnim = Door.closeAnim.clone
 
-	noob.close
+	noob.close false
 	noob.update 1
 
 	return noob
 end function
 
-Door.open = function()
+Door.open = function(withSound=true)
 	self.play self.openAnim
 	self.isOpen = true
-	//print "Opening door"
+	if withSound then sounds.doorOpen.playAt self.x
 end function
 
-Door.close = function()
+Door.close = function(withSound=true)
 	self.play self.closeAnim
 	self.isOpen = false
-	//print "Closing door"
+	if withSound then sounds.doorClose.playAt self.x
 end function
 
 Door.openForUser = function(user)
