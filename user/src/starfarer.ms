@@ -93,6 +93,10 @@ Starfarer.start = function()
 		dt = curTime - lastTime
 		self.processInput
 		shipDisplay.update dt
+		playerShip.update dt
+		if key.available then
+			if key.get == "1" then d.close else d.open
+		end if
 		yield
 	end while
 end function

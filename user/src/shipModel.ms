@@ -17,11 +17,14 @@ Item.sprite = null		// (filled in by shipDisplay as needed)
 Wall = {}
 Wall.name = "wall"
 Wall.isOpen = false		// walls should ALWAYS be closed
+Wall.canOpen = false	// and cannot be opened, even by the crew
 
 // Door: a wall that can open and close.
 Door = {}
 Door.name = "door"
-Door.isOpen = true		// closed by default, but can be opened! *** Set to open for testing.
+Door.isOpen = false		// closed by default...
+Door.canOpen = true		// but can be opened!
+Door.sprite = null		// filled in by shipDisplay
 
 // Cell class: information about one map cell, including whether it is
 // walkable, what equipment or cargo is there, whether it is on fire,
@@ -47,8 +50,13 @@ Cell.walkable = function()
 	return self.contents == null or not self.contents.blocksWalking
 end function
 
-Cell.canExitInDir = function(direction)
-	return self.walls[direction] == null or self.walls[direction].isOpen
+// Cell.canExitInDir: return whether a character could exit this cell
+// in the given direction.  If assumeDoorsOpen is true, then assume
+// any door that can be opened, will be opened.
+Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
+	if self.walls[direction] == null then return true	// no door/wall
+	d = self.walls[direction]
+	return d.isOpen or (assumeDoorsOpen and d.canOpen)
 end function
 
 // Ship: everything there is to know about a ship.
@@ -172,6 +180,25 @@ Ship.removeCargo = function()
 	end if
 	return removedItem
 end function
+
+Ship.update = function(dt)
+	// Check for minions about to pass through doors; open them.
+	// Any doors previously opened for a minion, let them close.
+	for m in self.minions
+		if not m.path then continue
+		dx = m.path[0][0] - m.col; dy = m.path[0][1] - m.row
+		if not dx and not dy then continue
+		dir = round(constants.dirFromDelta(dy, dx))
+		d = self.map[m.col][m.row].walls[dir]
+		if d != m.usingDoor then
+			//text.row = 25; print m.name + " is now using " + d + " at " + m.col + ", " + m.row + " with dx " + dx + ", dy " + dy + " dir " + dir
+			if m.usingDoor then m.usingDoor.sprite.userDone m
+			if d then d.sprite.openForUser m
+			m.usingDoor = d
+		end if			
+	end for
+end function
+
 //----------------------------------------------------------------------
 // Ship setup methods: these are used to prepare a ship map.
 //----------------------------------------------------------------------

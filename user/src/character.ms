@@ -51,11 +51,15 @@ AnimSet.make = function(sheet)
 end function
 
 Character = new spriteControllers.Animated
+Character.name = "Arthur"
 Character.anims = AnimSet.make(defaultSheet)
 Character.facing = SOUTH
 Character.walking = false
-Character.speed = 20  // walking speed, in pixels/sec
+Character.speed = 30		// walking speed, in pixels/sec
 Character.path = []
+Character.usingDoor = null
+Character.col = 0			// horizontal position within the ship
+Character.row = 0			// vertical position within the ship
 
 // Move the character towards the given screen position, moving no more than the 
 // given amount (distance, in pixels).  Return true if we moved, or false if we
@@ -77,6 +81,8 @@ Character.update = function(dt=0.1)
 				self.moveTowards renderer.mapToScreenPosition(self.path[0]), self.speed * dt
 			end if
 		end if
+		newPos = renderer.screenToMapPosition(self)
+		self.col = newPos.col; self.row = newPos.row
 	else
 		self.walking = false
 	end if
