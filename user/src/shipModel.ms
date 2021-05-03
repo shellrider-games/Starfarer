@@ -417,7 +417,6 @@ runUnitTests = function()
 	qa.assertEqual testCell.canExitInDir(globals.NORTH), true
 	qa.assertEqual testCell.canExitInDir(globals.EAST), false
 
-
 end function
 
 if locals == globals then demo
