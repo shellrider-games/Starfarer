@@ -386,4 +386,27 @@ demo = function()
 	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
 end function
 
+runUnitTests = function()
+	clear
+	errorCount = 0
+
+	setupTestCell = function()
+		outer.testCell = new shipModel.Cell
+	end function
+
+	setupTestCell
+	testCell.col = 1
+	testCell.row = 1
+	testCell.walls = [null, null, null, null]
+	qa.assertEqual testCell, Cell.make(1,1)
+
+	setupTestCell
+	qa.assertEqual testCell.walkable, true
+	testCell.placeItem new Item
+	qa.assertEqual testCell.walkable, false
+	testCell.contents.blocksWalking = false
+	qa.assertEqual testCell.walkable, true
+
+end function
+
 if locals == globals then demo
