@@ -169,7 +169,7 @@ demo = function()
 	import "character"
 	globals.character = character
 	crewmember = new character.Character
-	crewmember.setPosition(rend.mapToScreenPosition([4,6]))
+	crewmember.setScreenPos rend.mapToScreenPosition([4,6])
 	disp.shipSprites.sprites.push crewmember
 	while not key.pressed("escape")
 		if mouse.button then
