@@ -46,7 +46,7 @@ AnimSet.make = function(sheet)
 	for dir in range(0, 3)
 		result.idle.push getAnim(sheet, 3-dir, 0, 1)
 		result.walk.push getAnim(sheet, 3-dir, 1, 2)
-		result.walk[-1].fps = 1
+		result.walk[-1].fps = 3
 	end for
 	return result
 end function
@@ -90,6 +90,17 @@ Character.openDoorIfNeeded = function()
 	end if
 end function
 
+Character.updateAnimation = function(dt=0.1)
+	// make sure we're playing the right animation
+	if self.walking then a = self.anims.walk[self.facing] else a = self.anims.idle[self.facing]
+	if not self.curAnim or self.curAnim.frames != a.frames then
+		self.curAnim = a.clone
+	end if
+
+	// and apply the animation to this sprite
+	self.curAnim.applyTo self, dt
+end function
+
 Character.update = function(dt=0.1)
 	// follow our path
 	if self.path then
@@ -131,15 +142,8 @@ Character.update = function(dt=0.1)
 		self.walking = false
 	end if
 
-	// make sure we're playing the right animation
-	if self.walking then a = self.anims.walk[self.facing] else a = self.anims.idle[self.facing]
-	if not self.curAnim or self.curAnim.frames != a.frames then
-		self.curAnim = a.clone
-	end if
-
-	// and apply the animation to this sprite
-	self.curAnim.applyTo self, dt
-	
+	self.updateAnimation dt
+		
 	// if carrying an item, update its position relative to this character
 	if self.carrying then
 		self.carrying.scale = 0.75
@@ -248,31 +252,31 @@ Character.getMapPos = function()
 end function
 
 demo = function()
-	//clear
+	clear
 	display(4).mode = displayMode.sprite
 	spr = display(4)
 	spr.clear
 	
 	gfx.clear
 	gfx.fillRect 400, 240, 160, 160, color.gray
-	c = new Character
+	globals.c = new Character
 	c.x = 480; c.y = 320
 	spr.sprites.push c
 	
 	print "Use arrow keys or d-pad to move the character."
 	while not key.pressed("escape")
-		c.update null
+		c.updateAnimation 1/60
 		c.walking = true
-		if key.axis("Horizontal") < 0 then
+		if key.axis("Horizontal") < -0.5 then
 			c.facing = WEST
 			c.x = c.x - 1
-		else if key.axis("Horizontal") > 0 then
+		else if key.axis("Horizontal") > 0.5 then
 			c.facing = EAST
 			c.x = c.x + 1
-		else if key.axis("Vertical") > 0 then
+		else if key.axis("Vertical") > 0.5 then
 			c.facing = NORTH
 			c.y = c.y + 1
-		else if key.axis("Vertical") < 0 then
+		else if key.axis("Vertical") < -0.5 then
 			c.facing = SOUTH
 			c.y = c.y - 1
 		else

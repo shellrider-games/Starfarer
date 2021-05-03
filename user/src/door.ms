@@ -4,7 +4,7 @@
 
 if not globals.hasIndex("spriteControllers") then import "spriteControllers"
 if not globals.hasIndex("sounds") then import "sounds"
-//if not globals.hasIndex("listUtil") then import "listUtil"
+if not globals.hasIndex("listUtil") then import "listUtil"
 
 // Door: a wall that can open and close.
 Door = spriteControllers.Animated
