@@ -68,7 +68,6 @@ Renderer.renderShip = function(ship)
 		m.x = pos.x; m.y = pos.y
 		disp.shipSprites.sprites.removeVal m
 		disp.shipSprites.sprites.push m
-		print "Loaded minion at " + m.getMapPos + " to " + pos
 	end for
 end function
 

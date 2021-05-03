@@ -20,7 +20,7 @@ findPath = function(ship, startPos, endPos)
 	heuristic = function(endPos, nextPos)
 	    a = endPos[0] - nextPos[0]
 		b = endPos[1] - nextPos[1]
-		return sqrt(a^2+b^2)
+		return sqrt(a^2 + b^2)
 	end function
 
 
@@ -31,7 +31,7 @@ findPath = function(ship, startPos, endPos)
 	cellCosts = {}
 	cellCosts[startPos] = 0
 	while check
-		current = check.pull()[0]
+		current = check.pull[0]
 
 		if current == endPos then
 			break
@@ -59,7 +59,7 @@ findPath = function(ship, startPos, endPos)
 			result.push current
 			current = camefrom[current]
 		end while
-		result.reverse()
+		result.reverse
 	end if
 	return result
 end function
@@ -76,19 +76,6 @@ demo = function()
 	cd dir
 
 	ship = shipData.ship
-	
-	//Open up the doors for testing.
-	for col in ship.columnRange
-		for row in ship.rowRange
-			cell = ship.getCell([col,row])
-			if cell != null then
-				for d in cell.walls
-					if d isa shipModel.Door then d.isOpen = true
-				end for
-			end if
-		end for
-	end for
-
 	ship.draw
 	
 	xAtPos = function(pos); return (pos[0]+0.5) * CELLSIZE; end function

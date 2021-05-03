@@ -10,6 +10,8 @@ Item = new Sprite
 Item.image = file.loadImage("/usr/pics/crate.png")
 Item.name = "item"
 Item.blocksWalking = true
+Item.col = 0
+Item.row = 0
 
 // All the sprites that exist in the ship display need to have an update method
 // that takes one parameter (dt).  Item doesn't really need this, so here's a

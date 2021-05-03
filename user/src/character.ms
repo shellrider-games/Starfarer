@@ -109,10 +109,20 @@ Character.update = function(dt=0.1)
 			self.path = self.path[1:]
 			if self.path then
 				self.openDoorIfNeeded
-				self.moveTowards renderer.mapToScreenPosition(self.path[0]), self.speed * dt
-			else
-				// We've reached the end of our path.
-				self.dropItem
+				nextPos = self.path[0]
+				nextCell = self.ship.getCell(nextPos)
+				if self.path.len == 1 and self.carrying then
+					// drop our item on the last step of the path, and call it a day
+					self.dropItem self.path[0]
+					self.path = null
+				else if self.path.len == 1 and nextCell.contents then
+					// pick up the item at the end of the path
+					self.pickUp nextCell.contents
+					self.path = null
+				else
+					// just keep walking, just keep walking!
+					self.moveTowards renderer.mapToScreenPosition(nextPos), self.speed * dt
+				end if
 			end if
 		end if
 		newPos = renderer.screenToMapPosition(self)
@@ -148,17 +158,28 @@ Character.update = function(dt=0.1)
 end function
 
 Character.turnToFaceScreenPos = function(pos)
-	self.facing = round(constants.dirFromDelta(pos.y - self.y, pos.x - self.x)) % 4
+	// calculate the "ideal" facing, including diagonals
+	idealFacing = constants.dirFromDelta(pos.y - self.y, pos.x - self.x)
+	// if that's withing 0.5 of our current facing, leave it alone;
+	// otherwise, set the new facing (as close as we can)
+	diff = abs(idealFacing - self.facing)
+	if diff > 2 then diff = abs(diff - 4)  // (accounts for wrap-around)
+	if diff > 0.6 then self.facing = round(idealFacing) % 4
 end function
 
 // Pick up the given Item.  If this character is already next to the item,
 // it will pick it up immediately.  If not, it will path-find to it, and
 // then pick it up once it's next to it.
 Character.pickUp = function(item)
-	// ToDo: check positions.  If the item is not right next to us,
-	// then plot a path to it an empty space next to it (not through a wall),
-	// and then remember to pick it up when we get there.
-	// For now, just do it!
+	dcol = item.col - self.col; drow = item.row - self.row
+	if abs(dcol) > 1 or abs(drow) > 1 then
+		// Too far away!  Walk over there, and THEN pick it up.
+		cell = self.ship.getCell(item)
+		cell.contents = null	// (temporarily remove item so we can path there)
+		self.path = pathfinding.findPath(self.ship, self, item)
+		cell.contents = item
+		return
+	end if
 	self.turnToFaceScreenPos item
 	self.carrying = item
 	disp.shipSprites.sprites.removeVal item
@@ -166,15 +187,37 @@ Character.pickUp = function(item)
 	self.ship.noteItemPickedUp item, self
 end function
 
-// Drop the item we're carrying into the cell we are currently facing.
-Character.dropItem = function()
+// Drop the item we're carrying into the cell at the given position.
+// If that position is more than 1 square away, walk to it first.
+Character.dropItem = function(onPos)
 	item = self.carrying
 	if item == null then return
+
+	if onPos isa map then
+		col = onPos.col; row = onPos.row
+	else
+		col = onPos[0]; row = onPos[1]
+	end if
+	dcol = col - self.col; drow = row - self.row
+	if abs(dcol) > 1 or abs(drow) > 1 then
+		// Too far away!  Hoof it over there.
+		self.path = pathfinding.findPath(self.ship, self, onPos)
+		return
+	end if
+	
 	item.scale = 1
-	item.x = self.x + CELLSIZE * constants.dx(self.facing)
-	item.y = self.y + CELLSIZE * constants.dy(self.facing)
+	xy = renderer.mapToScreenPosition(onPos)
+	item.x = xy.x; item.y = xy.y
+	self.ship.map[col][row].placeItem item
+
+	self.turnToFaceScreenPos item
 	self.carrying = null
+	self.walking = false
 	self.ship.noteItemDropped item, self
+end function
+
+Character.goTo = function(mapPos)
+
 end function
 
 Character.setScreenPos = function(point)
