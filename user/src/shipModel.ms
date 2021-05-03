@@ -391,10 +391,10 @@ runUnitTests = function()
 	errorCount = 0
 
 	setupTestCell = function()
-		outer.testCell = new shipModel.Cell
+		outer.testCell = shipModel.Cell.make(0,0)
 	end function
 
-	setupTestCell
+	testCell = new Cell
 	testCell.col = 1
 	testCell.row = 1
 	testCell.walls = [null, null, null, null]
@@ -402,10 +402,21 @@ runUnitTests = function()
 
 	setupTestCell
 	qa.assertEqual testCell.walkable, true
+	qa.assertEqual testCell.contents, null
 	testCell.placeItem new Item
+	testItem = new Item
+	testItem.col = 0; testItem.row = 0;
+	qa.assertEqual testCell.contents, testItem
 	qa.assertEqual testCell.walkable, false
 	testCell.contents.blocksWalking = false
 	qa.assertEqual testCell.walkable, true
+	
+	setupTestCell
+	testCell.walls[globals.EAST] = new Wall
+	qa.assertEqual testCell.walls, [{"__isa":{"name":"wall","isOpen":false,"canOpen":false}}, null, null, null]
+	qa.assertEqual testCell.canExitInDir(globals.NORTH), true
+	qa.assertEqual testCell.canExitInDir(globals.EAST), false
+
 
 end function
 
