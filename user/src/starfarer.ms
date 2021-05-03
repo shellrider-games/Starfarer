@@ -109,8 +109,8 @@ Starfarer.processInput = function()
 	end if
 	self.mouseWasDownPrimary = mouseIsDownPrimary
 	self.mouseWasDownSecondary = mouseIsDownSecondary
-	disp.background.scrollX = gfx.width - (mouse.x*.05)
-	disp.background.scrollY = gfx.height - (mouse.y*.05)
+	disp.background.scrollX = gfx.width - (mouse.x*.025)
+	disp.background.scrollY = gfx.height - (mouse.y*.025)
 end function
 
 // Start Game/Main loop
