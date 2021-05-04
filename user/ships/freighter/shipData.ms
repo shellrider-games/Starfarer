@@ -11,6 +11,8 @@ ship.digRoom 3,7,3,5
 ship.digRoom 6,7,3,3
 ship.digRoom 7,10,2,4
 
+//ship.map[4][1] = null   //doing this causes the game to not work without any Error messages
+
 ship.placeBottomWalls 0,0,10
 ship.placeBottomWalls 0,4,3
 ship.placeBottomWalls 4,4,1
@@ -27,9 +29,9 @@ ship.placeTopWalls 7,13,2
 
 ship.placeLeftWalls 0,0,7
 ship.placeLeftWalls 1,7,7
-ship.placeLeftWalls 4,0,4
 ship.placeLeftWalls 7,10,4
 
+ship.placeRightWalls 3,0,4
 ship.placeRightWalls 2,7,7
 ship.placeRightWalls 5,7,5
 ship.placeRightWalls 8,7,7
