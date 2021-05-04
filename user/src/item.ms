@@ -7,7 +7,7 @@
 
 // Item (sprite subclass)
 Item = new Sprite
-Item.image = file.loadImage("/usr/pics/crate.png")
+Item.image = file.loadImage("/usr/pics/crate_blank.png")
 Item.name = "item"
 Item.blocksWalking = true
 Item.col = 0
@@ -17,6 +17,24 @@ Item.row = 0
 // that takes one parameter (dt).  Item doesn't really need this, so here's a
 // do-nothing update method for it.
 Item.update = function(dt); end function
+
+// Now let's make a subclass for each of our commodity types.
+FoodItem = new Item
+FoodItem.image = file.loadImage("/usr/pics/crate_food.png")
+FoodItem.name = "food"
+
+GunsItem = new Item
+GunsItem.image = file.loadImage("/usr/pics/crate_guns.png")
+GunsItem.name = "guns"
+
+MedsItem = new Item
+MedsItem.image = file.loadImage("/usr/pics/crate_medicine.png")
+MedsItem.name = "medicine"
+
+WaterItem = new Item
+WaterItem.image = file.loadImage("/usr/pics/crate_water.png")
+WaterItem.name = "water"
+
 
 
 // Item is an important enough class to push itself into the global namespace.
