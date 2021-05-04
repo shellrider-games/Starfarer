@@ -83,7 +83,7 @@ Starfarer.handlePrimaryClick = function(pos)
 		minion.dropItem mapPos
 	else
 		for minion in self.selectedMinion
-			minion.path = pathfinding.findPath(playerShip, m, mapPos)
+			minion.path = pathfinding.findPath(playerShip, minion, mapPos)
 		end for
 	end if
 	
