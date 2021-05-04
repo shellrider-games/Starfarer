@@ -397,6 +397,11 @@ runUnitTests = function()
 		outer.testShip.init(10,10)
 	end function
 
+	setupTestShipWithRoom = function()
+		setupTestShip
+		outer.testShip.digRoom(0,0,2,2)
+	end function
+
 	testCell = new Cell
 	testCell.col = 1
 	testCell.row = 1
@@ -436,8 +441,7 @@ runUnitTests = function()
 	qa.assertEqual testShip.map[0][0], Cell.make(0,0)
 	qa.assertEqual testShip.map[0][1], null
 
-	setupTestShip
-	testShip.digRoom(0,0,2,2)
+	setupTestShipWithRoom
 	qa.assertEqual testShip.map[0][0], Cell.make(0,0)
 	qa.assertEqual testShip.map[0][1], Cell.make(0,1)
 	qa.assertEqual testShip.map[1][0], Cell.make(1,0)
@@ -449,11 +453,74 @@ runUnitTests = function()
 	testShip.map[0][0].contents = new Item
 	qa.assertEqual testShip.walkable([0,0]), false
 
-	setupTestShip
-	testShip.digRoom(0,0,2,2)
+	setupTestShipWithRoom
 	qa.assertEqual testShip.getCell([0,0]), Cell.make(0,0)
 	qa.assertEqual testShip.getCell([2,2]), null
 	qa.assertEqual testShip.getCell([100,100]), null //out of bounds Test
+
+	setupTestShipWithRoom
+	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, null]
+	testShip.place(0,0,globals.EAST,new Wall)
+	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, new Wall, null]
+	testShip.place(0,0,globals.NORTH, new Door)
+	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, new Door, null, null]
+
+	setupTestShipWithRoom
+	testShip.placeTopWalls(0,0,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, new Wall]
+
+	setupTestShipWithRoom
+	testShip.placeTopWalls(0,1,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell([0,1]).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell([1,1]).walls , [null, new Wall, null, null]
+
+	setupTestShipWithRoom
+	testShip.placeBottomWalls(0,0,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, null]
+
+	setupTestShipWithRoom
+	testShip.placeBottomWalls(0,1,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, new Wall]
+
+	setupTestShipWithRoom
+	testShip.placeLeftWalls(0,0,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, null]
+
+	setupTestShipWithRoom
+	testShip.placeLeftWalls(1,0,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell([0,1]).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, new Wall, null]
+
+	setupTestShipWithRoom
+	testShip.placeRightWalls(0,0,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell([0,1]).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, new Wall, null]
+
+	setupTestShipWithRoom
+	testShip.placeRightWalls(1,0,2)
+	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell([1,0]).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell([1,1]).walls , [new Wall, null, null, null]
 
 end function
 
