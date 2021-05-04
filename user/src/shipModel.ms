@@ -432,7 +432,16 @@ runUnitTests = function()
 
 	setupTestShip
 	qa.assertEqual testShip,compareShip
-	
+	testShip.digRoom(0,0,1,1)
+	qa.assertEqual testShip.map[0][0], Cell.make(0,0)
+	qa.assertEqual testShip.map[0][1], null
+
+	setupTestShip
+	testShip.digRoom(0,0,2,2)
+	qa.assertEqual testShip.map[0][0], Cell.make(0,0)
+	qa.assertEqual testShip.map[0][1], Cell.make(0,1)
+	qa.assertEqual testShip.map[1][0], Cell.make(1,0)
+	qa.assertEqual testShip.map[1][1], Cell.make(1,1)
 
 
 end function
