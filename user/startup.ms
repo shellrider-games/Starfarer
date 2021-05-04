@@ -1,4 +1,3 @@
-import "listUtil"
 cd "/usr/src"
 
 print "Starfarer Launcher"
@@ -33,7 +32,7 @@ while waitingOnUserChoice
 end while
 
 if choice then
-load choice
-run
+	load choice
+	run
 end if
 
