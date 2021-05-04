@@ -117,14 +117,14 @@ end function
 // Start Game/Main loop
 Starfarer.start = function()
 	//Main Loop
-	curTime = time
+	currentTime = time
 	while true
-		lastTime = curTime
-		curTime = time
-		dt = curTime - lastTime
+		lastTime = currentTime
+		currentTime = time
+		delta = currentTime - lastTime
 		self.processInput
-		shipDisplay.update dt
-		playerShip.update dt
+		shipDisplay.update delta
+		playerShip.update delta
 		if key.available then
 			if key.get == "1" then d.close else d.open
 		end if
