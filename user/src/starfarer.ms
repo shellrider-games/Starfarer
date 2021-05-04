@@ -125,9 +125,6 @@ Starfarer.start = function()
 		self.processInput
 		shipDisplay.update delta
 		playerShip.update delta
-		if key.available then
-			if key.get == "1" then d.close else d.open
-		end if
 		yield
 	end while
 end function
