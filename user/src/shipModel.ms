@@ -443,6 +443,17 @@ runUnitTests = function()
 	qa.assertEqual testShip.map[1][0], Cell.make(1,0)
 	qa.assertEqual testShip.map[1][1], Cell.make(1,1)
 
+	qa.assertEqual testShip.walkable([0,0]), true
+	qa.assertEqual testShip.walkable([-1,0]), false
+	qa.assertEqual testShip.walkable([2,0]), false
+	testShip.map[0][0].contents = new Item
+	qa.assertEqual testShip.walkable([0,0]), false
+
+	setupTestShip
+	testShip.digRoom(0,0,2,2)
+	qa.assertEqual testShip.getCell([0,0]), Cell.make(0,0)
+	qa.assertEqual testShip.getCell([2,2]), null
+	qa.assertEqual testShip.getCell([100,100]), null //out of bounds Test
 
 end function
 
