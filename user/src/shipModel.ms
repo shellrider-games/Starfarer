@@ -49,8 +49,8 @@ end function
 // any door that can be opened, will be opened.
 Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
 	if self.walls[direction] == null then return true	// no door/wall
-	d = self.walls[direction]
-	return d.isOpen or (assumeDoorsOpen and d.canOpen)
+	wallInDirection = self.walls[direction]
+	return wallInDirection.isOpen or (assumeDoorsOpen and wallInDirection.canOpen)
 end function
 
 // Ship: everything there is to know about a ship.
@@ -387,11 +387,14 @@ demo = function()
 end function
 
 runUnitTests = function()
-	clear
-	errorCount = 0
 
 	setupTestCell = function()
 		outer.testCell = shipModel.Cell.make(0,0)
+	end function
+
+	setupTestShip = function()
+		outer.testShip = new shipModel.Ship
+		outer.testShip.init(10,10)
 	end function
 
 	testCell = new Cell
@@ -416,6 +419,21 @@ runUnitTests = function()
 	qa.assertEqual testCell.walls, [{"__isa":{"name":"wall","isOpen":false,"canOpen":false}}, null, null, null]
 	qa.assertEqual testCell.canExitInDir(globals.NORTH), true
 	qa.assertEqual testCell.canExitInDir(globals.EAST), false
+	testCell.walls[globals.NORTH] = Door.make
+	qa.assertEqual testCell.canExitInDir(globals.NORTH), true
+	qa.assertEqual testCell.canExitInDir(globals.NORTH, false), false
+
+	testShip = new Ship
+	compareShip = new Ship
+	compareShip.init(10,10)
+
+	testShip.rows = 10; testShip.columns = 10; testShip.rowRange = range(0,9); testShip.columnRange = range(0,9); testShip.map = list.init2d(10, 10)
+	qa.assertEqual testShip, compareShip
+
+	setupTestShip
+	qa.assertEqual testShip,compareShip
+	
+
 
 end function
 
