@@ -49,16 +49,16 @@ Starfarer.handlePrimaryClick = function(pos)
 	mapPos = self.renderer.screenToMapPosition(pos)
 	
 	// If we click a minion, toggle its selection status.
-	m = playerShip.minionAt(mapPos)
-	if m != null then
-		if self.selectedMinion.contains(m) then
-			self.selectedMinion.removeVal m
+	minion = playerShip.minionAt(mapPos)
+	if minion != null then
+		if self.selectedMinion.contains(minion) then
+			self.selectedMinion.removeVal minion
 		else
 			// with left-shift, add to selection; otherwise replace selection
 			if key.pressed("left shift") then
-				self.selectedMinion.push m
+				self.selectedMinion.push minion
 			else
-				self.selectedMinion = [m]
+				self.selectedMinion = [minion]
 			end if
 		end if
 		return
@@ -66,24 +66,24 @@ Starfarer.handlePrimaryClick = function(pos)
 	
 	// If we click anywhere else, and don't have a selected minion, ignore it.
 	if not self.selectedMinion then return
-	m = self.selectedMinion[0]
+	minion = self.selectedMinion[0]
 	
 	// If we click an Item, have the selected minion pick it up.
 	cell = playerShip.getCell(mapPos)
 	if cell == null then return
 	item = cell.contents
 	if item != null then
-		m.pickUp item
+		minion.pickUp item
 		return
 	end if
 	
 	// If we click anywhere else, and we're carrying something,
 	// then drop it there.  Otherwise, just walk to that spot.
-	if m.carrying then
-		m.dropItem mapPos
+	if minion.carrying then
+		minion.dropItem mapPos
 	else
-		for m in self.selectedMinion
-			m.path = pathfinding.findPath(playerShip, m, mapPos)
+		for minion in self.selectedMinion
+			minion.path = pathfinding.findPath(playerShip, minion, mapPos)
 		end for
 	end if
 	
@@ -117,14 +117,14 @@ end function
 // Start Game/Main loop
 Starfarer.start = function()
 	//Main Loop
-	curTime = time
+	currentTime = time
 	while true
-		lastTime = curTime
-		curTime = time
-		dt = curTime - lastTime
+		lastTime = currentTime
+		currentTime = time
+		delta = currentTime - lastTime
 		self.processInput
-		shipDisplay.update dt
-		playerShip.update dt
+		shipDisplay.update delta
+		playerShip.update delta
 		if key.available then
 			if key.get == "1" then d.close else d.open
 		end if
