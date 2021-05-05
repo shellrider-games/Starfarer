@@ -188,7 +188,7 @@ Character.pickUp = function(item)
 	self.carrying = item
 	disp.shipSprites.sprites.removeVal item
 	disp.shipSprites.sprites.push item
-	self.ship.noteItemPickedUp item, self
+	self.ship.noteItemPickedUp item
 end function
 
 // Drop the item we're carrying into the cell at the given position.
@@ -217,7 +217,6 @@ Character.dropItem = function(onPos)
 	self.turnToFaceScreenPos item
 	self.carrying = null
 	self.walking = false
-	self.ship.noteItemDropped item, self
 end function
 
 Character.goTo = function(mapPos)

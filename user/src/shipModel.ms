@@ -181,14 +181,11 @@ Ship.minionAt = function(col,row)
 	return null
 end function
 
-Ship.noteItemPickedUp = function(item, byWhom)
+Ship.noteItemPickedUp = function(item)
 	cell = self.getCell(item.col,item.row)
 	if cell != null then cell.contents = null
 end function
 
-Ship.noteItemDropped = function(item, byWhom)
-	// (currently nothing to do when this happens)
-end function
 
 Ship.update = function(dt)
 
