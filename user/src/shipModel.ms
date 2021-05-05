@@ -7,6 +7,7 @@ import "qa"
 import "listUtil"
 if not globals.hasIndex("Door") then import "door"
 if not globals.hasIndex("Item") then import "item"
+if not globals.hasIndex("Character") then import "character"
 
 // Wall: an ordinary wall between cells.  Considered unbreachable.
 Wall = {}
@@ -173,9 +174,9 @@ Ship.removeCargo = function()
 end function
 
 // Find the minion (if any) at a given row and column (position map).
-Ship.minionAt = function(mapPos)
+Ship.minionAt = function(col,row)
 	for minion in self.minions
-		if minion.col == mapPos.col and minion.row == mapPos.row then return minion
+		if minion.col == col and minion.row == row then return minion
 	end for
 	return null
 end function
@@ -536,6 +537,14 @@ runUnitTests = function()
 	testShip.removeCargo
 	qa.assertEqual testShip.getFreeCargoExchangeCells, [testShip.getCell(0,0),testShip.getCell(0,1)]
 	qa.assertEqual testShip.getFullCargoExchangeCells, []
+
+	setupTestShipWithRoom
+	testCharacter = new character.Character
+	testCharacter.boardShip(testShip)
+	testCharacter.setMapPos [0,0]
+	qa.assertEqual testShip.minions, [testCharacter]
+	qa.assertEqual testShip.minionAt(0,0), testCharacter
+	qa.assertEqual testShip.minionAt(1,1), null
 
 end function
 

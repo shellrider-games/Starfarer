@@ -49,7 +49,7 @@ Starfarer.handlePrimaryClick = function(pos)
 	mapPos = self.renderer.screenToMapPosition(pos)
 	
 	// If we click a minion, toggle its selection status.
-	minion = playerShip.minionAt(mapPos)
+	minion = playerShip.minionAt(mapPos.col, mapPos.row)
 	if minion != null then
 		if self.selectedMinion.contains(minion) then
 			self.selectedMinion.removeVal minion
