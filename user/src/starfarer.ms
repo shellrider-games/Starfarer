@@ -69,7 +69,7 @@ Starfarer.handlePrimaryClick = function(pos)
 	minion = self.selectedMinion[0]
 	
 	// If we click an Item, have the selected minion pick it up.
-	cell = playerShip.getCell(mapPos)
+	cell = playerShip.getCell(mapPos.col,mapPos.row)
 	if cell == null then return
 	item = cell.contents
 	if item != null then

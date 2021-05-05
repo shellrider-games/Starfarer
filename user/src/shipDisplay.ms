@@ -129,12 +129,12 @@ Renderer.mapToScreenPosition = function(point)
 end function
 
 Renderer.putItem = function(item, point)
-	targetCell = self.ship.getCell(point)
+	targetCell = self.ship.getCell(point.col, point.row)
 	if targetCell == null then return	// out of bounds
 	if targetCell.contents != null then return;	// already occupied
 	for col in self.ship.columnRange
 		for row in self.ship.rowRange
-			cell = self.ship.getCell([col,row])
+			cell = self.ship.getCell(col,row)
 			if cell != null and cell.contents == item then 
 				cell.contents = null
 			end if
@@ -174,7 +174,7 @@ demo = function()
 	while not key.pressed("escape")
 		if mouse.button then
 			text.clear
-			print ship.getCell(rend.screenToMapPosition(mouse))
+			print ship.getCell(rend.screenToMapPosition(mouse).col,rend.screenToMapPosition(mouse).row)
 			wait 0.25
 		end if
 		if mouse.button(1) then

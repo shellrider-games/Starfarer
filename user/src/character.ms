@@ -121,7 +121,7 @@ Character.update = function(dt=0.1)
 			if self.path then
 				self.openDoorIfNeeded
 				nextPos = self.path[0]
-				nextCell = self.ship.getCell(nextPos)
+				nextCell = self.ship.getCell(nextPos[0],nextPos[1])
 				if self.path.len == 1 and self.carrying then
 					// drop our item on the last step of the path, and call it a day
 					self.dropItem self.path[0]
@@ -178,7 +178,7 @@ Character.pickUp = function(item)
 	dcol = item.col - self.col; drow = item.row - self.row
 	if abs(dcol) > 1 or abs(drow) > 1 then
 		// Too far away!  Walk over there, and THEN pick it up.
-		cell = self.ship.getCell(item)
+		cell = self.ship.getCell(item.col,item.row)
 		cell.contents = null	// (temporarily remove item so we can path there)
 		self.path = pathfinding.findPath(self.ship, self, item)
 		cell.contents = item

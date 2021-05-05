@@ -113,30 +113,23 @@ Ship.walkableNeighbors = function(colRow)
 end function
 
 // Get a cell from our map, if it exists and is in bounds.
-// The parameter may be either a [col,row] list, or a map containing "col" and "row" keys.
-Ship.getCell = function(coordinates)
+Ship.getCell = function(col, row)
+	qa.assert col isa number and row isa number
 	cell = null
-	if coordinates isa map then
-		x = coordinates.col
-		y = coordinates.row
-	else
-		x = coordinates[0]
-		y = coordinates[1]
-	end if
-	if x >= 0 and x < self.columns and y >= 0 and y < self.rows then cell = self.map[x][y]
+	if col >= 0 and col < self.columns and row >= 0 and row < self.rows then cell = self.map[col][row]
 	return cell
 end function
 
 // Boolean value that is true if cell at [col][row] is a cargo exchange cell and is empty
 Ship.isFreeCargoCell = function(col, row)
-	c = self.getCell([col, row])
+	c = self.getCell(col, row)
 	if c == null then return false
 	return c.type == Celltype.CARGO_EXCHANGE and c.contents == null
 end function
 
 // Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
 Ship.isFullCargoCell = function(col, row)
-	c = self.getCell([col, row])
+	c = self.getCell(col, row)
 	if c == null then return false
 	return c.type == Celltype.CARGO_EXCHANGE and c.contents != null
 end function
@@ -146,7 +139,7 @@ Ship.getFreeCargoExchangeCells = function()
 	result = []
 	for col in self.columnRange
 		for row in self.rowRange
-			if self.isFreeCargoCell(col, row) then result.push self.getCell([col,row])
+			if self.isFreeCargoCell(col, row) then result.push self.getCell(col,row)
 		end for
 	end for
 	return result
@@ -156,7 +149,7 @@ Ship.getFullCargoExchangeCells = function()
 	result = []
 	for col in self.columnRange
 		for row in self.rowRange
-			if self.isFullCargoCell(col, row) then result.push self.getCell([col,row])
+			if self.isFullCargoCell(col, row) then result.push self.getCell(col,row)
 		end for
 	end for
 	return result
@@ -188,7 +181,7 @@ Ship.minionAt = function(mapPos)
 end function
 
 Ship.noteItemPickedUp = function(item, byWhom)
-	cell = self.getCell(item)
+	cell = self.getCell(item.col,item.row)
 	if cell != null then cell.contents = null
 end function
 
@@ -454,81 +447,81 @@ runUnitTests = function()
 	qa.assertEqual testShip.walkable([0,0]), false
 
 	setupTestShipWithRoom
-	qa.assertEqual testShip.getCell([0,0]), Cell.make(0,0)
-	qa.assertEqual testShip.getCell([2,2]), null
-	qa.assertEqual testShip.getCell([100,100]), null //out of bounds Test
+	qa.assertEqual testShip.getCell(0,0), Cell.make(0,0)
+	qa.assertEqual testShip.getCell(2,2), null
+	qa.assertEqual testShip.getCell(100,100), null //out of bounds Test
 
 	setupTestShipWithRoom
-	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [null, null, null, null]
 	testShip.place(0,0,globals.EAST,new Wall)
-	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, null, null, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, null, new Wall, null]
 	testShip.place(0,0,globals.NORTH, new Door)
-	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, new Door, null, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [new Wall, new Door, null, null]
 
 	setupTestShipWithRoom
 	testShip.placeTopWalls(0,0,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [null, new Wall, null, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, new Wall, null, null]
-	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, new Wall]
-	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell(0,0).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell(0,1).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell(1,1).walls , [null, null, null, new Wall]
 
 	setupTestShipWithRoom
 	testShip.placeTopWalls(0,1,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, null, null]
-	qa.assertEqual testShip.getCell([0,1]).walls , [null, new Wall, null, null]
-	qa.assertEqual testShip.getCell([1,1]).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(0,1).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell(1,1).walls , [null, new Wall, null, null]
 
 	setupTestShipWithRoom
 	testShip.placeBottomWalls(0,0,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, new Wall]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, null, new Wall]
-	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, null]
-	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell(0,1).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(1,1).walls , [null, null, null, null]
 
 	setupTestShipWithRoom
 	testShip.placeBottomWalls(0,1,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [null, new Wall, null, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, new Wall, null, null]
-	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, new Wall]
-	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell(0,0).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, new Wall, null, null]
+	qa.assertEqual testShip.getCell(0,1).walls , [null, null, null, new Wall]
+	qa.assertEqual testShip.getCell(1,1).walls , [null, null, null, new Wall]
 
 	setupTestShipWithRoom
 	testShip.placeLeftWalls(0,0,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, new Wall, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, null, null]
-	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, new Wall, null]
-	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(0,1).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell(1,1).walls , [null, null, null, null]
 
 	setupTestShipWithRoom
 	testShip.placeLeftWalls(1,0,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, null, null, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, new Wall, null]
-	qa.assertEqual testShip.getCell([0,1]).walls , [new Wall, null, null, null]
-	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell(0,1).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell(1,1).walls , [null, null, new Wall, null]
 
 	setupTestShipWithRoom
 	testShip.placeRightWalls(0,0,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [new Wall, null, null, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [null, null, new Wall, null]
-	qa.assertEqual testShip.getCell([0,1]).walls , [new Wall, null, null, null]
-	qa.assertEqual testShip.getCell([1,1]).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [null, null, new Wall, null]
+	qa.assertEqual testShip.getCell(0,1).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell(1,1).walls , [null, null, new Wall, null]
 
 	setupTestShipWithRoom
 	testShip.placeRightWalls(1,0,2)
-	qa.assertEqual testShip.getCell([0,0]).walls , [null, null, null, null]
-	qa.assertEqual testShip.getCell([1,0]).walls , [new Wall, null, null, null]
-	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, null]
-	qa.assertEqual testShip.getCell([1,1]).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell(0,0).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(1,0).walls , [new Wall, null, null, null]
+	qa.assertEqual testShip.getCell(0,1).walls , [null, null, null, null]
+	qa.assertEqual testShip.getCell(1,1).walls , [new Wall, null, null, null]
 
 	setupTestShipWithRoom
 	qa.assertEqual testShip.isFreeCargoCell(0,0) , false
 	qa.assertEqual testShip.isFullCargoCell(0,0) , false
-	testShip.getCell([0,0]).type = Celltype.CARGO_EXCHANGE
+	testShip.getCell(0,0).type = Celltype.CARGO_EXCHANGE
 	qa.assertEqual testShip.isFreeCargoCell(0,0) , true
 	qa.assertEqual testShip.isFullCargoCell(0,0) , false
-	testShip.getCell([0,0]).contents = new Item
+	testShip.getCell(0,0).contents = new Item
 	qa.assertEqual testShip.isFreeCargoCell(0,0) , false
 	qa.assertEqual testShip.isFullCargoCell(0,0) , true
 
