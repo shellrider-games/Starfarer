@@ -160,3 +160,7 @@ Note that many rare or even story-driven capabilities will be represented in the
 Scripted encounters and events can happen when approaching or departing a system, while visiting a station bar, or occasionally during/after combat.  These are little mini-programs that can present modal dialogs, giving you some information and often prompting you to choose between two or more response options.
 
 Each of these mini-programs maintains its own state, and can examine and affect the state of the game, allowing for multi-step missions and stories to unfold.
+
+## Lose the Game ##
+
+It is possible to lose the game all crewmembers die at the same time. Events that pose a riks of game over are very clearly telegraphed and should always include an option to turn away. Death and Game Over will never come as a surprise to the player but is the result of an informed and calculated risk.
