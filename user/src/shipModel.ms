@@ -174,8 +174,8 @@ end function
 
 // Find the minion (if any) at a given row and column (position map).
 Ship.minionAt = function(mapPos)
-	for m in self.minions
-		if m.col == mapPos.col and m.row == mapPos.row then return m
+	for minion in self.minions
+		if minion.col == mapPos.col and minion.row == mapPos.row then return minion
 	end for
 	return null
 end function
