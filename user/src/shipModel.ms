@@ -158,10 +158,6 @@ Ship.getFullCargoExchangeCells = function()
 	return result
 end function
 
-Ship.findItemCell = function(item)
-	return self.getCell(item)
-end function
-
 Ship.addCargo = function(item)
 	if item isa Item then
 		freeCargoCells = self.getFreeCargoExchangeCells
@@ -188,7 +184,7 @@ Ship.minionAt = function(mapPos)
 end function
 
 Ship.noteItemPickedUp = function(item, byWhom)
-	cell = self.findItemCell(item)
+	cell = self.getCell(item)
 	if cell != null then cell.contents = null
 end function
 
@@ -521,6 +517,12 @@ runUnitTests = function()
 	qa.assertEqual testShip.getCell([1,0]).walls , [new Wall, null, null, null]
 	qa.assertEqual testShip.getCell([0,1]).walls , [null, null, null, null]
 	qa.assertEqual testShip.getCell([1,1]).walls , [new Wall, null, null, null]
+
+	setupTestShipWithRoom
+	qa.assertEqual testShip.isFreeCargoCell([0,0]) , false
+	testShip.getCell([0,0]).type = Celltype.CARGO_EXCHANGE
+	qa.assertEqual testShip.isFreeCargoCell([0,0]) , true
+
 
 end function
 
