@@ -524,8 +524,13 @@ runUnitTests = function()
 
 	setupTestShipWithRoom
 	qa.assertEqual testShip.isFreeCargoCell(0,0) , false
+	qa.assertEqual testShip.isFullCargoCell(0,0) , false
 	testShip.getCell([0,0]).type = Celltype.CARGO_EXCHANGE
 	qa.assertEqual testShip.isFreeCargoCell(0,0) , true
+	qa.assertEqual testShip.isFullCargoCell(0,0) , false
+	testShip.getCell([0,0]).contents = new Item
+	qa.assertEqual testShip.isFreeCargoCell(0,0) , false
+	qa.assertEqual testShip.isFullCargoCell(0,0) , true
 
 
 end function
