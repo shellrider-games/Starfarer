@@ -129,12 +129,16 @@ end function
 
 // Boolean value that is true if cell at [col][row] is a cargo exchange cell and is empty
 Ship.isFreeCargoCell = function(col, row)
-	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents == null
+	c = self.getCell([col, row])
+	if c == null then return false
+	return c.type == Celltype.CARGO_EXCHANGE and c.contents == null
 end function
 
 // Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
 Ship.isFullCargoCell = function(col, row)
-	return self.getCell([col,row]) != null and self.getCell([col,row]).type == Celltype.CARGO_EXCHANGE and self.getCell([col,row]).contents != null
+	c = self.getCell([col, row])
+	if c == null then return false
+	return c.type == Celltype.CARGO_EXCHANGE and c.contents != null
 end function
 
 // Returns a list of all currently free cargo cells on the ship
@@ -390,12 +394,12 @@ runUnitTests = function()
 
 	setupTestShip = function()
 		outer.testShip = new shipModel.Ship
-		outer.testShip.init(10,10)
+		testShip.init 10,10
 	end function
 
 	setupTestShipWithRoom = function()
 		setupTestShip
-		outer.testShip.digRoom(0,0,2,2)
+		testShip.digRoom 0,0,2,2
 	end function
 
 	testCell = new Cell
@@ -519,11 +523,14 @@ runUnitTests = function()
 	qa.assertEqual testShip.getCell([1,1]).walls , [new Wall, null, null, null]
 
 	setupTestShipWithRoom
-	qa.assertEqual testShip.isFreeCargoCell([0,0]) , false
+	qa.assertEqual testShip.isFreeCargoCell(0,0) , false
 	testShip.getCell([0,0]).type = Celltype.CARGO_EXCHANGE
-	qa.assertEqual testShip.isFreeCargoCell([0,0]) , true
+	qa.assertEqual testShip.isFreeCargoCell(0,0) , true
 
 
 end function
 
-if locals == globals then demo
+if locals == globals then
+	shipModel = locals
+	runUnitTests
+end if
