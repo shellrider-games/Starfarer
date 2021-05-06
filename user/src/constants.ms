@@ -7,6 +7,8 @@
 // Note too that any commonly-needed constants are stuffed into the global
 // namespace, so they can be used without a prefix.
 
+if not globals.hasIndex("qa") then import "qa"
+
 // Directions:
 // In the context of a screen, "north" is towards the top of the screen.
 // In the context of a ship, "north" is the front (fore) end of the ship.
@@ -42,3 +44,10 @@ globals.CELLSIZE = 20		// size of one map cell, in pixels
 globals.Celltype = {}
 Celltype.STANDARD = 0
 Celltype.CARGO_EXCHANGE = 1
+
+runUnitTests = function()
+	qa.assertEqual inverseDir(globals.EAST), globals.WEST
+	qa.assertEqual inverseDir(globals.WEST), globals.EAST
+	qa.assertEqual inverseDir(globals.SOUTH), globals.NORTH
+	qa.assertEqual inverseDir(globals.NORTH), globals.SOUTH
+end function
