@@ -50,4 +50,20 @@ runUnitTests = function()
 	qa.assertEqual inverseDir(globals.WEST), globals.EAST
 	qa.assertEqual inverseDir(globals.SOUTH), globals.NORTH
 	qa.assertEqual inverseDir(globals.NORTH), globals.SOUTH
+
+	qa.assertEqual dx(globals.EAST), 1
+	qa.assertEqual dx(globals.WEST), -1
+	qa.assertEqual dx(globals.NORTH), 0
+	qa.assertEqual dx(globals.SOUTH), 0
+
+	qa.assertEqual dy(globals.EAST), 0
+	qa.assertEqual dy(globals.WEST), 0
+	qa.assertEqual dy(globals.NORTH), 1
+	qa.assertEqual dy(globals.SOUTH), -1
+
+	qa.assertEqual dirFromDelta(1,1), 0.5
+	qa.assertEqual dirFromDelta(-1,-1), 2.5
+	qa.assertEqual dirFromDelta(1,-1), 1.5
+	qa.assertEqual dirFromDelta(-1, 1), 3.5
+
 end function
