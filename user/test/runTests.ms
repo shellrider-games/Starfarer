@@ -11,4 +11,7 @@ miscUtil.runUnitTests
 print "Run tests for constants.ms"
 import "constants"
 constants.runUnitTests
+print "Run tests for shipDisplay.ms"
+import "shipDisplay"
+shipDisplay.runUnitTests
 print "RAN ALL TESTS"

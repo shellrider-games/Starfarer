@@ -5,7 +5,7 @@
 
 if not globals.hasIndex("setup") then import "setup"
 import "listUtil"
-import "qa"
+if not globals.hasIndex("qa") then import "qa"
 import "spriteUtil"
 import "spriteControllers"
 if not globals.hasIndex("Door") then import "door"
@@ -187,6 +187,22 @@ demo = function()
 		yield
 	end while
 	key.clear
+end function
+
+runUnitTests = function()
+	testRenderer = new Renderer
+	testRenderer.mapZeroZero = {"x":testRenderer.x,"y":testRenderer.y}
+	qa.assertEqual testRenderer.mapZeroZero, {"x": 240, "y": 320}
+	qa.assertEqual testRenderer.screenToMapPosition([240,320]), {"col":0,"row":0}
+	qa.assertEqual testRenderer.screenToMapPosition([240-globals.CELLSIZE,320]), {"col":-1,"row":0}
+	qa.assertEqual testRenderer.screenToMapPosition([240-globals.CELLSIZE,320-globals.CELLSIZE]), {"col":-1,"row":-1}
+	qa.assertEqual testRenderer.screenToMapPosition([240+globals.CELLSIZE,320+globals.CELLSIZE]), {"col":1,"row":1}
+
+	qa.assertEqual testRenderer.mapToScreenPosition([0,0]), {"x":250,"y":330}
+	qa.assertEqual testRenderer.mapToScreenPosition([0,1]), {"x":250,"y":330+globals.CELLSIZE}
+	qa.assertEqual testRenderer.mapToScreenPosition([-1,0]), {"x":250-globals.CELLSIZE,"y":330}
+	
+	clear
 end function
 
 init
