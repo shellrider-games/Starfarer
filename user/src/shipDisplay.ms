@@ -10,6 +10,7 @@ import "spriteUtil"
 import "spriteControllers"
 if not globals.hasIndex("Door") then import "door"
 if not globals.hasIndex("Item") then import "item"
+if not globals.hasIndex("constants") then import "constants"
 
 // addSprite: Helper method to create and add a sprite from an image
 addSprite = function(image, x, y, baseClass)
