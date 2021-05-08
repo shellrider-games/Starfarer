@@ -1,9 +1,11 @@
 env.importPaths.push "/usr/src"
 
 clear
-print "Run tests for shipDisplay.ms"
+
 import "shipDisplay"
 shipDisplay.runUnitTests
+print "Run tests for shipDisplay.ms"
+
 print "Run tests for shipModel.ms"
 import "shipModel"
 shipModel.runUnitTests
@@ -16,5 +18,8 @@ constants.runUnitTests
 print "Run tests for charAI.ms"
 import "charAI"
 charAI.runUnitTests
+print "Run tests fo uiWidgets.ms"
+import "uiWidgets"
+uiWidgets.runUnitTests
 
 print "RAN ALL TESTS"

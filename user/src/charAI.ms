@@ -61,7 +61,6 @@ runUnitTests = function()
 	n.update 2
 	qa.assert n.value == 6
 	
-	print "Unit tests complete."
 end function
 
 
