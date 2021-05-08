@@ -162,6 +162,31 @@ Widget.redraw = function()
 end function
 
 //----------------------------------------------------------------------
+// Panel: a widget that draws an Image or Image9Slice.
+//----------------------------------------------------------------------
+Panel = new Widget
+Panel.image = null		// may be an Image or an Image9Slice
+
+Panel.init = function(left, bottom, width, height, name, image)
+	super.init left, bottom, width, height, name
+	self.image = image
+	
+	// Get the color of a pixel at the center of the image; this is handy
+	// so that things drawing on top of this panel can know what to use
+	// for a background color.
+	if image isa Image9Slice then src = image.image else src = image
+	self.mainColor = src.pixel(src.width/2, src.height/2)
+end function
+
+Panel.draw = function()
+	if self.image isa Image then
+		disp.uiPixel.drawImage self.image, self.left, self.bottom, self.width, self.height
+	else if self.image isa Image9Slice then
+		self.image.draw self.left, self.bottom, self.width, self.height
+	end if
+end function
+
+//----------------------------------------------------------------------
 // Label: a bit of text that knows its bounds and can be easily updated.
 // (Note: if you're not going to update it, you could just print directly
 // to the disp.uiPixel display.  Use a Label when you want an easy way to
@@ -294,12 +319,13 @@ demo = function()
 	disp.uiPixel.clear
 	disp.uiSprites.clear
 	
-	w = new Widget
-	w.init 800, 500, 100, 30
-	w.draw
+	panel = new Panel
+	panel.init 400, 300, 300, 200, "panel", load9SliceImage("panel")
+	panel.draw
 
 	btn = new Button
 	btn.init 500, 400, 100, 24, "Click Me"
+	btn.backColor = panel.mainColor
 	btn.start
 	
 	lab1 = new Label

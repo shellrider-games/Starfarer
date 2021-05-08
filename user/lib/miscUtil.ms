@@ -2,10 +2,12 @@
 
 if not globals.hasIndex("qa") then import "qa"
 
+// Get the maximum of two values
 max = function(a,b)
 	if a > b then return a else return b
 end function
 
+// Get the minimum of two values
 min = function(a,b)
 	if a < b then return a else return b
 end function
