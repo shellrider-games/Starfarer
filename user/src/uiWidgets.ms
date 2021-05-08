@@ -12,14 +12,15 @@ if not globals.hasIndex("qa") then import "qa"
 //----------------------------------------------------------------------
 
 loadImage = function(name)
-	img = file.loadImage("/usr/pics/" + name + ".png")
-	qa.assert img != null
+	path = "/usr/pics/" + name + ".png"
+	img = file.loadImage(path)
+	if img == null then qa.abort("Image not found: " + path)
 	return img
 end function
 
-load9SliceImage = function(name)
+load9SliceImage = function(name, left=12, bottom=12, right=12, top=12)
 	img = loadImage(name)
-	return Image9Slice.make(img)
+	return Image9Slice.make(img, left, bottom, right, top)
 end function
 
 
@@ -138,6 +139,35 @@ Widget.draw = function()
 	disp.uiPixel.fillRect self.left, self.bottom, self.width, self.height, color.fuchsia
 end function
 
+Widget.erase = function()
+	disp.uiPixel.fillRect self.left, self.bottom, self.width, self.height, color.clear
+end function
+
+
+//----------------------------------------------------------------------
+// Button: represents a push button.
+//----------------------------------------------------------------------
+Button = new Widget
+Button.upImg = load9SliceImage("uiButton")
+Button.downImg = load9SliceImage("uiButtonDown")
+Button.NORMAL = 0
+Button.PRESSED = 1
+Button.state = Button.NORMAL
+Button.caption = "Button"
+Button.font = "Arial14"
+
+Button.draw = function()
+	y = self.bounds.y - 3
+	if self.state == Button.PRESSED then
+		self.downImg.draw self.left, self.bottom, self.width, self.height
+		y = y - 2
+	else
+		self.upImg.draw self.left, self.bottom, self.width, self.height
+	end if
+	f = fonts[self.font]
+	f.setColor color.black
+	f.printCentered self.caption, self.bounds.x, y
+end function
 
 //----------------------------------------------------------------------
 // Demo/testing functions
@@ -150,8 +180,14 @@ demo = function()
 	w.init 800, 500, 100, 30
 	w.draw
 
-	img = load9SliceImage("uiButton")
-	img.draw 480, 320, 100, 100
+	btn = new Button
+	btn.init 500, 400, 100, 24, "Button"
+	btn.draw
+	wait 1
+	btn.erase; btn.state = Button.PRESSED; btn.draw
+	wait 1
+	btn.erase; btn.state = Button.NORMAL; btn.draw
+	
 end function
 
 runUnitTests = function()

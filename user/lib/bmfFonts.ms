@@ -19,7 +19,6 @@ CharData.load = function(data, pos)
 	self.relY = data.sbyte(pos+3)
 	self.shift = data.sbyte(pos+4)
 	self.colors = []
-	self.image = null
 	pos = pos + 5
 	bytes = self.width * self.height
 	if bytes then
@@ -33,8 +32,12 @@ end function
 // Font class, storing all data about a particular font.
 Font = {}
 Font.data = null
-Font.chars = null   // key: character; value: charData map
-Font.kernMap = null  // key: char1; value: map from char2->kern
+Font.chars = null		// key: character; value: charData map
+Font.kernMap = null		// key: char1; value: map from char2->kern
+Font.imgCache = null	// key: character; value: Image
+Font.altColors = null	// key: color; value: [palette, imgCache]
+Font.curAltColor = null	// current color in altColors
+
 Font.setKern = function(c1, c2, kern)
 	if self.kernMap == null then self.kernMap = {}
 	if not self.kernMap.hasIndex(c1) then self.kernMap[c1] = {}
@@ -58,6 +61,8 @@ Font.load = function(path)
 	f = new  Font
 	f.data = data
 	f.chars = {}
+	f.imgCache = {}
+	f.altColors = {}
 	data.littleEndian = true
 	vers = data.byte(4)
 	//print "Font version: " + floor(vers/16) + "." + vers % 16
@@ -179,10 +184,31 @@ end function
 // Get an Image that represents the given character.
 // This method uses a cache, so is faster after the first call.
 Font.getCharImage = function(c)
-	d = self.charData(c)
-	if d == null then return null
-	if d.image == null then d.image = self.makeCharImage(c)
-	return d.image
+	if not self.imgCache.hasIndex(c) then self.imgCache[c] = self.makeCharImage(c)
+	return self.imageCache[c]
+end function
+
+// Change the color of this font for subsequent drawing.
+Font.setColor = function(clr)
+	if clr == self.curAltColor then return
+	if self.altColors.hasIndex(clr) then
+		// This is an alternate color we have seen before; just switch back
+		// to the palette and image cache we used then.
+		palAndCache = self.altColors[clr]
+		self.palette = palAndCache[0]
+		self.imgCache = palAndCache[1]
+	else
+		// This is a new alt color.  Set up a new palette and image cache.
+		if clr isa string then
+			self.palette = self.palette[:]
+			self.palette[0] = clr
+		else
+			self.palette = clr
+		end if
+		self.imgCache = {}
+		// And store it for future reuse.
+		self.altColors[clr] = [self.palette, self.imgCache]
+	end if
 end function
 
 // Render (draw) the given character to gfx, and return how
@@ -191,11 +217,17 @@ end function
 Font.printChar = function(c, x=480, y=320)
 	d = self.charData(c)
 	if d == null then return 0
-	if d.image == null and d.width > 0 then d.image = self.makeCharImage(c)
+	img = null
+	if self.imgCache.hasIndex(c) then
+		img = self.imgCache[c]
+	else if d.width > 0 then
+		img = self.makeCharImage(c)
+		self.imgCache[c] = img
+	end if
 	x = x + d.relX
-	if d.image != null then
-		y = y - self.sizeOver - d.relY - d.image.height
-		gfx.drawImage d.image, x, y
+	if img != null then
+		y = y - self.sizeOver - d.relY - img.height
+		gfx.drawImage img, x, y
 	end if
 	return d.shift
 end function
