@@ -26,7 +26,7 @@ show = function(left=550, bottom=150, width=350, height=400)
 	font = fonts.ArialBlack14
 	font.setColor color.black
 	font.print "Antares Station : MARKET", left+4, top-14
-	
+		
 	y = top - 60
 	addCommodity left, y-40, width, 40, item.FoodItem, 84, 50
 	y = y - 40
@@ -59,6 +59,9 @@ addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPri
 	    "Buy ($" + buyPrice + ")"
 	btn.backColor = background.mainColor
 	btn.start
+	btn.action = function()
+		print "You buy " + itemType.name
+	end function
 	
 	// column 2: sell button
 	btn = new Button
@@ -66,6 +69,9 @@ addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPri
 	    "Sell ($" + sellPrice + ")"
 	btn.backColor = background.mainColor
 	btn.start
+	btn.action = function()
+		print "You sell " + itemType.name
+	end function
 	
 end function
 

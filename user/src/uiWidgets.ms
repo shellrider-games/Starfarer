@@ -299,6 +299,7 @@ end function
 //----------------------------------------------------------------------
 
 mouseWasPressed = false	// whether mouse was pressed on *previous* update
+
 update = function(dt = 0.1)
 	// update our handy dandy mouse-state variables: currently pressed, or just up/down
 	outer.mousePressed = mouse.button
