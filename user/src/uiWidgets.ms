@@ -98,6 +98,7 @@ Widget = {}
 Widget.bounds = null	// should be a Bounds instance with rotation == 0
 Widget.name = ""		// name for debugging/logging purposes
 Widget.visible = true
+Widget.backColor = color.clear
 
 _allWidgets = []
 
@@ -152,9 +153,53 @@ Widget.draw = function()
 end function
 
 Widget.erase = function()
-	disp.uiPixel.fillRect self.left, self.bottom, self.width, self.height, color.clear
+	disp.uiPixel.fillRect self.left, self.bottom, self.width, self.height, self.backColor
 end function
 
+Widget.redraw = function()
+	self.erase
+	self.draw
+end function
+
+//----------------------------------------------------------------------
+// Label: a bit of text that knows its bounds and can be easily updated.
+// (Note: if you're not going to update it, you could just print directly
+// to the disp.uiPixel display.  Use a Label when you want an easy way to
+// change the text displayed.)
+//----------------------------------------------------------------------
+Label = new Widget
+Label.text = "Label"
+Label.color = color.gray
+Label.font = fonts.ArialBlack14
+Label.ALIGNLEFT = 0
+Label.ALIGNCENTER = 1
+Label.ALIGNRIGHT = 2
+Label.alignment = Label.ALIGNLEFT
+
+Label.init = function(left, bottom, width, height, text="", align=Label.ALIGNLEFT)
+	super.init left, bottom, width, height, text
+	self.text = text
+	self.alignment = align
+end function
+
+Label.draw = function()
+	w = self.font.width(self.text)
+	y = self.bounds.y - 5
+	self.font.setColor self.color
+	if self.alignment == Label.ALIGNRIGHT then
+		self.font.print self.text, self.right - w, y
+	else if self.alignment == Label.ALIGNCENTER then
+		self.font.print self.text, self.bounds.x - w/2, y
+	else
+		self.font.print self.text, self.left, y
+	end if
+end function
+
+Label.setText = function(s)
+	if s == self.text then return
+	self.text = s
+	self.redraw
+end function
 
 //----------------------------------------------------------------------
 // Button: represents a push button.
@@ -190,11 +235,6 @@ Button.draw = function()
 	f = fonts[self.font]
 	f.setColor color.black
 	f.printCentered self.caption, self.bounds.x, y
-end function
-
-Button.redraw = function()
-	self.erase
-	self.draw
 end function
 
 Button.update = function(dt = 0.1)
@@ -261,6 +301,28 @@ demo = function()
 	btn = new Button
 	btn.init 500, 400, 100, 24, "Click Me"
 	btn.start
+	
+	lab1 = new Label
+	lab1.init 800, 500, 100, 30, "Centered", Label.ALIGNCENTER
+	lab1.draw
+	
+	lab2 = new Label
+	lab2.init 800, 530, 100, 20, "Left"
+	lab2.draw
+	
+	lab3 = new Label
+	lab3.init 800, 480, 100, 20, "Right", Label.ALIGNRIGHT
+	lab3.draw
+	
+	clock = new Label
+	clock.init 900, 620, 60, 20, "Clock", Label.ALIGNRIGHT
+	clock.color = color.aqua; clock.backColor = color.black
+	clock.text = "0:00"
+	clock.start
+	clock.update = function(dt)
+		t = round(time)
+		self.setText floor(t/60) + ":" + ("00" + (t%60))[-2:]
+	end function
 	
 	while not key.pressed("escape")
 		update 1/60
