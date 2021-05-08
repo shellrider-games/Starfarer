@@ -97,6 +97,9 @@ end function
 Widget = {}
 Widget.bounds = null	// should be a Bounds instance with rotation == 0
 Widget.name = ""		// name for debugging/logging purposes
+Widget.visible = true
+
+_allWidgets = []
 
 Widget.init = function(left, bottom, width, height, name="")
 	self.bounds = new Bounds
@@ -105,6 +108,15 @@ Widget.init = function(left, bottom, width, height, name="")
 	self.bounds.width = width
 	self.bounds.height = height
 	self.name = name
+end function
+
+Widget.start = function()
+	if _allWidgets.indexOf(self) == null then _allWidgets.push self
+	self.draw
+end function
+
+Widget.update = function(dt = 0.1)
+	// (overridden in most subclasses)
 end function
 
 Widget.left = function()
@@ -155,6 +167,17 @@ Button.PRESSED = 1
 Button.state = Button.NORMAL
 Button.caption = "Button"
 Button.font = "Arial14"
+Button.trackingPress = false	// true when tracking a mouse click
+
+Button.init = function(left, bottom, width, height, caption="")
+	super.init left, bottom, width, height, caption
+	self.caption = caption
+end function
+
+// action function, invoked upon click (buttons should override this)
+Button.action = function()			
+	print "Button """ + self.name + """ clicked!"
+end function
 
 Button.draw = function()
 	y = self.bounds.y - 3
@@ -169,6 +192,61 @@ Button.draw = function()
 	f.printCentered self.caption, self.bounds.x, y
 end function
 
+Button.redraw = function()
+	self.erase
+	self.draw
+end function
+
+Button.update = function(dt = 0.1)
+	if not self.trackingPress then
+		// When not tracking a press, the only thing we need to worry
+		// about is a mouse-down on this button.
+		if mouseDown and self.contains(mouse) then
+			// Start tracking!
+			self.state = Button.PRESSED
+			self.trackingPress = true
+			self.redraw
+		end if
+	else
+		// While tracking a press, update based on where the mouse is,
+		// until the mouse is released.
+		if not mousePressed then
+			// Release!
+			if self.state == Button.PRESSED then
+				self.action
+				self.state = Button.NORMAL
+				self.redraw
+			end if
+			self.trackingPress = false
+		else
+			// show down when mouse in bounds, up when out of bounds
+			if self.contains(mouse) then s = Button.PRESSED else s = Button.NORMAL
+			if s != self.state then
+				self.state = s
+				self.redraw
+			end if
+		end if
+	end if
+end function
+
+//----------------------------------------------------------------------
+// Main update function: must be called periodically for proper function.
+//----------------------------------------------------------------------
+
+mouseWasPressed = false	// whether mouse was pressed on *previous* update
+update = function(dt = 0.1)
+	// update our handy dandy mouse-state variables: currently pressed, or just up/down
+	outer.mousePressed = mouse.button
+	outer.mouseDown = mousePressed and not mouseWasPressed
+	outer.mouseUp = mouseWasPressed and not mousePressed
+	
+	for w in _allWidgets
+		w.update dt
+	end for
+
+	outer.mouseWasPressed = mousePressed
+end function
+
 //----------------------------------------------------------------------
 // Demo/testing functions
 //----------------------------------------------------------------------
@@ -181,12 +259,14 @@ demo = function()
 	w.draw
 
 	btn = new Button
-	btn.init 500, 400, 100, 24, "Button"
-	btn.draw
-	wait 1
-	btn.erase; btn.state = Button.PRESSED; btn.draw
-	wait 1
-	btn.erase; btn.state = Button.NORMAL; btn.draw
+	btn.init 500, 400, 100, 24, "Click Me"
+	btn.start
+	
+	while not key.pressed("escape")
+		update 1/60
+		yield
+	end while
+	key.clear
 	
 end function
 
