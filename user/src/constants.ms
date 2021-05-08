@@ -44,6 +44,7 @@ globals.CELLSIZE = 20		// size of one map cell, in pixels
 globals.Celltype = {}
 Celltype.STANDARD = 0
 Celltype.CARGO_EXCHANGE = 1
+Celltype.CARGO_OUT = 2
 
 runUnitTests = function()
 	qa.assertEqual inverseDir(globals.EAST), globals.WEST

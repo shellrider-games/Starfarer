@@ -135,6 +135,12 @@ Ship.isFullCargoCell = function(col, row)
 	return c.type == Celltype.CARGO_EXCHANGE and c.contents != null
 end function
 
+Ship.isCargoOutCell = function(col, row)
+	c = self.getCell(col, row)
+	if c == null then return false
+	return c.type == Celltype.CARGO_OUT
+end function
+
 // Returns a list of all currently free cargo cells on the ship
 Ship.getFreeCargoExchangeCells = function()
 	result = []
@@ -151,6 +157,16 @@ Ship.getFullCargoExchangeCells = function()
 	for col in self.columnRange
 		for row in self.rowRange
 			if self.isFullCargoCell(col, row) then result.push self.getCell(col,row)
+		end for
+	end for
+	return result
+end function
+
+Ship.getCargoOutCells = function()
+	result = []
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.isCargoOutCell(col,row) then result.push self.getCell(col, row)
 		end for
 	end for
 	return result
@@ -542,6 +558,11 @@ runUnitTests = function()
 	qa.assertEqual testShip.minions, [testCharacter]
 	qa.assertEqual testShip.minionAt(0,0), testCharacter
 	qa.assertEqual testShip.minionAt(1,1), null
+
+	setupTestShipWithRoom
+	testShip.getCell(0,0).type = Celltype.CARGO_OUT
+	qa.assertEqual testShip.isCargoOutCell(0,0), true
+	qa.assertEqual testShip.getCargoOutCells, [testShip.getCell(0,0)]
 
 end function
 
