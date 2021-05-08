@@ -10,6 +10,8 @@ import "shipModel"
 import "shipDisplay"
 import "character"
 import "pathfinding"
+import "uiWidgets"
+import "stationUI"
 
 Starfarer = {}
 
@@ -30,7 +32,7 @@ Starfarer.init = function()
 	self.renderer.renderShip playerShip
 	globals.renderer = self.renderer
 	
-
+	stationUI.show
 
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
@@ -125,6 +127,7 @@ Starfarer.start = function()
 		self.processInput
 		shipDisplay.update delta
 		playerShip.update delta
+		uiWidgets.update delta
 		yield
 	end while
 end function
