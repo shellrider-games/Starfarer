@@ -60,7 +60,7 @@ addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPri
 	btn.backColor = background.mainColor
 	btn.start
 	btn.action = function()
-		print "You buy " + itemType.name
+		playerShip.incomingTypes.push itemType
 	end function
 	
 	// column 2: sell button
@@ -70,7 +70,7 @@ addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPri
 	btn.backColor = background.mainColor
 	btn.start
 	btn.action = function()
-		print "You sell " + itemType.name
+		playerShip.outgoingTypes.push itemType
 	end function
 	
 end function

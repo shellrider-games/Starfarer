@@ -125,6 +125,7 @@ Starfarer.start = function()
 		currentTime = time
 		delta = currentTime - lastTime
 		self.processInput
+		self.renderer.update delta
 		shipDisplay.update delta
 		playerShip.update delta
 		uiWidgets.update delta

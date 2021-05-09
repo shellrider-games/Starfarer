@@ -16,6 +16,8 @@ Item.row = 0
 // All the sprites that exist in the ship display need to have an update method
 // that takes one parameter (dt).  Item doesn't really need this, so here's a
 // do-nothing update method for it.
+// ToDo: actually, items sometimes need to lerp into position/scale, often
+// while also fading in/out.  THAT is what Item.update should do.
 Item.update = function(dt); end function
 
 // Now let's make a subclass for each of our commodity types.

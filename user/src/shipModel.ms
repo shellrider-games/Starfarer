@@ -9,15 +9,19 @@ if not globals.hasIndex("Door") then import "door"
 if not globals.hasIndex("Item") then import "item"
 if not globals.hasIndex("Character") then import "character"
 
+//----------------------------------------------------------------------
 // Wall: an ordinary wall between cells.  Considered unbreachable.
+//----------------------------------------------------------------------
 Wall = {}
 Wall.name = "wall"
 Wall.isOpen = false		// walls should ALWAYS be closed
 Wall.canOpen = false	// and cannot be opened, even by the crew
 
+//----------------------------------------------------------------------
 // Cell class: information about one map cell, including whether it is
 // walkable, what equipment or cargo is there, whether it is on fire,
 // its air quality, etc.
+//----------------------------------------------------------------------
 Cell = {}
 Cell.contents = null		// an Item instance, or null
 Cell.col = 0				// column within its ship map
@@ -42,6 +46,7 @@ end function
 
 // Cell.walkable: returns whether an agent can step into this cell.
 Cell.walkable = function()
+	//print "checking walkable at " + self.col + "," + self.row
 	return self.contents == null or not self.contents.blocksWalking
 end function
 
@@ -54,7 +59,10 @@ Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
 	return wallInDirection.isOpen or (assumeDoorsOpen and wallInDirection.canOpen)
 end function
 
+//----------------------------------------------------------------------
 // Ship: everything there is to know about a ship.
+//----------------------------------------------------------------------
+
 Ship = {}
 Ship.maxHp = 20			// hull points (basically ship health)
 Ship.hp = Ship.maxHp
@@ -62,6 +70,8 @@ Ship.jumpFuel = 5		// how many jumps we can make before refueling
 Ship.directory = null   // where is the shipdata located
 Ship.mapOffset = [0,0]  // x,y offset for map image
 Ship.minions = []		// living things on a ship
+Ship.incomingTypes = []	// list of ItemTypes bought but not yet loaded
+Ship.outgoingTypes = []	// list of ItemTypes sold but not yet unloaded
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -152,6 +162,16 @@ Ship.getFreeCargoInCells = function()
 	return result
 end function
 
+// Returns a single currently free cargo cell on the ship, if any
+Ship.getAnyFreeCargoInCell = function()
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.isFreeCargoCell(col, row) then return self.getCell(col,row)
+		end for
+	end for
+	return null
+end function
+
 Ship.getFullCargoInCells = function()
 	result = []
 	for col in self.columnRange
@@ -198,8 +218,9 @@ Ship.minionAt = function(col,row)
 end function
 
 Ship.noteItemPickedUp = function(item)
-	cell = self.getCell(item.col,item.row)
-	if cell != null then cell.contents = null
+	cell = self.getCell(item.col, item.row)
+	if cell != null and cell.contents == item then cell.contents = null
+	item.col = null; item.row = null
 end function
 
 

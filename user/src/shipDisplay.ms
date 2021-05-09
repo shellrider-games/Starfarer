@@ -129,8 +129,8 @@ Renderer.mapToScreenPosition = function(point)
 	        "y": mapStartPoint.y + y*CELLSIZE + CELLSIZE/2}
 end function
 
-Renderer.putItem = function(item, point)
-	targetCell = self.ship.getCell(point.col, point.row)
+Renderer.putItem = function(item, mapPos)
+	targetCell = self.ship.getCell(mapPos.col, mapPos.row)
 	if targetCell == null then return	// out of bounds
 	if targetCell.contents != null then return;	// already occupied
 	for col in self.ship.columnRange
@@ -143,6 +143,23 @@ Renderer.putItem = function(item, point)
 	end for
 	targetCell.contents = item
 	self.renderContents targetCell
+end function
+
+// Update just this one ship renderer.  Here we check for cargo bought/sold, etc.
+Renderer.update = function(dt = 0.1)
+	// check for new incoming types that need to be loaded onto the ship
+	if self.ship.incomingTypes then
+		// We have some incoming type -- looks like the player has bought
+		// something.  Look for an empty CARGO_IN cell to place it in.
+		cell = self.ship.getAnyFreeCargoInCell
+		if cell != null then
+			cell.placeItem new self.ship.incomingTypes.pull
+			self.renderContents cell
+		end if
+	end if
+
+	// check for outgoing types that are now satisfied
+	// (ToDo)
 end function
 
 // Update the whole ship display (and all sprites on it).
