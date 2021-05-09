@@ -125,14 +125,14 @@ end function
 Ship.isFreeCargoCell = function(col, row)
 	c = self.getCell(col, row)
 	if c == null then return false
-	return c.type == Celltype.CARGO_EXCHANGE and c.contents == null
+	return c.type == Celltype.CARGO_IN and c.contents == null
 end function
 
 // Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
 Ship.isFullCargoCell = function(col, row)
 	c = self.getCell(col, row)
 	if c == null then return false
-	return c.type == Celltype.CARGO_EXCHANGE and c.contents != null
+	return c.type == Celltype.CARGO_IN and c.contents != null
 end function
 
 Ship.isCargoOutCell = function(col, row)
@@ -142,7 +142,7 @@ Ship.isCargoOutCell = function(col, row)
 end function
 
 // Returns a list of all currently free cargo cells on the ship
-Ship.getFreeCargoExchangeCells = function()
+Ship.getFreeCargoInCells = function()
 	result = []
 	for col in self.columnRange
 		for row in self.rowRange
@@ -152,7 +152,7 @@ Ship.getFreeCargoExchangeCells = function()
 	return result
 end function
 
-Ship.getFullCargoExchangeCells = function()
+Ship.getFullCargoInCells = function()
 	result = []
 	for col in self.columnRange
 		for row in self.rowRange
@@ -174,14 +174,14 @@ end function
 
 Ship.addCargo = function(item)
 	if item isa Item then
-		freeCargoCells = self.getFreeCargoExchangeCells
+		freeCargoCells = self.getFreeCargoInCells
 		if freeCargoCells.len > 0 then freeCargoCells[0].placeItem item
 	end if
 end function
 
 Ship.removeCargo = function()
 	removedItem = null
-	fullCargoCells = self.getFullCargoExchangeCells
+	fullCargoCells = self.getFullCargoInCells
 	if fullCargoCells.len > 0 then
 		removedItem = fullCargoCells[0].contents
 		fullCargoCells[0].contents = null
@@ -336,8 +336,10 @@ Ship.draw = function()
 				gfx.line x+2, y+2, x+CELLSIZE-4, y+CELLSIZE-4, color.gray
 				gfx.line x+2, y+CELLSIZE-4, x+CELLSIZE-4, y+2, color.gray
 			else
-				if cell.type == Celltype.CARGO_EXCHANGE then 
+				if cell.type == Celltype.CARGO_IN then 
 					cellcolor = color.lime
+				else if cell.type == Celltype.CARGO_OUT then
+					cellcolor = color.orange
 				else
 					cellcolor = "#EEEEEE"
 				end if
@@ -370,27 +372,27 @@ demo = function()
 	ship.draw
 	print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
 	print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
-	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
 	ship.addCargo(new Item)
 	ship.draw
-	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
 	ship.addCargo(new Item)
 	ship.draw
-	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
 	ship.addCargo(new Item)
 	ship.draw
-	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
 	ship.removeCargo
 	ship.draw
-	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
 	ship.removeCargo
 	ship.draw
-	print "Free Cargo cells: " + ship.getFreeCargoExchangeCells.len
+	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 end function
 
 runUnitTests = function()
@@ -532,7 +534,7 @@ runUnitTests = function()
 	setupTestShipWithRoom
 	qa.assertEqual testShip.isFreeCargoCell(0,0) , false
 	qa.assertEqual testShip.isFullCargoCell(0,0) , false
-	testShip.getCell(0,0).type = Celltype.CARGO_EXCHANGE
+	testShip.getCell(0,0).type = Celltype.CARGO_IN
 	qa.assertEqual testShip.isFreeCargoCell(0,0) , true
 	qa.assertEqual testShip.isFullCargoCell(0,0) , false
 	testShip.getCell(0,0).contents = new Item
@@ -540,16 +542,16 @@ runUnitTests = function()
 	qa.assertEqual testShip.isFullCargoCell(0,0) , true
 
 	setupTestShipWithRoom
-	testShip.getCell(0,0).type = Celltype.CARGO_EXCHANGE
-	testShip.getCell(0,1).type = Celltype.CARGO_EXCHANGE
-	qa.assertEqual testShip.getFreeCargoExchangeCells, [testShip.getCell(0,0),testShip.getCell(0,1)]
-	qa.assertEqual testShip.getFullCargoExchangeCells, []
+	testShip.getCell(0,0).type = Celltype.CARGO_IN
+	testShip.getCell(0,1).type = Celltype.CARGO_IN
+	qa.assertEqual testShip.getFreeCargoInCells, [testShip.getCell(0,0),testShip.getCell(0,1)]
+	qa.assertEqual testShip.getFullCargoInCells, []
 	testShip.addCargo(new Item)
-	qa.assertEqual testShip.getFreeCargoExchangeCells, [testShip.getCell(0,1)]
-	qa.assertEqual testShip.getFullCargoExchangeCells, [testShip.getCell(0,0)]
+	qa.assertEqual testShip.getFreeCargoInCells, [testShip.getCell(0,1)]
+	qa.assertEqual testShip.getFullCargoInCells, [testShip.getCell(0,0)]
 	testShip.removeCargo
-	qa.assertEqual testShip.getFreeCargoExchangeCells, [testShip.getCell(0,0),testShip.getCell(0,1)]
-	qa.assertEqual testShip.getFullCargoExchangeCells, []
+	qa.assertEqual testShip.getFreeCargoInCells, [testShip.getCell(0,0),testShip.getCell(0,1)]
+	qa.assertEqual testShip.getFullCargoInCells, []
 
 	setupTestShipWithRoom
 	testCharacter = new character.Character
