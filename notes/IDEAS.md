@@ -21,3 +21,5 @@ This document is a place to jot down ideas that may not be fully fleshed out, or
 # Ship Equipment/Features
 
 * **Secret Compartments**: there are (somewhat shady) places that can add small rooms to your ship behind a secret door which is ignored by boarders.  You can use these to smuggle goods or hide crewmembers.  However, such secret compartments reduce your ship's maximum hull points.
+
+* **Jump Distance**: it might be nice if there are different classes/qualities of hyperdrive engines, which control how far you can jump.  A minimal hyperdrive lets you only jump between close systems; a better one lets you make bigger jumps.  Bigger jumps could let you reach systems that are otherwise unreachable, or in a crowded part of the map, maybe skip some intermediate jumps and get where you're going in one step.
