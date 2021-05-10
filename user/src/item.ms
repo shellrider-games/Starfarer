@@ -4,6 +4,7 @@
 // It is both model and view: that is, it contains the data which is part
 // of a shipModel, but it's also a Sprite that can be loaded by shipDisplay.
 
+if not globals.hasIndex("spriteUtil") then import "spriteUtil"
 
 // Item (sprite subclass)
 Item = new Sprite
@@ -12,13 +13,38 @@ Item.name = "item"
 Item.blocksWalking = true
 Item.col = 0
 Item.row = 0
+Item.lerper = null	// a SpriteLerper instance, when needed
 
-// All the sprites that exist in the ship display need to have an update method
-// that takes one parameter (dt).  Item doesn't really need this, so here's a
-// do-nothing update method for it.
-// ToDo: actually, items sometimes need to lerp into position/scale, often
-// while also fading in/out.  THAT is what Item.update should do.
-Item.update = function(dt); end function
+Item.update = function(dt)
+	if self.lerper == null then return
+	self.lerper.apply self
+	if self.lerper.isDone then self.lerper = null
+end function
+
+Item.fadeIn = function(dx = -16, dy = 0)
+	self.lerper = new spriteUtil.SpriteLerper
+	self.lerper.init self
+	self.x = self.x + dx; self.y = self.y + dy
+	self.lerper.startPos.x = self.x
+	self.lerper.startPos.y = self.y
+	self.lerper.fadeIn = true
+end function
+
+Item.fadeOut = function(dx = 16, dy = 0)
+	self.lerper = new spriteUtil.SpriteLerper
+	self.lerper.init self
+	self.lerper.endPos.x = self.x + dx
+	self.lerper.endPos.y = self.y + dy
+	self.lerper.fadeOut = true
+end function
+
+Item.lerpTo = function(screenPos, scale=null, duration=0.5)
+	self.lerper = new spriteUtil.SpriteLerper
+	self.lerper.init self
+	self.lerper.duration = duration
+	self.lerper.endPos = screenPos
+	if scale != null then self.lerper.endScale = scale
+end function
 
 // Now let's make a subclass for each of our commodity types.
 FoodItem = new Item

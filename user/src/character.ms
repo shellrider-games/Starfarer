@@ -143,21 +143,22 @@ Character.update = function(dt=0.1)
 	end if
 
 	self.updateAnimation dt
-		
-	// if carrying an item, update its position relative to this character
-	if self.carrying then
-		self.carrying.scale = 0.75
-		dist = CELLSIZE * 0.4
-		self.carrying.x = self.x + dist * constants.dx(self.facing)
-		self.carrying.y = self.y + dist * constants.dy(self.facing)
-		myIdx = disp.shipSprites.sprites.indexOf(self)
-		if self.facing == NORTH then
-			// position item just under the character
-			self.carrying.positionAtIndex disp.shipSprites, myIdx-1
-		else
-			// position item just on top of the character
-			self.carrying.positionAtIndex disp.shipSprites, myIdx+1
-		end if
+	self.updateCarriedItem
+end function
+
+Character.updateCarriedItem = function()
+	if not self.carrying then return
+	self.carrying.scale = 0.75
+	dist = CELLSIZE * 0.4
+	self.carrying.x = self.x + dist * constants.dx(self.facing)
+	self.carrying.y = self.y + dist * constants.dy(self.facing)
+	myIdx = disp.shipSprites.sprites.indexOf(self)
+	if self.facing == NORTH then
+		// position item just under the character
+		self.carrying.positionAtIndex disp.shipSprites, myIdx-1
+	else
+		// position item just on top of the character
+		self.carrying.positionAtIndex disp.shipSprites, myIdx+1
 	end if
 end function
 
@@ -184,6 +185,7 @@ Character.pickUp = function(item)
 		cell.contents = item
 		return
 	end if
+	// Close enough; let's pick it up now.
 	self.turnToFaceScreenPos item
 	self.carrying = item
 	disp.shipSprites.sprites.removeVal item
@@ -209,9 +211,11 @@ Character.dropItem = function(onPos)
 		return
 	end if
 	
-	item.scale = 1
-	xy = renderer.mapToScreenPosition(onPos)
-	item.x = xy.x; item.y = xy.y
+	// Close enough; let's put it down now.
+	dropScreenPos = renderer.mapToScreenPosition(onPos)
+	self.turnToFaceScreenPos renderer.mapToScreenPosition(onPos)
+	self.updateCarriedItem
+	item.lerpTo dropScreenPos, 1, 0.25
 	self.ship.map[col][row].placeItem item
 
 	self.turnToFaceScreenPos item

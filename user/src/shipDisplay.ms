@@ -155,11 +155,19 @@ Renderer.update = function(dt = 0.1)
 		if cell != null then
 			cell.placeItem new self.ship.incomingTypes.pull
 			self.renderContents cell
+			cell.contents.fadeIn
 		end if
 	end if
 
 	// check for outgoing types that are now satisfied
-	// (ToDo)
+	for cell in self.ship.getCargoOutCells
+		if cell.contents == null or cell.contents.lerper then continue
+		// For now, we'll assume anything we find here is valid and should go out.
+		// ToDo: decide what to do here.  Auto-sell it, maybe?
+		item = cell.contents
+		cell.contents = null
+		item.fadeOut 16, 0
+	end for
 end function
 
 // Update the whole ship display (and all sprites on it).
