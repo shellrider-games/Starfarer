@@ -18,8 +18,12 @@ constants.runUnitTests
 print "Run tests for charAI.ms"
 import "charAI"
 charAI.runUnitTests
-print "Run tests fo uiWidgets.ms"
+print "Run tests for uiWidgets.ms"
 import "uiWidgets"
 uiWidgets.runUnitTests
+print "Run tests for stationModel.ms"
+import "stationModel"
+stationModel.runUnitTests
+
 
 print "RAN ALL TESTS"
