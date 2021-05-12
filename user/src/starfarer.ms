@@ -33,6 +33,7 @@ Starfarer.init = function()
 	self.renderer.renderShip playerShip
 	globals.renderer = self.renderer
 	
+	//setup station
 	station = new stationModel.Station
 	station.name = "SUPER COOL SPACE STATION - 7"
 	station.addCommodityToMarket "Food", 80, 50, item.FoodItem
