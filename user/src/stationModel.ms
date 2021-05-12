@@ -3,6 +3,7 @@ if not globals.hasIndex("qa") then import "qa"
 defaultCrateImage = file.loadImage("/usr/pics/crate_blank.png")
 
 Station = {}
+Station.name = "DEFAULT NAME"
 Station.market = []
 
 Commodity = {}
@@ -26,5 +27,4 @@ runUnitTests = function()
 	qa.assertEqual testCommodity, {"__isa":{"name":"DEFAULT NAME","buyPrice":0,"sellPrice":0,"image":defaultCrateImage}}
 	testStation.addCommodityToMarket("Water", 120, 100)
 	qa.assertEqual testStation.market, [{"__isa": {"name":"DEFAULT NAME","buyPrice":0,"sellPrice":0,"image":defaultCrateImage},"name":"Water","buyPrice":120,"sellPrice":100}]
-
 end function
