@@ -1,8 +1,6 @@
 if not globals.hasIndex("qa") then import "qa"
 if not globals.hasIndex("item") then import "item"
 
-defaultCrateImage = file.loadImage("/usr/pics/crate_blank.png")
-
 Station = {}
 Station.name = "DEFAULT NAME"
 Station.market = []
