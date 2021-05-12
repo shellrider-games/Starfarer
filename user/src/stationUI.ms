@@ -39,6 +39,26 @@ show = function(left=550, bottom=150, width=350, height=400)
 	
 end function
 
+// Draw station UI according to station model
+showStation = function(station,left=550, bottom=150, width=350, height=400)
+	right = left + width
+	top = bottom + height
+	
+	outer.background = new Panel
+	background.init left, bottom, width, height, "background", load9SliceImage("panel")
+	background.draw
+	
+	font = fonts.ArialBlack14
+	font.setColor color.black
+	font.print station.name + " : MARKET", left+4, top-14
+	
+	y = top - 60
+
+	for commodity in station.market
+		y = y - 40
+		addCommodity left, y, width, 40, commodity.item, commodity.buyPrice, commodity.sellPrice 
+	end for
+end function
 
 // Add a row of widgets for one market commodity.
 addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPrice)

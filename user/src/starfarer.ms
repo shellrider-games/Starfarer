@@ -7,6 +7,7 @@ import "constants"
 import "setup"
 import "item"
 import "shipModel"
+import "stationModel"
 import "shipDisplay"
 import "character"
 import "pathfinding"
@@ -32,7 +33,14 @@ Starfarer.init = function()
 	self.renderer.renderShip playerShip
 	globals.renderer = self.renderer
 	
-	stationUI.show
+	station = new stationModel.Station
+	station.name = "SUPER COOL SPACE STATION - 7"
+	station.addCommodityToMarket "Food", 80, 50, item.FoodItem
+	station.addCommodityToMarket "Water", 120, 100, item.WaterItem
+	station.addCommodityToMarket "Medicine", 200, 150, item.MedsItem
+	station.addCommodityToMarket "Guns", 300, 200, item.GunsItem
+
+	stationUI.showStation(station)
 
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
