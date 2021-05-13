@@ -13,17 +13,18 @@ Station.init = function(name)
 end function
 
 Commodity = {}
-Commodity.name = "DEFAULT NAME"
+Commodity.itemType = null // an Item subclass defining the commodity type
 Commodity.buyPrice = 0
 Commodity.sellPrice = 0
-Commodity.item = null // an Item subclass defining the commodity type
+Commodity.name = function()
+	return item.name
+end function
 
-Station.addCommodityToMarket = function(name, buyPrice, sellPrice, item = null)
+Station.addCommodityToMarket = function(itemType, buyPrice, sellPrice)
 	temporaryCommodity = new Commodity
-	temporaryCommodity.name = name
+	temporaryCommodity.itemType = itemType
 	temporaryCommodity.buyPrice = buyPrice
 	temporaryCommodity.sellPrice = sellPrice
-	if item != null then temporaryCommodity.item = item
 	qa.assert self.market isa list
 	self.market.push temporaryCommodity
 end function
@@ -45,8 +46,9 @@ runUnitTests = function()
 	testCommodity = new Commodity
 	testItem = new item.Item
 	qa.assert testCommodity isa Commodity
-	testStation.addCommodityToMarket "Water", 120, 100
+	testStation.addCommodityToMarket item.WaterItem, 120, 100
 	qa.assertEqual testStation.market.len, 1
+	qa.assertEqual testStation.market[0].name, "Water"
 	qa.assertEqual testStation.market[0].buyPrice, 120
 	qa.assertEqual testStation.market[0].sellPrice, 100
 

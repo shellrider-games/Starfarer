@@ -35,14 +35,14 @@ Starfarer.init = function()
 	
 	//setup station
 	station = new stationModel.Station
-	station.name = "SUPER COOL SPACE STATION - 7"
-	station.addCommodityToMarket "Food", 80, 50, item.FoodItem
-	station.addCommodityToMarket "Water", 120, 100, item.WaterItem
-	station.addCommodityToMarket "Medicine", 200, 150, item.MedsItem
-	station.addCommodityToMarket "Guns", 300, 200, item.GunsItem
-
-	stationUI.showStation(station)
-
+	station.init "SUPER COOL SPACE STATION - 7"
+	station.addCommodityToMarket item.FoodItem, 80, 50
+	station.addCommodityToMarket item.WaterItem, 120, 100
+	station.addCommodityToMarket item.MedsItem, 200, 150
+	station.addCommodityToMarket item.GunsItem, 300, 200
+	
+	stationUI.showStation station
+	
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
 end function

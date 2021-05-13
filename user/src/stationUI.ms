@@ -56,7 +56,7 @@ showStation = function(station,left=550, bottom=150, width=350, height=400)
 
 	for commodity in station.market
 		y = y - 40
-		addCommodity left, y, width, 40, commodity.item, commodity.buyPrice, commodity.sellPrice 
+		addCommodity left, y, width, 40, commodity.itemType, commodity.buyPrice, commodity.sellPrice 
 	end for
 end function
 
