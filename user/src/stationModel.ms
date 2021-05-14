@@ -6,10 +6,14 @@ if not globals.hasIndex("item") then import "item"
 Station = {}
 Station.name = "DEFAULT NAME"
 Station.market = null		// a list of Commodity instances
+Station.x = null
+Station.y = null
 
 Station.init = function(name, x = floor(rnd * 100), y = floor(rnd * 100))
 	self.name = name
 	self.market = []
+	self.x = x
+	self.y = y
 end function
 
 Commodity = {}
@@ -43,8 +47,10 @@ runUnitTests = function()
 	qa.assertEqual testStation.market[0].sellPrice, 100
 
 	otherTestStation = new Station
-	otherTestStation.init "Station 2"
+	otherTestStation.init "Station 2", 10, 10
 	qa.assertEqual otherTestStation.market, []
+	qa.assertEqual otherTestStation.x, 10
+	qa.assertEqual otherTestStation.y, 10
 
 end function
 
