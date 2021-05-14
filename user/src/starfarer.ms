@@ -41,7 +41,7 @@ Starfarer.init = function()
 	station.addCommodityToMarket item.MedsItem, 200, 150
 	station.addCommodityToMarket item.GunsItem, 300, 200
 	
-	stationUI.showStation station
+	stationUI.show station
 	
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false

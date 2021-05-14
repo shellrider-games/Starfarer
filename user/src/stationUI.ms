@@ -6,6 +6,7 @@ import "stringUtil"
 import "qa"
 if not globals.hasIndex("uiWidgets") then import "uiWidgets"
 if not globals.hasIndex("item") then import "item"
+if not globals.hasIndex("stationModel") then import "stationModel"
 
 // Import the widget classes directly into this module for more readable code:
 for idx in uiWidgets.indexes
@@ -15,32 +16,9 @@ for idx in uiWidgets.indexes
 end for
 
 // Setup/draw the station UI.
-show = function(left=550, bottom=150, width=350, height=400)
-	right = left + width
-	top = bottom + height
-	
-	outer.background = new Panel
-	background.init left, bottom, width, height, "background", load9SliceImage("panel")
-	background.draw
-	
-	font = fonts.ArialBlack14
-	font.setColor color.black
-	font.print "Antares Station : MARKET", left+4, top-14
-		
-	y = top - 60
-	addCommodity left, y-40, width, 40, item.FoodItem, 84, 50
-	y = y - 40
-	addCommodity left, y-40, width, 40, item.WaterItem, 42, 15
-	y = y - 40
-	addCommodity left, y-40, width, 40, item.MedsItem, 532, 284
-	y = y - 40
-	addCommodity left, y-40, width, 40, item.GunsItem, 320, 193
-	y = y - 40
-	
-end function
 
 // Draw station UI according to station model
-showStation = function(station,left=550, bottom=150, width=350, height=400)
+show = function(station,left=550, bottom=150, width=350, height=400)
 	right = left + width
 	top = bottom + height
 	
@@ -104,7 +82,14 @@ demo = function()
 	disp.uiSprites.clear
 	text.clear
 
-	show
+	station = new stationModel.Station
+	station.init "SUPER COOL SPACE STATION - 7"
+	station.addCommodityToMarket item.FoodItem, 80, 50
+	station.addCommodityToMarket item.WaterItem, 120, 100
+	station.addCommodityToMarket item.MedsItem, 200, 150
+	station.addCommodityToMarket item.GunsItem, 300, 200
+
+	show station
 
 	while not key.pressed("escape")
 		uiWidgets.update 1/60
