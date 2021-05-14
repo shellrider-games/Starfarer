@@ -22,6 +22,7 @@ end for
 print
 print
 print "enter 'q' to exit launcher"
+print "enter 'u' to run unitTests"
 print "enter a number to launch the module"
 
 mainLoop = function()
@@ -30,6 +31,8 @@ mainLoop = function()
 		if inp == "q" then
 			cd
 			exit
+		else if inp == "u" then 
+			reset; load "/usr/test/runTests.ms"; run
 		else if moduleMap.hasIndex(inp) then
 			choice = moduleMap[inp]
 			reset; load choice; run
