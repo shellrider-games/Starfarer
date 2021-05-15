@@ -304,18 +304,19 @@ end function
 //----------------------------------------------------------------------
 
 LineEdit = new Widget
-LineEdit.font = "Arial14"
+LineEdit.font = fonts.ArialBlack14
 LineEdit.text = ""
 LineEdit.backColor = color.clear
 LineEdit.activeBackColor = color.white
 LineEdit.color = color.gray
-LineEdit.alignment = ALIGNLEFT
-LineEdit.active = false 
+LineEdit.active = false
+LineEdit.pointer = 0
+LineEdit.label = new Label
 
 
-LineEdit.init = function(left, bottom, width, height, align=ALIGNLEFT)
-	super.init left, bottom, width, height
-	self.alignment = align
+LineEdit.init = function(left, bottom, width, align=ALIGNLEFT)
+	super.init left, bottom, width, 22
+	self.label.init(left+2, bottom+2, width-2, 20, self.text, align)
 end function
 
 LineEdit.draw = function()
@@ -328,6 +329,7 @@ LineEdit.draw = function()
 	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, self.bounds.y-self.bounds.height/2, self.bounds.width, self.bounds.height
 	disp.uiPixel.color = self.color
 	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, self.bounds.y-self.bounds.height/2, self.bounds.width, 2
+	self.label.setText self.text
 	disp.uiPixel.color = tempColor
 end function
 
@@ -335,11 +337,38 @@ LineEdit.update = function(dt = 0.1)
 	if mouseDown then
 		previousActiveState = self.active
 		if self.contains(mouse) then
+			self.pointer = 0
+			self.text = ""
 			self.active = true
 		else
 			self.active = false
 		end if
-		if previousActiveState != self.active then self.redraw
+		if previousActiveState != self.active then 
+			self.redraw
+			self.label.redraw
+		end if
+	end if
+	if self.active then
+		while key.available
+			tempKey = key.get
+			if tempKey == char(17) and self.pointer < self.text.len then
+				self.pointer = self.pointer + 1
+			else if tempKey == char(18) and self.pointer > 0 then
+				self.pointer = self.pointer - 1
+			else if tempKey == char(10) then
+				self.active = false
+				self.redraw
+				self.label.redraw
+			//else if tempKey == char(8) then
+			//	self.text = self.text[0:self.text.len-self.pointer-1] + self.text[self.text.len-self.pointer:self.text.len-1]
+			//	self.redraw
+			//	self.label.redraw
+			else if tempKey >= " " and tempKey < char(127) then
+				self.text = self.text.insert(self.text.len - self.pointer, tempKey)
+				self.label.text = self.text
+				self.label.redraw
+			end if
+		end while
 	end if
 end function
 
