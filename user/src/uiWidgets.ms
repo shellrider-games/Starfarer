@@ -347,6 +347,7 @@ LineEdit.update = function(dt = 0.1)
 			self.active = false
 		end if
 		if previousActiveState != self.active then 
+			key.clear
 			self.redraw
 			self.label.redraw
 		end if
@@ -362,10 +363,10 @@ LineEdit.update = function(dt = 0.1)
 				self.active = false
 				self.redraw
 				self.label.redraw
-			//else if tempKey == char(8) then
-			//	self.text = self.text[0:self.text.len-self.pointer-1] + self.text[self.text.len-self.pointer:self.text.len-1]
-			//	self.redraw
-			//	self.label.redraw
+			else if tempKey == char(8) then //char(8) = backspace
+				self.text = self.text[0:self.text.len-1-self.pointer] + self.text[self.text.len-self.pointer:self.text.len]
+				self.redraw
+				self.label.redraw
 			else if tempKey >= " " and tempKey < char(127) and self.text.len <= self.maxTextLength then
 				self.text = self.text.insert(self.text.len - self.pointer, tempKey)
 				self.label.text = self.text
