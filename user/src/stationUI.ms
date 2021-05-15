@@ -36,6 +36,17 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 		y = y - 40
 		addCommodity left, y, width, 40, commodity.itemType, commodity.buyPrice, commodity.sellPrice 
 	end for
+	
+	// navigation (depart/jump) button
+	outer.navBtn = new Button
+	navBtn.init 900, 610, 60, 30, "NAV"
+	navBtn.backColor = color.black
+	navBtn.start
+	
+end function
+
+hide = function()
+	uiWidgets.clearAll
 end function
 
 // Add a row of widgets for one market commodity.

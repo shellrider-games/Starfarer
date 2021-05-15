@@ -13,6 +13,7 @@ import "character"
 import "pathfinding"
 import "uiWidgets"
 import "stationUI"
+import "starmap"
 
 Starfarer = {}
 
@@ -42,6 +43,7 @@ Starfarer.init = function()
 	station.addCommodityToMarket item.GunsItem, 300, 200
 	
 	stationUI.show station
+	stationUI.navBtn.action = @Starfarer.showNavScreen
 	
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
@@ -51,6 +53,11 @@ end function
 Starfarer.cleanup = function()
 	clear
 	key.clear
+end function
+
+Starfarer.showNavScreen = function()
+	stationUI.hide
+	starmap.draw
 end function
 
 Starfarer.selectedMinion = []
@@ -101,13 +108,10 @@ Starfarer.handlePrimaryClick = function(pos)
 end function
 
 Starfarer.handleSecondaryClick = function(pos)
-	mapPos = self.renderer.screenToMapPosition(pos)
-	if playerShip.walkable([mapPos.col,mapPos.row]) then
-		for minion in self.selectedMinion
-			minion.path = pathfinding.findPath(playerShip, minion, mapPos)
-		end for	
-	end if
+	// Right-click not currently used.
 end function
+
+
 
 // Process all available input
 Starfarer.processInput = function()
@@ -126,22 +130,22 @@ Starfarer.processInput = function()
 end function
 
 // Start Game/Main loop
-Starfarer.start = function()
+Starfarer.run = function()
 	//Main Loop
 	currentTime = time
 	while true
 		lastTime = currentTime
 		currentTime = time
-		delta = currentTime - lastTime
+		deltaTime = currentTime - lastTime
 		self.processInput
-		self.renderer.update delta
-		shipDisplay.update delta
-		playerShip.update delta
-		uiWidgets.update delta
+		self.renderer.update deltaTime
+		shipDisplay.update deltaTime
+		playerShip.update deltaTime
+		uiWidgets.update deltaTime
 		yield
 	end while
 end function
 
 game = new Starfarer
 game.init
-game.start
+game.run

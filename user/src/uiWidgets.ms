@@ -31,6 +31,12 @@ load9SliceImage = function(name, left=12, bottom=12, right=12, top=12)
 	return Image9Slice.make(img, left, bottom, right, top)
 end function
 
+// clearAll: clear all widgets (and the entire uiPixel display).
+clearAll = function()
+	disp.uiPixel.clear color.clear
+	outer._allWidgets = []
+end function
+
 
 //----------------------------------------------------------------------
 // Image9Slice class: an image wrapper with margins that are not stretched,
