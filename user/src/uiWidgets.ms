@@ -307,8 +307,10 @@ LineEdit = new Widget
 LineEdit.font = "Arial14"
 LineEdit.text = ""
 LineEdit.backColor = color.clear
+LineEdit.activeBackColor = color.white
 LineEdit.color = color.gray
 LineEdit.alignment = ALIGNLEFT
+LineEdit.active = false 
 
 
 LineEdit.init = function(left, bottom, width, height, align=ALIGNLEFT)
@@ -318,11 +320,27 @@ end function
 
 LineEdit.draw = function()
 	tempColor = disp.uiPixel.color
-	disp.uiPixel.color = self.backColor
-	disp.uiPixel.fillRect self.bounds.x, self.bounds.y, self.bounds.width, self.bounds.height
+	if self.active then
+		disp.uiPixel.color = self.activeBackColor
+	else
+		disp.uiPixel.color = self.backColor
+	end if
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, self.bounds.y-self.bounds.height/2, self.bounds.width, self.bounds.height
 	disp.uiPixel.color = self.color
-	disp.uiPixel.fillRect self.bounds.x, self.bounds.y, self.bounds.width, 2
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, self.bounds.y-self.bounds.height/2, self.bounds.width, 2
 	disp.uiPixel.color = tempColor
+end function
+
+LineEdit.update = function(dt = 0.1)
+	if mouseDown then
+		previousActiveState = self.active
+		if self.contains(mouse) then
+			self.active = true
+		else
+			self.active = false
+		end if
+		if previousActiveState != self.active then self.redraw
+	end if
 end function
 
 //----------------------------------------------------------------------
@@ -385,7 +403,7 @@ demo = function()
 	lineInput = new LineEdit
 	lineInput.init 80, 400, 60, 20
 //	lineInput.backColor = color.white  //Demonstrates background color option
-	lineInput.draw
+	lineInput.start
 
 	while not key.pressed("escape")
 		update 1/60
