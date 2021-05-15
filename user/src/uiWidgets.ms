@@ -306,6 +306,7 @@ end function
 LineEdit = new Widget
 LineEdit.font = "Arial14"
 LineEdit.text = ""
+LineEdit.backColor = color.clear
 LineEdit.color = color.gray
 LineEdit.alignment = ALIGNLEFT
 
@@ -317,6 +318,8 @@ end function
 
 LineEdit.draw = function()
 	tempColor = disp.uiPixel.color
+	disp.uiPixel.color = self.backColor
+	disp.uiPixel.fillRect self.bounds.x, self.bounds.y, self.bounds.width, self.bounds.height
 	disp.uiPixel.color = self.color
 	disp.uiPixel.fillRect self.bounds.x, self.bounds.y, self.bounds.width, 2
 	disp.uiPixel.color = tempColor
@@ -381,6 +384,7 @@ demo = function()
 	
 	lineInput = new LineEdit
 	lineInput.init 80, 400, 60, 20
+//	lineInput.backColor = color.white  //Demonstrates background color option
 	lineInput.draw
 
 	while not key.pressed("escape")
