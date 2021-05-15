@@ -402,7 +402,6 @@ demo = function()
 	
 	lineInput = new LineEdit
 	lineInput.init 80, 400, 60, 20
-//	lineInput.backColor = color.white  //Demonstrates background color option
 	lineInput.start
 
 	while not key.pressed("escape")
