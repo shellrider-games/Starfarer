@@ -311,12 +311,15 @@ LineEdit.activeBackColor = color.white
 LineEdit.color = color.gray
 LineEdit.active = false
 LineEdit.pointer = 0
+LineEdit.maxTextLength = 0
 LineEdit.label = new Label
 
 
 LineEdit.init = function(left, bottom, width, align=ALIGNLEFT)
 	super.init left, bottom, width, 22
 	self.label.init(left+2, bottom+2, width-2, 20, self.text, align)
+	self.label.font = self.font
+	self.maxTextLength = floor((width-2)/self.font.width("m"))
 end function
 
 LineEdit.draw = function()
@@ -363,7 +366,7 @@ LineEdit.update = function(dt = 0.1)
 			//	self.text = self.text[0:self.text.len-self.pointer-1] + self.text[self.text.len-self.pointer:self.text.len-1]
 			//	self.redraw
 			//	self.label.redraw
-			else if tempKey >= " " and tempKey < char(127) then
+			else if tempKey >= " " and tempKey < char(127) and self.text.len <= self.maxTextLength then
 				self.text = self.text.insert(self.text.len - self.pointer, tempKey)
 				self.label.text = self.text
 				self.label.redraw
