@@ -8,6 +8,14 @@ if not globals.hasIndex("disp") then import "setup"
 if not globals.hasIndex("qa") then import "qa"
 
 //----------------------------------------------------------------------
+// Constants
+//----------------------------------------------------------------------
+
+ALIGNLEFT = 0
+ALIGNCENTER = 1
+ALIGNRIGHT = 2
+
+//----------------------------------------------------------------------
 // General utility methods
 //----------------------------------------------------------------------
 
@@ -196,12 +204,9 @@ Label = new Widget
 Label.text = "Label"
 Label.color = color.gray
 Label.font = fonts.ArialBlack14
-Label.ALIGNLEFT = 0
-Label.ALIGNCENTER = 1
-Label.ALIGNRIGHT = 2
-Label.alignment = Label.ALIGNLEFT
+Label.alignment = ALIGNLEFT
 
-Label.init = function(left, bottom, width, height, text="", align=Label.ALIGNLEFT)
+Label.init = function(left, bottom, width, height, text="", align=ALIGNLEFT)
 	super.init left, bottom, width, height, text
 	self.text = text
 	self.alignment = align
@@ -211,9 +216,9 @@ Label.draw = function()
 	w = self.font.width(self.text)
 	y = self.bounds.y - 5
 	self.font.setColor self.color
-	if self.alignment == Label.ALIGNRIGHT then
+	if self.alignment == ALIGNRIGHT then
 		self.font.print self.text, self.right - w, y
-	else if self.alignment == Label.ALIGNCENTER then
+	else if self.alignment == ALIGNCENTER then
 		self.font.print self.text, self.bounds.x - w/2, y
 	else
 		self.font.print self.text, self.left, y
@@ -295,6 +300,29 @@ Button.update = function(dt = 0.1)
 end function
 
 //----------------------------------------------------------------------
+// LineEdit: Represents a line tall input field
+//----------------------------------------------------------------------
+
+LineEdit = new Widget
+LineEdit.font = "Arial14"
+LineEdit.text = ""
+LineEdit.color = color.gray
+LineEdit.alignment = ALIGNLEFT
+
+
+LineEdit.init = function(left, bottom, width, height, align=ALIGNLEFT)
+	super.init left, bottom, width, height
+	self.alignment = align
+end function
+
+LineEdit.draw = function()
+	tempColor = disp.uiPixel.color
+	disp.uiPixel.color = self.color
+	disp.uiPixel.fillRect self.bounds.x, self.bounds.y, self.bounds.width, 2
+	disp.uiPixel.color = tempColor
+end function
+
+//----------------------------------------------------------------------
 // Main update function: must be called periodically for proper function.
 //----------------------------------------------------------------------
 
@@ -330,7 +358,7 @@ demo = function()
 	btn.start
 	
 	lab1 = new Label
-	lab1.init 800, 500, 100, 30, "Centered", Label.ALIGNCENTER
+	lab1.init 800, 500, 100, 30, "Centered", ALIGNCENTER
 	lab1.draw
 	
 	lab2 = new Label
@@ -338,11 +366,11 @@ demo = function()
 	lab2.draw
 	
 	lab3 = new Label
-	lab3.init 800, 480, 100, 20, "Right", Label.ALIGNRIGHT
+	lab3.init 800, 480, 100, 20, "Right", ALIGNRIGHT
 	lab3.draw
 	
 	clock = new Label
-	clock.init 900, 620, 60, 20, "Clock", Label.ALIGNRIGHT
+	clock.init 900, 620, 60, 20, "Clock", ALIGNRIGHT
 	clock.color = color.aqua; clock.backColor = color.black
 	clock.text = "0:00"
 	clock.start
@@ -351,6 +379,10 @@ demo = function()
 		self.setText floor(t/60) + ":" + ("00" + (t%60))[-2:]
 	end function
 	
+	lineInput = new LineEdit
+	lineInput.init 80, 400, 60, 20
+	lineInput.draw
+
 	while not key.pressed("escape")
 		update 1/60
 		yield
