@@ -351,11 +351,11 @@ LineEdit.update = function(dt = 0.1)
 	if self.active then
 		while key.available
 			tempKey = key.get
-			if tempKey == char(17) and self.pointer < self.text.len then
+			if tempKey == char(17) and self.pointer < self.text.len then //char(17) = left arrow
 				self.pointer = self.pointer + 1
-			else if tempKey == char(18) and self.pointer > 0 then
+			else if tempKey == char(18) and self.pointer > 0 then //char(18) = right arrow
 				self.pointer = self.pointer - 1
-			else if tempKey == char(10) then
+			else if tempKey == char(10) then //char(10) = enter
 				self.active = false
 				self.redraw
 				self.label.redraw
