@@ -7,6 +7,7 @@ import "qa"
 if not globals.hasIndex("uiWidgets") then import "uiWidgets"
 if not globals.hasIndex("item") then import "item"
 if not globals.hasIndex("stationModel") then import "stationModel"
+if not globals.hasIndex("crewStatistics") then import "crewStatistics"
 
 // Import the widget classes directly into this module for more readable code:
 for idx in uiWidgets.indexes
