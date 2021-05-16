@@ -238,6 +238,31 @@ Label.setText = function(s)
 end function
 
 //----------------------------------------------------------------------
+// Bar: a simple bar that has a value between 0 and 1 and is filled that much
+//----------------------------------------------------------------------
+
+Bar = new Widget
+Bar.color = color.gray
+Bar.value = 0.5
+
+Bar.draw = function()
+	tempColor = disp.uiPixel.color
+	disp.uiPixel.color = self.color
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, self.bounds.y-self.bounds.height/2, self.bounds.width, self.bounds.height
+	disp.uiPixel.color = color.clear
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+2, self.bounds.y-self.bounds.height/2+2, self.bounds.width-4, self.bounds.height-4
+	disp.uiPixel.color = self.color
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+4, self.bounds.y-self.bounds.height/2+4, (self.bounds.width-8)*self.value, self.bounds.height-8
+	disp.uiPixel.color = self.color
+end function
+
+Bar.setValue = function(value)
+	qa.assert(value >= 0 and value <= 1)
+	self.value = value
+	self.redraw
+end function
+
+//----------------------------------------------------------------------
 // Button: represents a push button.
 //----------------------------------------------------------------------
 Button = new Widget
@@ -440,8 +465,15 @@ demo = function()
 	lineInput.init 80, 400, 60, 20
 	lineInput.start
 
+	bar = new Bar
+	bar.init 80, 600, 160, 20
+	bar.draw
+
+	
+
 	while not key.pressed("escape")
 		update 1/60
+		bar.setValue((bar.value+0.0015)%1)
 		yield
 	end while
 	key.clear
