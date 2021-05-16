@@ -325,7 +325,7 @@ LineEdit.init = function(left, bottom, width, align=ALIGNLEFT)
 	super.init left, bottom, width, 22
 	self.label.init(left+2, bottom+2, width-2, 20, self.text, align)
 	self.label.font = self.font
-	self.maxTextLength = floor((width-2)/self.font.width("m"))
+	self.maxTextLength = floor((width-2)/self.font.width("m"))-1
 end function
 
 LineEdit.draw = function()
