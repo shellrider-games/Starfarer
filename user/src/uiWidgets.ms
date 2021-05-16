@@ -289,9 +289,9 @@ Button.update = function(dt = 0.1)
 		if not mousePressed then
 			// Release!
 			if self.state == Button.PRESSED then
-				self.action
 				self.state = Button.NORMAL
 				self.redraw
+				self.action
 			end if
 			self.trackingPress = false
 		else

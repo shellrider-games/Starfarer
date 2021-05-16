@@ -17,6 +17,12 @@ import "starmap"
 
 Starfarer = {}
 
+Starfarer.STATE_AT_STATION = "AtStation"
+Starfarer.STATE_NAVMAP = "NavMap"
+
+Starfarer.STATE_NONE = "None"  // (initial state before set up)
+Starfarer.state = Starfarer.STATE_NONE
+
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
 	cd "../ships/freighter"
@@ -34,19 +40,10 @@ Starfarer.init = function()
 	self.renderer.renderShip playerShip
 	globals.renderer = self.renderer
 	
-	//setup station
-	station = new stationModel.Station
-	station.init "SUPER COOL SPACE STATION - 7"
-	station.addCommodityToMarket item.FoodItem, 80, 50
-	station.addCommodityToMarket item.WaterItem, 120, 100
-	station.addCommodityToMarket item.MedsItem, 200, 150
-	station.addCommodityToMarket item.GunsItem, 300, 200
-	
-	stationUI.show station
-	stationUI.navBtn.action = @Starfarer.showNavScreen
-	
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
+	
+	self.enterState self.STATE_AT_STATION
 end function
 
 // cleanup before exit.
@@ -55,9 +52,34 @@ Starfarer.cleanup = function()
 	key.clear
 end function
 
-Starfarer.showNavScreen = function()
-	stationUI.hide
-	starmap.draw
+Starfarer.enterState = function(newState)
+	if newState == self.state then return	// no change
+	self.exitState newState
+	
+	if newState == self.STATE_AT_STATION then
+		self.station = stationModel.randomStation
+		stationUI.show self.station
+		stationUI.navBtn.action = function()
+			game.enterState Starfarer.STATE_NAVMAP
+		end function
+		
+	else if newState == self.STATE_NAVMAP then
+		starmap.draw
+		starmap.jumpBtn.action = function()
+			game.enterState Starfarer.STATE_AT_STATION
+		end function
+		
+	end if
+	
+	self.state = newState
+end function
+
+Starfarer.exitState = function(toNextState)
+	if self.state == self.STATE_AT_STATION then
+		stationUI.hide
+	else if self.state == self.STATE_NAVMAP then
+		starmap.hide
+	end if
 end function
 
 Starfarer.selectedMinion = []
@@ -142,6 +164,9 @@ Starfarer.run = function()
 		shipDisplay.update deltaTime
 		playerShip.update deltaTime
 		uiWidgets.update deltaTime
+		if self.state == self.STATE_NAVMAP then
+			starmap.update deltaTime
+		end if
 		yield
 	end while
 end function

@@ -6,6 +6,7 @@
 // over by 10000 pixels.  Yeah, it's a sneaky trick.
 
 if not globals.hasIndex("setup") then import "setup"
+if not globals.hasIndex("uiWidgets") then import "uiWidgets"
 import "listUtil"
 import "mathUtil"
 if not globals.hasIndex("qa") then import "qa"
@@ -70,12 +71,26 @@ end function
 // draw: present the map on the screen
 //----------------------------------------------------------------------
 draw = function()
+	uiWidgets.clearAll
 	updateForZoom
 	disp.shipSprites.scrollX = CENTER - WIDTH/2
 	disp.shipSprites.scrollY = CENTER - HEIGHT/2
 	for spr in starSprites
 		disp.shipSprites.sprites.push spr
 	end for
+	
+	// warp (jump) button
+	outer.jumpBtn = new uiWidgets.Button
+	jumpBtn.init 900, 610, 60, 30, "JUMP"
+	jumpBtn.backColor = color.black
+	jumpBtn.start
+
+end function
+
+hide = function()
+	uiWidgets.clearAll
+	disp.shipSprites.scrollX = 0
+	disp.shipSprites.scrollY = 0
 end function
 
 updateForZoom = function()
@@ -84,6 +99,26 @@ updateForZoom = function()
 		spr.y = CENTER + spr.mapY * zoom
 		spr.scale = spr.mapScale * zoom
 	end for
+end function
+
+update = function(dt = 0.1)
+	scrollInp = key.axis("Mouse ScrollWheel")
+	if scrollInp != 0 then
+		outer.zoom = mathUtil.clamp(outer.zoom + scrollInp, 0.1, 10)
+		updateForZoom
+	end if
+	if mouse.button then
+		// drag the map around
+		startPos = {} + mouse
+		startScroll = {"x":disp.shipSprites.scrollX, "y":disp.shipSprites.scrollY}
+		while mouse.button
+			dx = mouse.x - startPos.x
+			dy = mouse.y - startPos.y
+			disp.shipSprites.scrollX = startScroll.x - dx
+			disp.shipSprites.scrollY = startScroll.y - dy
+			yield
+		end while
+	end if
 end function
 
 //----------------------------------------------------------------------
@@ -97,23 +132,7 @@ demo = function()
 	draw
 
 	while not key.pressed("escape")
-		scrollInp = key.axis("Mouse ScrollWheel")
-		if scrollInp != 0 then
-			outer.zoom = mathUtil.clamp(outer.zoom + scrollInp, 0.1, 10)
-			updateForZoom
-		end if
-		if mouse.button then
-			// drag the map around
-			startPos = {} + mouse
-			startScroll = {"x":disp.shipSprites.scrollX, "y":disp.shipSprites.scrollY}
-			while mouse.button
-				dx = mouse.x - startPos.x
-				dy = mouse.y - startPos.y
-				disp.shipSprites.scrollX = startScroll.x - dx
-				disp.shipSprites.scrollY = startScroll.y - dy
-				yield
-			end while
-		end if
+		update 0.1
 		yield
 	end while
 	key.clear

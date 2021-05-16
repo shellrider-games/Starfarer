@@ -2,6 +2,8 @@
 if not globals.hasIndex("setup") then import "setup"
 if not globals.hasIndex("qa") then import "qa"
 if not globals.hasIndex("item") then import "item"
+if not globals.hasIndex("randomNames") then import "randomNames"
+import "mathUtil"
 
 Station = {}
 Station.name = "DEFAULT NAME"
@@ -25,12 +27,24 @@ Commodity.name = function()
 end function
 
 Station.addCommodityToMarket = function(itemType, buyPrice, sellPrice)
-	temporaryCommodity = new Commodity
-	temporaryCommodity.itemType = itemType
-	temporaryCommodity.buyPrice = buyPrice
-	temporaryCommodity.sellPrice = sellPrice
+	newCommodity = new Commodity
+	newCommodity.itemType = itemType
+	newCommodity.buyPrice = buyPrice
+	newCommodity.sellPrice = sellPrice
 	qa.assert self.market isa list
-	self.market.push temporaryCommodity
+	self.market.push newCommodity
+end function
+
+randomStation = function()
+	result = new Station
+	result.init randomNames.station
+	for type in [item.FoodItem, item.WaterItem, item.MedsItem, item.GunsItem]
+		if rnd < 0.1 then continue	// commodity not traded here
+		value = floor(type.typicalValue * (1 + mathUtil.randNormal/4))
+		markup = floor(rnd * value)	
+		result.addCommodityToMarket type, value, markup
+	end for
+	return result
 end function
 
 runUnitTests = function()

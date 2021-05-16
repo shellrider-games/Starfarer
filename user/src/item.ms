@@ -14,6 +14,7 @@ Item.blocksWalking = true
 Item.col = 0
 Item.row = 0
 Item.lerper = null	// a SpriteLerper instance, when needed
+Item.typicalValue = 100
 
 Item.update = function(dt)
 	if self.lerper == null then return
@@ -50,19 +51,22 @@ end function
 FoodItem = new Item
 FoodItem.image = file.loadImage("/usr/pics/crate_food.png")
 FoodItem.name = "food"
+FoodItem.typicalValue = 50
 
 GunsItem = new Item
 GunsItem.image = file.loadImage("/usr/pics/crate_guns.png")
 GunsItem.name = "guns"
+GunsItem.typicalValue = 150
 
 MedsItem = new Item
 MedsItem.image = file.loadImage("/usr/pics/crate_medicine.png")
 MedsItem.name = "medicine"
+MedsItem.typicalValue = 250
 
 WaterItem = new Item
 WaterItem.image = file.loadImage("/usr/pics/crate_water.png")
 WaterItem.name = "water"
-
+WaterItem.typicalValue = 25
 
 
 // Item is an important enough class to push itself into the global namespace.
