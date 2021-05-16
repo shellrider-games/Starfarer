@@ -339,6 +339,9 @@ LineEdit.draw = function()
 	disp.uiPixel.color = self.color
 	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, self.bounds.y-self.bounds.height/2, self.bounds.width, 2
 	self.label.setText self.text
+	self.label.redraw
+	disp.uiPixel.color = self.color
+	if self.active then disp.uiPixel.line self.bounds.x-self.bounds.width/2+self.font.width(self.text[0:self.text.len-self.pointer])+2, self.bounds.y-self.bounds.height/2+4, self.bounds.x-self.bounds.width/2+self.font.width(self.text[0:self.text.len-self.pointer])+2,  self.bounds.y+self.bounds.height/2-4
 	disp.uiPixel.color = tempColor
 end function
 
@@ -347,7 +350,6 @@ LineEdit.update = function(dt = 0.1)
 		previousActiveState = self.active
 		if self.contains(mouse) then
 			self.pointer = 0
-			self.text = ""
 			self.active = true
 		else
 			self.active = false
@@ -355,7 +357,6 @@ LineEdit.update = function(dt = 0.1)
 		if previousActiveState != self.active then 
 			key.clear
 			self.redraw
-			self.label.redraw
 		end if
 	end if
 	if self.active then
@@ -367,17 +368,13 @@ LineEdit.update = function(dt = 0.1)
 				self.pointer = self.pointer - 1
 			else if tempKey == char(10) then //char(10) = enter
 				self.active = false
-				self.redraw
-				self.label.redraw
 			else if tempKey == char(8) then //char(8) = backspace
 				self.text = self.text[0:self.text.len-1-self.pointer] + self.text[self.text.len-self.pointer:self.text.len]
-				self.redraw
-				self.label.redraw
 			else if tempKey >= " " and tempKey < char(127) and self.text.len <= self.maxTextLength then
 				self.text = self.text.insert(self.text.len - self.pointer, tempKey)
 				self.label.text = self.text
-				self.label.redraw
 			end if
+			self.redraw
 		end while
 	end if
 end function
