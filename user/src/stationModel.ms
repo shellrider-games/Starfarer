@@ -35,6 +35,20 @@ Station.addCommodityToMarket = function(itemType, buyPrice, sellPrice)
 	self.market.push newCommodity
 end function
 
+Station.getCommodityBuyPrice = function(itemType)
+	for commodity in self.market
+		if commodity.itemType.name == itemType then return commodity.buyPrice
+	end for
+	return null
+end function
+
+Station.getCommoditySellPrice = function(itemType)
+	for commodity in self.market
+		if commodity.itemType.name == itemType then return commodity.sellPrice
+	end for
+	return null
+end function
+
 randomStation = function()
 	result = new Station
 	result.init randomNames.station
@@ -59,6 +73,9 @@ runUnitTests = function()
 	qa.assertEqual testStation.market[0].name, "water"
 	qa.assertEqual testStation.market[0].buyPrice, 120
 	qa.assertEqual testStation.market[0].sellPrice, 100
+	
+	qa.assertEqual testStation.getCommodityBuyPrice(item.WaterItem.name), 120
+	qa.assertEqual testStation.getCommoditySellPrice(item.WaterItem.name), 100
 
 	otherTestStation = new Station
 	otherTestStation.init "Station 2", 10, 10

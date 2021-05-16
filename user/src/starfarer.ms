@@ -5,6 +5,7 @@ cd "/usr/src"
 import "listUtil"
 import "constants"
 import "setup"
+import "crewStatistics"
 import "item"
 import "shipModel"
 import "stationModel"
@@ -14,6 +15,7 @@ import "pathfinding"
 import "uiWidgets"
 import "stationUI"
 import "starmap"
+import "playerUI"
 
 Starfarer = {}
 
@@ -62,7 +64,8 @@ Starfarer.enterState = function(newState)
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP
 		end function
-		
+		crewStatistics.currentStation = self.station
+		playerUI.show
 	else if newState == self.STATE_NAVMAP then
 		starmap.draw
 		starmap.jumpBtn.action = function()
@@ -164,6 +167,7 @@ Starfarer.run = function()
 		shipDisplay.update deltaTime
 		playerShip.update deltaTime
 		uiWidgets.update deltaTime
+		playerUI.update deltaTime
 		if self.state == self.STATE_NAVMAP then
 			starmap.update deltaTime
 		end if
