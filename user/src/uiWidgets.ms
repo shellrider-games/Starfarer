@@ -366,7 +366,9 @@ LineEdit.draw = function()
 	self.label.setText self.text
 	self.label.redraw
 	disp.uiPixel.color = self.color
-	if self.active then disp.uiPixel.line self.bounds.x-self.bounds.width/2+self.font.width(self.text[0:self.text.len-self.pointer])+2, self.bounds.y-self.bounds.height/2+4, self.bounds.x-self.bounds.width/2+self.font.width(self.text[0:self.text.len-self.pointer])+2,  self.bounds.y+self.bounds.height/2-4
+	if self.active then
+		disp.uiPixel.line self.bounds.x-self.bounds.width/2+self.font.width(self.text[0:self.text.len-self.pointer])+2, self.bounds.y-self.bounds.height/2+4, self.bounds.x-self.bounds.width/2+self.font.width(self.text[0:self.text.len-self.pointer])+2,  self.bounds.y+self.bounds.height/2-4
+	end if
 	disp.uiPixel.color = tempColor
 end function
 
