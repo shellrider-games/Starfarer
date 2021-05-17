@@ -25,6 +25,8 @@ Starfarer.STATE_NAVMAP = "NavMap"
 Starfarer.STATE_NONE = "None"  // (initial state before set up)
 Starfarer.state = Starfarer.STATE_NONE
 
+Starfarer.stations = []  // all stations in the galaxy
+
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
 	cd "../ships/freighter"
@@ -36,6 +38,12 @@ Starfarer.init = function()
 	minion = new character.Character
 	minion.setMapPos [2, 2]
 	minion.boardShip playerShip
+
+	// generate a random galaxy full of stations
+	self.stations = []
+	for i in range(1, 10)
+		self.stations.push stationModel.randomStation
+	end for
 
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
@@ -59,13 +67,14 @@ Starfarer.enterState = function(newState)
 	self.exitState newState
 	
 	if newState == self.STATE_AT_STATION then
-		self.station = stationModel.randomStation
+		self.station = self.stations.any
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP
 		end function
 		crewStatistics.currentStation = self.station
 		playerUI.show
+		
 	else if newState == self.STATE_NAVMAP then
 		starmap.draw
 		starmap.jumpBtn.action = function()
@@ -80,6 +89,7 @@ end function
 Starfarer.exitState = function(toNextState)
 	if self.state == self.STATE_AT_STATION then
 		stationUI.hide
+		
 	else if self.state == self.STATE_NAVMAP then
 		starmap.hide
 	end if
