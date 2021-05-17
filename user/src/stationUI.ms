@@ -29,7 +29,7 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 	
 	font = fonts.ArialBlack14
 	font.setColor color.black
-	font.print station.name + " : MARKET", left+4, top-14
+	font.print station.name + " Station : MARKET", left+4, top-14
 	
 	y = top - 60
 

@@ -15,7 +15,7 @@ end function
 
 // Generate a good name for a star/planet/station.
 station = function()
-	return generic + " Station"	// ToDo: something better here.
+	return generic	// ToDo: something better here.
 end function
 
 demo = function()

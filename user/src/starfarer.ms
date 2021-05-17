@@ -40,10 +40,7 @@ Starfarer.init = function()
 	minion.boardShip playerShip
 
 	// generate a random galaxy full of stations
-	self.stations = []
-	for i in range(1, 10)
-		self.stations.push stationModel.randomStation
-	end for
+	self.stations = stationModel.manyRandomStations(30)
 
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
@@ -76,7 +73,7 @@ Starfarer.enterState = function(newState)
 		playerUI.show
 		
 	else if newState == self.STATE_NAVMAP then
-		starmap.draw
+		starmap.draw self.stations
 		starmap.jumpBtn.action = function()
 			game.enterState Starfarer.STATE_AT_STATION
 		end function

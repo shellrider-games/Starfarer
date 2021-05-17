@@ -49,14 +49,58 @@ Station.getCommoditySellPrice = function(itemType)
 	return null
 end function
 
+// closestStation: return the station in stationList closest to the given
+// point (a map containing x and y properties)
+closestStation = function(xyPoint, stationList)
+	if not stationList then return null
+	best = stationList[0]
+	if stationList.len < 2 then return best
+	bestDist = mathUtil.distance(xyPoint, best)
+	for i in range(1, stationList.len-1)
+		dist = mathUtil.distance(xyPoint, stationList[i])
+		if dist < bestDist then
+			best = stationList[i]
+			bestDist = dist
+		end if
+	end for
+	return best
+end function
+
+// Generate a random station.
 randomStation = function()
 	result = new Station
 	result.init randomNames.station
+	result.x = round(mathUtil.randRange(80, 880))
+	result.y = round(mathUtil.randRange(80, 590))
+	result.starIsGiant = (rnd < 0.3)
+	result.starTypeRow = floor(mathUtil.randRange(0, 3))
+	result.starTypeCol = floor(mathUtil.randRange(0, 4))
+	if result.starIsGiant then
+		result.starTypeCol = result.starTypeCol + 4
+		result.starSize = mathUtil.randRange(0.6, 1)
+	else
+		result.starSize = mathUtil.randRange(0.25, 0.5)
+	end if
 	for type in [item.FoodItem, item.WaterItem, item.MedsItem, item.GunsItem]
 		if rnd < 0.1 then continue	// commodity not traded here
 		value = floor(type.typicalValue * (1 + mathUtil.randNormal/4))
 		markup = floor(rnd * value)	
 		result.addCommodityToMarket type, value, markup
+	end for
+	return result
+end function
+
+// Generate a whole bunch of random stations, ensuring that no two stations
+// are too close to each other.
+manyRandomStations = function(quantity=30)
+	result = []
+	for i in range(1, quantity)
+		while true
+			noob = randomStation
+			closest = closestStation(noob, result)
+			if closest == null or mathUtil.distance(closest, noob) > 50 then break
+		end while	
+		result.push noob
 	end for
 	return result
 end function
