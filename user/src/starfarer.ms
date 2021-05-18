@@ -41,7 +41,8 @@ Starfarer.init = function()
 
 	// generate a random galaxy full of stations
 	self.stations = stationModel.manyRandomStations(30)
-
+	self.station = self.stations.any
+		
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
 	self.renderer.renderShip playerShip
@@ -64,7 +65,6 @@ Starfarer.enterState = function(newState)
 	self.exitState newState
 	
 	if newState == self.STATE_AT_STATION then
-		self.station = self.stations.any
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP
@@ -73,11 +73,14 @@ Starfarer.enterState = function(newState)
 		playerUI.show
 		
 	else if newState == self.STATE_NAVMAP then
-		starmap.draw self.stations
-		starmap.jumpBtn.action = function()
+		starmap.draw self.stations, self.station
+		starmap.backBtn.action = function()
 			game.enterState Starfarer.STATE_AT_STATION
 		end function
-		
+		starmap.jumpCallback = function(newStation)
+			game.station = newStation
+			game.enterState Starfarer.STATE_AT_STATION
+		end function
 	end if
 	
 	self.state = newState

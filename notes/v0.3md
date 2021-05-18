@@ -1,13 +1,13 @@
 # MINIMUM IMPLEMENTATION #
 
-- starmap
-- persistent map
+- starmap ✔
+- persistent map ✔
 
 ## starmap ##
 
-- names
-- show player position
-- select neighbours to jump
+- names ✔
+- show player position ✔
+- select neighbours to jump ✔
 
 ## persistance ##
 

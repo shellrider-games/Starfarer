@@ -23,6 +23,9 @@ zoom = 1
 // The first 4 columns are normal or dwarf stars; the last 4 are giants.
 starImages = null
 
+// jump callback: set this to a function(station) to be invoked
+// when the player indicates they want to jump to a given station.
+jumpCallback = null
 
 //----------------------------------------------------------------------
 // init: initialize this module, loading all stars, etc.
@@ -38,6 +41,11 @@ init = function()
 			starImages[col][row] = img
 		end for
 	end for
+	
+	// prepare star selection sprite
+	outer.selectionSprite = new Sprite
+	selectionSprite.image = file.loadImage("/usr/pics/starCursor.png")
+	
 //
 //	create stars
 //	for i in range(99)
@@ -66,10 +74,25 @@ end function
 //----------------------------------------------------------------------
 // draw: present the map on the screen
 //----------------------------------------------------------------------
-draw = function(stationList)
+draw = function(stationList, curStation=null, jumpLimit=200)
 	// setup
 	uiWidgets.clearAll
 	gfx.fillRect 0, 40, 960, 560, color.black
+	outer.stations = stationList
+	outer.curStation = curStation
+	outer.jumpLimit = jumpLimit
+	
+	// draw lines from the current station to all reachable stations
+	if curStation != null then
+		for station in stationList
+			if station == curStation then continue
+			dist = mathUtil.distance(station, curStation)
+			if dist < jumpLimit then
+				gfx.line station.x, station.y, curStation.x, curStation.y, 
+				  "#666666", 3
+			end if
+		end for
+	end if
 	
 	// draw stars (stations)
 	f = fonts.Arial14
@@ -81,20 +104,66 @@ draw = function(stationList)
 		f.printCentered station.name, station.x, station.y - 20
 	end for
 	
-	// warp (jump) button
-	outer.jumpBtn = new uiWidgets.Button
-	jumpBtn.init 900, 610, 60, 30, "JUMP"
-	jumpBtn.backColor = color.black
-	jumpBtn.start
+	// selection sprite
+	disp.uiSprites.sprites.push selectionSprite
+	
+	// cancel (back) button
+	outer.backBtn = new uiWidgets.Button
+	backBtn.init 900, 610, 60, 30, "BACK"
+	backBtn.backColor = color.black
+	backBtn.start
 end function
 
 hide = function()
 	uiWidgets.clearAll
+	disp.uiSprites.sprites.removeVal selectionSprite
 	gfx.clear color.clear
 end function
 
 update = function(dt = 0.1)
-	// ToDo: watch for clicking on a valid station.
+	// Find the station the mouse is over
+	closest = stationModel.closestStation(mouse, stations)
+	if closest != null and mathUtil.distance(closest, mouse) > 32 then closest = null
+	
+	// Update the selection cursor
+	canJump = false
+	if closest == null then
+		selectionSprite.tint = color.clear
+	else
+		jumpDist = mathUtil.distance(closest, curStation)
+		selectionSprite.x = closest.x
+		selectionSprite.y = closest.y
+		if closest == curStation then
+			selectionSprite.tint = color.blue
+			canJump = true
+		else if jumpDist < jumpLimit then
+			selectionSprite.tint = "#00CC00"
+			canJump = true
+		else
+			selectionSprite.tint = "#880000"
+		end if
+	end if
+	
+	// if mouse goes down, track until up, then handle accordingly
+	if mouse.button then
+		if not canJump then
+			while mouse.button; yield; end while
+		else
+			normalColor = selectionSprite.tint
+			while mouse.button
+				if mathUtil.distance(closest, mouse) > 32 then
+					selectionSprite.tint = normalColor
+				else
+					selectionSprite.tint = color.lerp(normalColor, color.gray, 0.5)
+				end if
+				yield
+			end while
+			if selectionSprite.tint != normalColor then
+				// Jump!
+				if @jumpCallback != null then jumpCallback(closest)
+			end if
+		end if
+	end if
 end function
 
 //----------------------------------------------------------------------
@@ -102,7 +171,7 @@ end function
 //----------------------------------------------------------------------
 demo = function()
 	outer.stations = stationModel.manyRandomStations(30)
-	draw stations
+	draw stations, stations[0]
 
 	while not key.pressed("escape")
 		update 0.1
