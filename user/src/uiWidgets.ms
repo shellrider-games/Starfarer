@@ -238,7 +238,8 @@ Label.setText = function(s)
 end function
 
 //----------------------------------------------------------------------
-// Bar: a simple bar that has a value between 0 and 1 and is filled that much
+// Bar: a simple bar that has a value between 0 and 1 and is filled that much.
+// Or, give it a value between -1 and 0, and it will fill from the right.
 //----------------------------------------------------------------------
 
 Bar = new Widget
@@ -246,21 +247,36 @@ Bar.color = color.gray
 Bar.value = 0.5
 
 Bar.draw = function()
-	tempColor = disp.uiPixel.color
-	disp.uiPixel.color = self.color
-	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, 
-	   self.bounds.y-self.bounds.height/2, self.bounds.width, self.bounds.height
-	disp.uiPixel.color = color.clear
-	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+2, 
-	   self.bounds.y-self.bounds.height/2+2, self.bounds.width-4, self.bounds.height-4
-	disp.uiPixel.color = self.color
-	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+4, 
-	   self.bounds.y-self.bounds.height/2+4, (self.bounds.width-8)*self.value, self.bounds.height-8
-	disp.uiPixel.color = self.color
+	left = self.bounds.x - self.bounds.width/2 + 1
+	bottom = self.bounds.y - self.bounds.height/2 + 1
+	width = self.bounds.width - 2
+	height = self.bounds.height - 2
+	right = left + width
+	
+	// border
+	disp.uiPixel.drawRect left, bottom, width, height, self.color, 2
+
+	// inset border
+	disp.uiPixel.drawRect left+2, bottom+2, width-4, height-4, color.green, 2
+	
+	// fill
+	if self.value >= 0 then
+		divx = left+3 + (width-6) * self.value
+		disp.uiPixel.fillRect left+3, bottom+3, divx - (left+3), height-6, self.color
+		disp.uiPixel.fillRect divx, bottom+3, right-3 - divx, height-6, color.clear
+	else
+		divx = right-3 + (width-6) * self.value
+		disp.uiPixel.fillRect left+3, bottom+3, divx - (left+3), height-6, color.clear
+		disp.uiPixel.fillRect divx, bottom+3, right-2 - divx, height-6, self.color
+	end if
 end function
 
+// Because the Bar completely overdraws its own space, redraw does not need
+// to erase first.  So it can be just an alias for draw.
+Bar.redraw = @Bar.draw
+
 Bar.setValue = function(value)
-	qa.assert value >= 0 and value <= 1
+	qa.assert value >= -1 and value <= 1
 	if value == self.value then return
 	self.value = value
 	self.redraw
@@ -472,15 +488,14 @@ demo = function()
 	lineInput.init 80, 400, 60, 20
 	lineInput.start
 
-	bar = new Bar
+	outer.bar = new Bar
 	bar.init 80, 600, 160, 20
+	bar.value = -0.5
 	bar.draw
-
 	
-
 	while not key.pressed("escape")
 		update 1/60
-		bar.setValue((bar.value+0.0015)%1)
+		bar.setValue ((bar.value+1.0015)%2) - 1
 		yield
 	end while
 	key.clear
