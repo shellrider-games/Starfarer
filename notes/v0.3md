@@ -2,6 +2,7 @@
 
 - starmap ✔
 - persistent map ✔
+- eventsystem
 
 ## starmap ##
 
@@ -12,3 +13,9 @@
 ## persistance ##
 
 - generate stars/stations at beginning of game ✔
+
+## eventsystem ##
+
+- event can trigger at system enter
+- show event with prompt + choices
+- event conclusion effects ship
