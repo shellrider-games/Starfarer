@@ -248,16 +248,20 @@ Bar.value = 0.5
 Bar.draw = function()
 	tempColor = disp.uiPixel.color
 	disp.uiPixel.color = self.color
-	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, self.bounds.y-self.bounds.height/2, self.bounds.width, self.bounds.height
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2, 
+	   self.bounds.y-self.bounds.height/2, self.bounds.width, self.bounds.height
 	disp.uiPixel.color = color.clear
-	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+2, self.bounds.y-self.bounds.height/2+2, self.bounds.width-4, self.bounds.height-4
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+2, 
+	   self.bounds.y-self.bounds.height/2+2, self.bounds.width-4, self.bounds.height-4
 	disp.uiPixel.color = self.color
-	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+4, self.bounds.y-self.bounds.height/2+4, (self.bounds.width-8)*self.value, self.bounds.height-8
+	disp.uiPixel.fillRect self.bounds.x-self.bounds.width/2+4, 
+	   self.bounds.y-self.bounds.height/2+4, (self.bounds.width-8)*self.value, self.bounds.height-8
 	disp.uiPixel.color = self.color
 end function
 
 Bar.setValue = function(value)
-	qa.assert(value >= 0 and value <= 1)
+	qa.assert value >= 0 and value <= 1
+	if value == self.value then return
 	self.value = value
 	self.redraw
 end function
@@ -329,6 +333,7 @@ Button.update = function(dt = 0.1)
 		end if
 	end if
 end function
+
 
 //----------------------------------------------------------------------
 // LineEdit: Represents a line tall input field
