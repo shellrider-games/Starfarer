@@ -18,9 +18,9 @@ Warp.update = function(delta)
     if self.active then
         self.timeSpent = self.timeSpent + delta
         if self.timeSpent <= 1 then
-            disp.curtain.color = color.lerp(color.clear, color.black, self.timeSpent)
+            disp.curtain.color = color.lerp(color.clear, color.white, self.timeSpent)
         else if self.timeSpent <= 2 then
-            disp.curtain.color = color.lerp(color.black, color.clear, self.timeSpent-1)
+            disp.curtain.color = color.lerp(color.white, color.clear, self.timeSpent-1)
         else
             disp.curtain.color = color.clear
             self.active = false
