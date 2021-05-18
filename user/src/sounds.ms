@@ -18,6 +18,7 @@ end function
 
 doorOpen = PositionalSound.load("door-open")
 doorClose = PositionalSound.load("door-close")
+warp = PositionalSound.load("warp-sound")
 
 
 demo = function()

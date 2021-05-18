@@ -1,5 +1,6 @@
 if not globals.hasIndex("disp") then import "setup"
 if not globals.hasIndex("qa") then import "qa"
+if not globals.hasIndex("sounds") then import "sounds"
 
 Warp = {}
 Warp.timeSpent = null
@@ -9,6 +10,7 @@ Warp.run = function()
     if not self.active then
         self.timeSpent = 0
         self.active = true
+        sounds.warp.play
     end if
 end function
 
