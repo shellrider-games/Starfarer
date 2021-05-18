@@ -8,6 +8,7 @@ if not globals.hasIndex("setup") then import "setup"
 if not globals.hasIndex("stationModel") then import "stationModel"
 if not globals.hasIndex("uiWidgets") then import "uiWidgets"
 if not globals.hasIndex("qa") then import "qa"
+if not globals.hasIndex("effects") then import "effects"
 
 // constants defining the area for the star map in the display
 CENTER = 10000	// (center in both X and Y)
@@ -160,7 +161,9 @@ update = function(dt = 0.1)
 			end while
 			if selectionSprite.tint != normalColor then
 				// Jump!
-				if @jumpCallback != null then jumpCallback(closest)
+				if @jumpCallback != null then 
+					jumpCallback(closest)
+				end if
 			end if
 		end if
 	end if

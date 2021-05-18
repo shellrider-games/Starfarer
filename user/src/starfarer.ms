@@ -16,6 +16,7 @@ import "uiWidgets"
 import "stationUI"
 import "starmap"
 import "playerUI"
+import "effects"
 
 Starfarer = {}
 
@@ -178,6 +179,7 @@ Starfarer.run = function()
 		playerShip.update deltaTime
 		uiWidgets.update deltaTime
 		playerUI.update deltaTime
+		effects.Warp.update deltaTime
 		if self.state == self.STATE_NAVMAP then
 			starmap.update deltaTime
 		end if
