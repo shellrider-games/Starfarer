@@ -5,18 +5,19 @@ if not globals.hasIndex("sounds") then import "sounds"
 Warp = {}
 Warp.timeSpent = null
 Warp.active = false
+Warp.speed = 1
 
 Warp.run = function()
     if not self.active then
         self.timeSpent = 0
         self.active = true
-        sounds.warp.play
+        sounds.warp.play 1, 0, self.speed
     end if
 end function
 
 Warp.update = function(delta)
     if self.active then
-        self.timeSpent = self.timeSpent + delta
+        self.timeSpent = self.timeSpent + delta * self.speed
         if self.timeSpent <= 1 then
             disp.curtain.color = color.lerp(color.clear, color.white, self.timeSpent)
         else if self.timeSpent <= 2 then
@@ -32,6 +33,7 @@ demo = function()
     
     wait 1
     
+    Warp.speed = 3
     Warp.run
 
     while not key.pressed("escape")

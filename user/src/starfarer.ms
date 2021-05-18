@@ -20,12 +20,12 @@ import "effects"
 
 Starfarer = {}
 
+Starfarer.STATE_NONE = "None"  // (initial state before set up)
 Starfarer.STATE_AT_STATION = "AtStation"
 Starfarer.STATE_NAVMAP = "NavMap"
-
-Starfarer.STATE_NONE = "None"  // (initial state before set up)
+Starfarer.STATE_TRAVEL = "Travel"
 Starfarer.state = Starfarer.STATE_NONE
-
+Starfarer.stateStartTime = time
 Starfarer.stations = []  // all stations in the galaxy
 
 Starfarer.init = function()
@@ -61,6 +61,10 @@ Starfarer.cleanup = function()
 	key.clear
 end function
 
+Starfarer.timeInState = function()
+	return time - self.stateStartTime
+end function
+
 Starfarer.enterState = function(newState)
 	if newState == self.state then return	// no change
 	self.exitState newState
@@ -79,12 +83,20 @@ Starfarer.enterState = function(newState)
 			game.enterState Starfarer.STATE_AT_STATION
 		end function
 		starmap.jumpCallback = function(newStation)
-			game.station = newStation
-			game.enterState Starfarer.STATE_AT_STATION
+			if newStation == game.station then
+				game.enterState Starfarer.STATE_AT_STATION
+			else
+				game.nextStation = newStation
+				game.enterState Starfarer.STATE_TRAVEL
+			end if
 		end function
+		
+	else if newState == self.STATE_TRAVEL then
+		
 	end if
 	
 	self.state = newState
+	self.stateStartTime = time
 end function
 
 Starfarer.exitState = function(toNextState)
@@ -93,7 +105,29 @@ Starfarer.exitState = function(toNextState)
 		
 	else if self.state == self.STATE_NAVMAP then
 		starmap.hide
+		
+	else if self.state == self.STATE_TRAVEL then
+		playerUI.hideTravel
+		
 	end if
+end function
+
+Starfarer.updateTravel = function(dt)
+	t = self.timeInState / 2
+	if t > 2 then
+		self.nextStation = null
+		self.enterState self.STATE_AT_STATION
+	else if t > 1 then
+		self.station = self.nextStation
+		playerUI.showTravel self.nextStation, 2-t, true
+	else
+		playerUI.showTravel self.station, t, false
+		if t > 0.83 then
+			effects.Warp.speed = 3
+			effects.Warp.run
+		end if
+	end if
+	effects.Warp.update dt
 end function
 
 Starfarer.selectedMinion = []
@@ -179,9 +213,10 @@ Starfarer.run = function()
 		playerShip.update deltaTime
 		uiWidgets.update deltaTime
 		playerUI.update deltaTime
-		effects.Warp.update deltaTime
 		if self.state == self.STATE_NAVMAP then
 			starmap.update deltaTime
+		else if self.state == self.STATE_TRAVEL then
+			self.updateTravel deltaTime
 		end if
 		yield
 	end while

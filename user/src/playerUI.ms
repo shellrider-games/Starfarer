@@ -24,28 +24,37 @@ end function
 showTravel = function(station, distance=0.5, arriving=true)
 	if travelModeLabel == null then
 		outer.travelModeLabel = new uiWidgets.Label
-		travelModeLabel.init 860,620,100,20, "TRAVEL"
+		travelModeLabel.init 800,620,160,16, "TRAVEL"
 		travelModeLabel.color = color.gray
 		travelModeLabel.alignment = uiWidgets.ALIGNCENTER
 	end if
-	if arriving then travelModeLabel.setText "ARRIVING:" else travelModeLabel.setText "DEPARTING:"
+		
 	if travelStationLabel == null then
 		outer.travelStationLabel = new uiWidgets.Label
-		travelStationLabel.init 860,600,100,20, "STATION"
+		travelStationLabel.init 800,606,160,16, "STATION"
 		travelStationLabel.color = color.white
 		travelStationLabel.alignment = uiWidgets.ALIGNCENTER
 	end if
 	travelStationLabel.setText station.name.upper
 	if travelProgressBar == null then
 		outer.travelProgressBar = new uiWidgets.Bar
-		travelProgressBar.init 860, 585, 100, 10, "TRAVEL PROGRESS"
+		travelProgressBar.init 810, 590, 140, 16, "TRAVEL PROGRESS"
 		travelProgressBar.color = color.green
 	end if
-	travelProgressBar.setValue distance
+
+	if arriving then
+		travelModeLabel.setText "ARRIVING:"
+		travelProgressBar.setValue -distance
+	else
+		travelModeLabel.setText "DEPARTING:"
+		travelProgressBar.setValue distance
+	end if
 end function
 
 hideTravel = function()
-
+	travelModeLabel.erase;		outer.travelModeLabel = null
+	travelStationLabel.erase;	outer.travelStationLabel = null
+	travelProgressBar.erase;	outer.travelProgressBar = null
 end function
 
 update = function(dt = 0.1)

@@ -257,7 +257,7 @@ Bar.draw = function()
 	disp.uiPixel.drawRect left, bottom, width, height, self.color, 2
 
 	// inset border
-	disp.uiPixel.drawRect left+2, bottom+2, width-4, height-4, color.green, 2
+	disp.uiPixel.drawRect left+2, bottom+2, width-4, height-4, color.clear, 2
 	
 	// fill
 	if self.value >= 0 then
