@@ -6,6 +6,7 @@
 
 if not globals.hasIndex("disp") then import "setup"
 if not globals.hasIndex("qa") then import "qa"
+import "stringUtil"
 
 //----------------------------------------------------------------------
 // Constants
@@ -218,17 +219,44 @@ Label.init = function(left, bottom, width, height, text="", align=ALIGNLEFT)
 	self.alignment = align
 end function
 
+Label.wrap = function(wrapWidth=null)
+	// Split our text into lines.
+	if wrapWidth == null then wrapWidth = self.bounds.width
+	self.lines = []
+	s = self.text
+	while s
+		cutPos = self.font.lenToFit(s, wrapWidth)
+		if cutPos >= s.len then
+			self.lines.push s
+			break
+		end if
+		while cutPos > 1 and not stringUtil.whitespace.contains(s[cutPos-1])
+			cutPos = cutPos - 1
+		end while
+		self.lines.push s[:cutPos]
+		s = s[cutPos:].trim
+	end while
+	// Then increase height if needed
+	h = self.lines.len * self.font.lineHeight
+	if h > self.bounds.height then self.bounds.height = h
+end function
+
 Label.draw = function()
-	w = self.font.width(self.text)
-	y = self.bounds.y - 5
 	self.font.setColor self.color
-	if self.alignment == ALIGNRIGHT then
-		self.font.print self.text, self.right - w, y
-	else if self.alignment == ALIGNCENTER then
-		self.font.print self.text, self.bounds.x - w/2, y
-	else
-		self.font.print self.text, self.left, y
-	end if
+	if self.hasIndex("lines") then data = self.lines else data = [self.text]
+	y = self.bounds.y + (data.len/2) * self.font.lineHeight
+	for line in data
+		if self.alignment == ALIGNRIGHT then
+			w = self.font.width(line)
+			self.font.print line, self.right - w, y
+		else if self.alignment == ALIGNCENTER then
+			w = self.font.width(line)
+			self.font.print line, self.bounds.x - w/2, y
+		else
+			self.font.print line, self.left, y
+		end if
+		y = y - self.font.lineHeight
+	end for
 end function
 
 Label.setText = function(s)
@@ -236,6 +264,7 @@ Label.setText = function(s)
 	self.text = s
 	self.redraw
 end function
+
 
 //----------------------------------------------------------------------
 // Bar: a simple bar that has a value between 0 and 1 and is filled that much.
@@ -474,6 +503,13 @@ demo = function()
 	lab3.init 800, 480, 100, 20, "Right", ALIGNRIGHT
 	lab3.draw
 	
+	outer.multiline = new Label
+	multiline.init panel.left+4, panel.bottom, panel.width-8, 100,
+		"Here is a rather long text, so long in fact that it needs to wrap over " +
+		"several lines.  This will turn out to be a very useful thing to do."
+	multiline.wrap
+	multiline.draw
+	
 	clock = new Label
 	clock.init 900, 620, 60, 20, "Clock", ALIGNRIGHT
 	clock.color = color.aqua; clock.backColor = color.black
@@ -488,7 +524,7 @@ demo = function()
 	lineInput.init 80, 400, 60, 20
 	lineInput.start
 
-	outer.bar = new Bar
+	bar = new Bar
 	bar.init 80, 600, 160, 20
 	bar.value = -0.5
 	bar.draw

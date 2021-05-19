@@ -270,6 +270,24 @@ Font.width = function(s)
 	return sum
 end function
 
+// Return the number of characters of the given string that
+// fit a given width.
+Font.lenToFit = function(s, width=100)
+	if not s or not (s isa string) then return 0
+	if self.width(s) <= width then return s.len
+	lo = 1
+	hi = s.len
+	while lo + 1 < hi
+		mid = floor((lo + hi) / 2)
+		if self.width(s[:mid]) <= width then
+			lo = mid
+		else
+			hi = mid
+		end if
+	end while
+	return lo
+end function
+
 // Demo program: find the fonts directory, then load and display
 // every font found therein.
 demo = function()
