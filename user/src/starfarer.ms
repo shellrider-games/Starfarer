@@ -25,7 +25,7 @@ Starfarer.STATE_AT_STATION = "AtStation"
 Starfarer.STATE_NAVMAP = "NavMap"
 Starfarer.STATE_TRAVEL = "Travel"
 Starfarer.state = Starfarer.STATE_NONE
-Starfarer.stateStartTime = time
+Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
 
 Starfarer.init = function()
@@ -61,10 +61,6 @@ Starfarer.cleanup = function()
 	key.clear
 end function
 
-Starfarer.timeInState = function()
-	return time - self.stateStartTime
-end function
-
 Starfarer.enterState = function(newState)
 	if newState == self.state then return	// no change
 	self.exitState newState
@@ -92,11 +88,12 @@ Starfarer.enterState = function(newState)
 		end function
 		
 	else if newState == self.STATE_TRAVEL then
+		encounters.planEncounters self.station, self.nextStation
 		
 	end if
 	
 	self.state = newState
-	self.stateStartTime = time
+	self.timeInState = 0
 end function
 
 Starfarer.exitState = function(toNextState)
@@ -128,6 +125,7 @@ Starfarer.updateTravel = function(dt)
 		end if
 	end if
 	effects.Warp.update dt
+	encounters.update dt
 end function
 
 Starfarer.selectedMinion = []
@@ -207,17 +205,22 @@ Starfarer.run = function()
 		lastTime = currentTime
 		currentTime = time
 		deltaTime = currentTime - lastTime
+		if deltaTime > 0.1 then deltaTime = 0.1 // (cap, in case of blocking dialog)
+		self.timeInState = self.timeInState + deltaTime
+		
 		self.processInput
 		self.renderer.update deltaTime
 		shipDisplay.update deltaTime
 		playerShip.update deltaTime
 		uiWidgets.update deltaTime
 		playerUI.update deltaTime
+
 		if self.state == self.STATE_NAVMAP then
 			starmap.update deltaTime
 		else if self.state == self.STATE_TRAVEL then
 			self.updateTravel deltaTime
 		end if
+
 		yield
 	end while
 end function

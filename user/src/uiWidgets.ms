@@ -180,16 +180,16 @@ end function
 // Panel: a widget that draws an Image or Image9Slice.
 //----------------------------------------------------------------------
 Panel = new Widget
-Panel.image = null		// may be an Image or an Image9Slice
+Panel.image = load9SliceImage("panel")		// may be an Image or an Image9Slice
 
 Panel.init = function(left, bottom, width, height, name, image)
 	super.init left, bottom, width, height, name
-	self.image = image
+	if image != null then self.image = image
 	
 	// Get the color of a pixel at the center of the image; this is handy
 	// so that things drawing on top of this panel can know what to use
 	// for a background color.
-	if image isa Image9Slice then src = image.image else src = image
+	if self.image isa Image9Slice then src = self.image.image else src = self.image
 	self.mainColor = src.pixel(src.width/2, src.height/2)
 end function
 
@@ -212,6 +212,7 @@ Label.text = "Label"
 Label.color = color.gray
 Label.font = fonts.ArialBlack14
 Label.alignment = ALIGNLEFT
+Label.leading = 2  // (extra space between lines, in multiline label)
 
 Label.init = function(left, bottom, width, height, text="", align=ALIGNLEFT)
 	super.init left, bottom, width, height, text
@@ -237,14 +238,14 @@ Label.wrap = function(wrapWidth=null)
 		s = s[cutPos:].trim
 	end while
 	// Then increase height if needed
-	h = self.lines.len * self.font.lineHeight
+	h = self.lines.len * (self.font.lineHeight + self.leading)
 	if h > self.bounds.height then self.bounds.height = h
 end function
 
 Label.draw = function()
 	self.font.setColor self.color
 	if self.hasIndex("lines") then data = self.lines else data = [self.text]
-	y = self.bounds.y + (data.len/2) * self.font.lineHeight
+	y = self.bounds.y + (data.len/2 - 1) * (self.font.lineHeight + self.leading)
 	for line in data
 		if self.alignment == ALIGNRIGHT then
 			w = self.font.width(line)
@@ -255,7 +256,7 @@ Label.draw = function()
 		else
 			self.font.print line, self.left, y
 		end if
-		y = y - self.font.lineHeight
+		y = y - self.font.lineHeight - self.leading
 	end for
 end function
 
@@ -483,7 +484,7 @@ demo = function()
 	disp.uiSprites.clear
 	
 	panel = new Panel
-	panel.init 400, 300, 300, 200, "panel", load9SliceImage("panel")
+	panel.init 400, 300, 300, 200, "panel"
 	panel.draw
 
 	btn = new Button

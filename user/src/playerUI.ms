@@ -24,14 +24,14 @@ end function
 showTravel = function(station, distance=0.5, arriving=true)
 	if travelModeLabel == null then
 		outer.travelModeLabel = new uiWidgets.Label
-		travelModeLabel.init 800,620,160,16, "TRAVEL"
+		travelModeLabel.init 800,622,160,16, "TRAVEL"
 		travelModeLabel.color = color.gray
 		travelModeLabel.alignment = uiWidgets.ALIGNCENTER
 	end if
 		
 	if travelStationLabel == null then
 		outer.travelStationLabel = new uiWidgets.Label
-		travelStationLabel.init 800,606,160,16, "STATION"
+		travelStationLabel.init 800,608,160,16, "STATION"
 		travelStationLabel.color = color.white
 		travelStationLabel.alignment = uiWidgets.ALIGNCENTER
 	end if

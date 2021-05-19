@@ -92,5 +92,10 @@ loadFonts = function()
 	end for
 end function
 loadFonts
+
+showProgress "Loading encounters"
+import "encounters"
+globals.encounters = encounters
+
 gfx.clear color.clear
 
