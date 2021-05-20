@@ -57,11 +57,11 @@ present = function(data)
 	whereLabel.text = round(data.distance * 100000) + " km from " + data.station.name
 	whereLabel.draw
 
-	okBtn = new uiWidgets.Button
-	okBtn.init 480-40, panel.bottom + 20, 80, 24, "OK"
-	okBtn.backColor = panel.mainColor
-	okBtn.start
-	okBtn.action = function()
+	okButton = new uiWidgets.Button
+	okButton.init 480-40, panel.bottom + 20, 80, 24, "OK"
+	okButton.backColor = panel.mainColor
+	okButton.start
+	okButton.action = function()
 		outer.done = true
 	end function
 
