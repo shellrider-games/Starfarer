@@ -16,6 +16,6 @@
 
 ## eventsystem ##
 
-- event can trigger at system enter
+- event can trigger at system enter ✔
 - show event with prompt + choices
 - event conclusion effects ship
