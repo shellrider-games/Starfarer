@@ -40,6 +40,7 @@ present = function(data)
 	descriptionBox.init 480-150, 0, 300, 20, "descriptionBox"
 	descriptionBox.text = description
 	descriptionBox.font = fonts.Arial14
+	descriptionBox.color = "#222222"
 	descriptionBox.wrap
 	
 	outer.panel = new uiWidgets.Panel
@@ -52,7 +53,7 @@ present = function(data)
 	
 	whereLabel = new uiWidgets.Label
 	whereLabel.init panel.right-204, panel.top-20, 200, 20
-	whereLabel.color = "#CCCCFF"
+	whereLabel.color = "#8080FF"
 	whereLabel.alignment = uiWidgets.ALIGNRIGHT
 	whereLabel.text = round(data.distance * 100000) + " km from " + data.station.name
 	whereLabel.draw
