@@ -31,24 +31,24 @@ end function
 // this present method, with the data returned from consider():
 present = function(data)
 	value = floor(rnd * 10) + 5
-	desc = "You have encountered an anomaly.  It hangs in front of your " +
+	description = "You have encountered an anomaly.  It hangs in front of your " +
 	  "ship like a particularly empty region of space.  " +
 	  "Analyzing it with your ship sensors yields data worth " +
 	  value + " credits."
 	
-	descBox = new uiWidgets.Label
-	descBox.init 480-150, 0, 300, 20, "descBox"
-	descBox.text = desc
-	descBox.font = fonts.Arial14
-	descBox.wrap
+	descriptionBox = new uiWidgets.Label
+	descriptionBox.init 480-150, 0, 300, 20, "descriptionBox"
+	descriptionBox.text = description
+	descriptionBox.font = fonts.Arial14
+	descriptionBox.wrap
 	
 	outer.panel = new uiWidgets.Panel
-	h = descBox.height + 100
+	h = descriptionBox.height + 100
 	panel.init 480-180, 320 - h/2, 360, h, "panel"
 	panel.draw
 	
-	descBox.bounds.y = panel.bounds.y + descBox.height/2 - 16
-	descBox.draw
+	descriptionBox.bounds.y = panel.bounds.y + descriptionBox.height/2 - 16
+	descriptionBox.draw
 	
 	whereLabel = new uiWidgets.Label
 	whereLabel.init panel.right-204, panel.top-20, 200, 20
