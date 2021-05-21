@@ -1,11 +1,15 @@
 // Our very first encounter!
 
-if not globals.hasIndex("uiWidgets") then
+if not globals.hasIndex("Encounter") then
 	if env.importPaths.indexOf("/usr/src") == null then
 		env.importPaths.push "/usr/src"
 	end if
 	import "uiWidgets"
+	import "encounterBase"
 end if
+
+
+encounter = new encounterBase.Encounter
 
 // Consider whether we want to present this encounter while traveling
 // to (if arriving=true) or from (arriving=false) the given station.
@@ -16,20 +20,15 @@ end if
 // You can also add any other data you will want at presentation time.
 // The host app will then decide whether to actually present this
 // encounter.
-consider = function(station, arriving)
+encounter.consider = function(station, arriving)
 	probability = 0.20		// 20% chance of this encounter
 	if rnd > probability then return null
-	data = {}
-	data.priority = 0
-	data.distance = 0.2 + 0.6 * rnd
-	data.station = station
-	data.arriving = arriving
-	return data
+	return self.consideration(station, arriving, 0)
 end function
 
 // If the host app decides to present this encounter, then it will call
 // this present method, with the data returned from consider():
-present = function(data)
+encounter.present = function(data)
 	value = floor(rnd * 10) + 5
 	description = "You have encountered an anomaly.  It hangs in front of your " +
 	  "ship like a particularly empty region of space.  " +
@@ -79,5 +78,6 @@ end function
 
 if locals == globals then
 	crewStatistics = {"money": 0}
-	present
+	enc = new encounter
+	enc.present enc.consideration({"name":"Demo"}, true)
 end if

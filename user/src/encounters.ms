@@ -2,12 +2,14 @@
 // encounters as the player ship travels from station to station.
 // The actual encounters are defined by the tiny modules in /usr/encounters.
 
+import "encounterBase"
+globals.encounterBase = encounterBase
 
-encounters = []
+encounterList = []
 
 init = function()
+	outer.encounterList = []
 	loadEncountersFromFolder "/usr/encounters"
-
 end function
 
 loadEncountersFromFolder = function(path)
@@ -27,14 +29,14 @@ loadOneEncounter = function(parentPath, filename)
 	import filename
 	env.importPaths.remove 0
 	content = locals[filename]
-	content.sourcePath = file.child(parentPath, filename + ".ms")
-	encounters.push content
+	content.encounter.sourcePath = file.child(parentPath, filename + ".ms")
+	encounterList.push content.encounter
 end function
 
 planEncounters = function(sourceStation, destStation)
 	// first gather all the encounters we might present
 	possibilities = []
-	for enc in encounters
+	for enc in encounterList
 		cons = enc.consider(sourceStation, false)
 		if cons != null then
 			cons.time = cons.distance * 2
@@ -76,7 +78,7 @@ end function
 init
 	
 if locals == globals then
-	print "Loaded " + encounters.len + " encounters,"
-	print "from " + encounters[0].sourcePath
-	print "  to " + encounters[-1].sourcePath
+	print "Loaded " + encounterList.len + " encounters,"
+	print "from " + encounterList[0].sourcePath
+	print "  to " + encounterList[-1].sourcePath
 end if
