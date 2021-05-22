@@ -83,10 +83,10 @@ Character.openDoorIfNeeded = function()
 	if not self.path or not self.ship then return
 
 	dir = constants.dirFromDelta(self.path[0][1]-self.row, self.path[0][0]-self.col)
-	d = self.ship.map[self.col][self.row].walls[dir]
-	if d isa Door then
-		d.openForUser self
-		self.usingDoor = d
+	door = self.ship.map[self.col][self.row].walls[dir]
+	if door isa Door then
+		door.openForUser self
+		self.usingDoor = door
 	end if
 end function
 
