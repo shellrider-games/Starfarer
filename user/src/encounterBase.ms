@@ -59,12 +59,12 @@ Encounter.showDialog = function(data, text, options=[])
 	panel.init 480-180, 320 - h/2, 360, h, "panel"
 	panel.draw
 	
-	textBox.bounds.y = panel.bounds.y + textBox.height/2 - 16
+	textBox.bounds.y = panel.top - 22 - textBox.height/2
 	textBox.draw
 	
 	whereLabel = new uiWidgets.Label
-	whereLabel.init panel.right-204, panel.top-20, 200, 20
-	whereLabel.color = "#8080FF"
+	whereLabel.init panel.right-204, panel.top-18, 200, 18
+	whereLabel.color = "#CCCCFF"
 	whereLabel.alignment = uiWidgets.ALIGNRIGHT
 	whereLabel.text = round(data.distance * 100000) + " km from " + data.station.name
 	whereLabel.draw
