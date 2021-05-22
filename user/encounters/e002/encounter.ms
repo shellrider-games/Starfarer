@@ -1,4 +1,5 @@
-// Our very first encounter!
+// Our second test encounter.
+// Gain a crewman!
 
 if not globals.hasIndex("Encounter") then
 	if env.importPaths.indexOf("/usr/src") == null then
@@ -21,27 +22,30 @@ encounter = new encounterBase.Encounter
 // The host app will then decide whether to actually present this
 // encounter.
 encounter.consider = function(station, arriving)
-	probability = 0.20		// 20% chance of this encounter
+	// this encounter only happens on the departing leg
+	if arriving then return null
+	// and even there, only with low probability
+	probability = 0.10
 	if rnd > probability then return null
+	
 	return self.consideration(station, arriving, 0)
 end function
 
-// If the host app decides to present this encounter, then it will call
-// this present method, with the data returned from consider():
 encounter.present = function(data)
-	value = floor(rnd * 10) + 5
-	description = "You have encountered an anomaly.  It hangs in front of your " +
-	  "ship like a particularly empty region of space.  " +
-	  "Analyzing it with your ship sensors yields data worth " +
-	  value + " credits."
-
+	description = "As you are exiting the system, your sensors pick up a tiny " +
+	  "one-person pod.  Investigating, you find a half-starved man inside, who " +
+	  "begs you to join your crew.  ""Take me with you!"" he pleads.  ""I can't " +
+	  "go back there!"""
 	self.showDialog data, description
-	crewStatistics.money = crewStatistics.money + value
+
+	newbie = new character.Character
+	newbie.setMapPos [0, 2]
+	newbie.boardShip playerShip
+	game.renderer.renderMinion newbie
 end function
 
 
 if locals == globals then
-	crewStatistics = {"money": 0}
 	enc = new encounter
 	enc.present enc.consideration({"name":"Demo"}, true)
 end if
