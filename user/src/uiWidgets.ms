@@ -7,6 +7,7 @@
 if not globals.hasIndex("disp") then import "setup"
 if not globals.hasIndex("qa") then import "qa"
 import "stringUtil"
+import "listUtil"
 
 //----------------------------------------------------------------------
 // Constants
@@ -131,6 +132,11 @@ Widget.start = function()
 	self.draw
 end function
 
+Widget.stop = function()
+	_allWidgets.removeVal self
+	self.erase
+end function
+
 Widget.update = function(dt = 0.1)
 	// (overridden in most subclasses)
 end function
@@ -245,7 +251,7 @@ end function
 Label.draw = function()
 	self.font.setColor self.color
 	if self.hasIndex("lines") then data = self.lines else data = [self.text]
-	y = self.bounds.y + (data.len/2 - 1) * (self.font.lineHeight + self.leading)
+	y = self.bounds.y + 1 - self.font.sizeInner/2 + (data.len/2 - 1) * (self.font.lineHeight + self.leading)
 	for line in data
 		if self.alignment == ALIGNRIGHT then
 			w = self.font.width(line)
@@ -258,6 +264,7 @@ Label.draw = function()
 		end if
 		y = y - self.font.lineHeight - self.leading
 	end for
+	//for debugging, draw the frame: gfx.drawPoly self.bounds.corners, color.fuchsia
 end function
 
 Label.setText = function(s)
@@ -321,7 +328,7 @@ Button.downImg = load9SliceImage("uiButtonDown")
 Button.NORMAL = 0
 Button.PRESSED = 1
 Button.state = Button.NORMAL
-Button.caption = "Button"
+Button.caption = "Button"		// may be a string, or a Label
 Button.font = "Arial14"
 Button.trackingPress = false	// true when tracking a mouse click
 
@@ -336,16 +343,22 @@ Button.action = function()
 end function
 
 Button.draw = function()
-	y = self.bounds.y - 3
+	y = self.bounds.y + 1
 	if self.state == Button.PRESSED then
 		self.downImg.draw self.left, self.bottom, self.width, self.height
 		y = y - 2
 	else
 		self.upImg.draw self.left, self.bottom, self.width, self.height
 	end if
-	f = fonts[self.font]
-	f.setColor color.black
-	f.printCentered self.caption, self.bounds.x, y
+	if self.caption isa string then
+		f = fonts[self.font]
+		f.setColor color.black
+		f.printCentered self.caption, self.bounds.x, y - f.lineHeight * 0.2
+	else
+		self.caption.bounds.x = self.bounds.x
+		self.caption.bounds.y = y
+		self.caption.draw
+	end if
 end function
 
 Button.update = function(dt = 0.1)

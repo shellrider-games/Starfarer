@@ -209,6 +209,23 @@ Ship.removeCargo = function()
 	return removedItem
 end function
 
+Ship.findItemOfType = function(type)
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.map[col][row] == null then continue
+			c = self.map[col][row].contents
+			// Note: you might think we could use `c isa type` here.
+			// But that doesn't always work reliably, if the calling code is
+			// in some module that has imported item separately and so may
+			// have a different instance of the type class.  Checking the
+			// name always works.
+			if c != null and c.name == type.name then return c
+		end for
+	end for
+	return null
+end function
+
+
 // Find the minion (if any) at a given row and column (position map).
 Ship.minionAt = function(col,row)
 	for minion in self.minions

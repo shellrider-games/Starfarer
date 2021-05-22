@@ -3,6 +3,8 @@
 // drawing a dialog describing what's happening, giving the user response
 // choices, etc.
 
+if not globals.hasIndex("uiWidgets") then import "uiWidgets"
+
 Encounter = {}
 
 // Consider presenting this encounter.  Subclasses will usually want to
@@ -54,13 +56,49 @@ Encounter.showDialog = function(data, text, options=[])
 	textBox.color = "#222222"
 	textBox.wrap
 	
+	responseButtons = []
+	if options then
+		for i in options.indexes
+			opt = options[i]
+			label = new uiWidgets.Label
+			label.init 0, 0, 220, fonts.Arial14.lineHeight, "response " + i
+			label.text = opt
+			label.font = fonts.Arial14
+			label.color = "#222222"
+			label.wrap
+		
+			btn = new uiWidgets.Button
+			btn.init 0, 0, label.width + 20, label.height + 10, "response " + i
+			btn.caption = label
+			btn.choiceNum = i
+			btn.action = function()
+				outer.responseIndex = self.choiceNum
+				outer.done = true
+			end function
+			responseButtons.push btn
+		end for
+	end if
+		
 	panel = new uiWidgets.Panel
-	h = textBox.height + 100
+	h = textBox.height + 60 + 40 * (responseButtons.len == 0)
+	for btn in responseButtons
+		h = h + btn.height + 10
+	end for
 	panel.init 480-180, 320 - h/2, 360, h, "panel"
 	panel.draw
 	
-	textBox.bounds.y = panel.top - 22 - textBox.height/2
+	y = panel.top - 22
+	textBox.bounds.y = y - textBox.height/2
 	textBox.draw
+	y = y - textBox.height - 20
+	
+	for btn in responseButtons
+		btn.bounds.x = panel.bounds.x
+		btn.bounds.y = y - btn.height/2
+		btn.backColor = panel.mainColor
+		btn.start
+		y = y - btn.height - 10
+	end for
 	
 	whereLabel = new uiWidgets.Label
 	whereLabel.init panel.right-204, panel.top-18, 200, 18
@@ -69,20 +107,26 @@ Encounter.showDialog = function(data, text, options=[])
 	whereLabel.text = round(data.distance * 100000) + " km from " + data.station.name
 	whereLabel.draw
 
-	okButton = new uiWidgets.Button
-	okButton.init 480-40, panel.bottom + 20, 80, 24, "OK"
-	okButton.backColor = panel.mainColor
-	okButton.start
-	okButton.action = function()
-		outer.done = true
-	end function
+	okButton = null
+	if not responseButtons then
+		okButton = new uiWidgets.Button
+		okButton.init 480-40, panel.bottom + 20, 80, 24, "OK"
+		okButton.backColor = panel.mainColor
+		okButton.start
+		okButton.action = function()
+			outer.done = true
+		end function
+	end if
 
 	done = false
+	responseIndex = null
 	while not done
 		uiWidgets.update 1/60
 		yield
 	end while
 
+	if okButton then okButton.stop
+	for btn in responseButtons; btn.stop; end for
 	panel.erase
-	return null
+	return responseIndex
 end function
