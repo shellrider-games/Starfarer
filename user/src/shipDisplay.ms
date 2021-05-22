@@ -66,11 +66,15 @@ Renderer.renderShip = function(ship)
 	
 	// load the minions
 	for m in ship.minions
-		pos = self.mapToScreenPosition(m)
-		m.x = pos.x; m.y = pos.y
-		disp.shipSprites.sprites.removeVal m
-		disp.shipSprites.sprites.push m
+		self.renderMinion m
 	end for
+end function
+
+Renderer.renderMinion = function(minion)
+	pos = self.mapToScreenPosition(minion)
+	minion.x = pos.x; minion.y = pos.y
+	disp.shipSprites.sprites.removeVal minion
+	disp.shipSprites.sprites.push minion
 end function
 
 Renderer.placeDoor = function(door, cell, direction)

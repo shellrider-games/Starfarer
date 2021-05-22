@@ -69,6 +69,11 @@ Character.boardShip = function(ship)
 	ship.minions.push self
 end function
 
+Character.leaveShip = function()
+	if self.ship then self.ship.minions.removeVal self
+	self.ship = null
+end function
+
 // Move the character towards the given screen position, moving no more than the 
 // given amount (distance, in pixels).  Return true if we moved, or false if we
 // were already there.
