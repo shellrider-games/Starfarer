@@ -5,12 +5,20 @@
 import "listUtil"
 import "stringUtil"
 
-engWords = file.readLines("/sys/data/englishWords.txt")
+addWordList = function(path)
+	outer.words = outer.words + file.readLines(path)
+end function
+
+words = []
+
+addWordList("/sys/data/englishWords.txt")
+addWordList("/usr/data/german_nouns.txt")
+
 
 // Generate a generic name we can use when we don't have anything better.
 generic = function()
 	// For now, we'll just pick a random word and capitalize it.
-	return engWords.any.titleCase
+	return words.any.titleCase
 end function
 
 // Generate a good name for a star/planet/station.
@@ -27,7 +35,7 @@ human = function()
 end function
 
 demo = function()
-	print "Generic names:"
+
 	for i in range(9)
 		print "  - " + generic
 	end for
@@ -35,6 +43,7 @@ demo = function()
 	for i in range(9)
 		print "  - " + human
 	end for
+
 end function
 
 if locals == globals then demo
