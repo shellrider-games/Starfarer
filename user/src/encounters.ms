@@ -24,7 +24,10 @@ loadEncountersFromFolder = function(path)
 end function
 
 loadOneEncounter = function(parentPath, filename)
-	env.importPaths.insert 0, parentPath
+	// On WebGL, file.children appends a trailing "/" to directory names.
+	// But import doesn't like that (on its importPaths).  So, we'll just
+	// subtract the "/", and that will strip it off, if found.
+	env.importPaths.insert 0, parentPath - "/"
 	filename = filename - ".ms"
 	import filename
 	env.importPaths.remove 0
