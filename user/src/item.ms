@@ -4,6 +4,7 @@
 // It is both model and view: that is, it contains the data which is part
 // of a shipModel, but it's also a Sprite that can be loaded by shipDisplay.
 
+
 if not globals.hasIndex("spriteUtil") then import "spriteUtil"
 
 // Item (sprite subclass)
