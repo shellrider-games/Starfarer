@@ -1,0 +1,17 @@
+#MINIMUM IMPLEMENTATION
+
+- fuel system
+- ship hull (hp system)
+
+## fuel system ##
+
+- ship uses fuel when traveling
+- current fuel status is displayed in UI
+- ship can be refueled at stations
+
+## ship hull ##
+
+- ship has a value of hitpoints (hullpoints)
+- ship "health" is displayed in UI
+- ship can be repaired at stations
+- events can damage the ship
