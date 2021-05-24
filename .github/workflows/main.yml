@@ -26,7 +26,7 @@ jobs:
       - name: Overwrite startup.ms
         run: echo "load "src/starfarer"; run" > user/startup.ms
       - name: Zip user to user.minidisk
-        run: zip -r user.minidisk user/*
+        run: zip -r -j user.minidisk user
       - name: copy user.minidisk into webgl folder
         run: cp user.minidisk minimicro-webgl/MiniMicro/StreamingAssets/
       - name: Zip Starfarer
