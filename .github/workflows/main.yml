@@ -24,11 +24,12 @@ jobs:
       - name: Extract minimicro-webgl archive
         run: unzip minimicro-webgl.zip -d minimicro-webgl
       - name: Overwrite startup.ms
-        run: echo "load "src/starfarer"; run" > user/startup.ms
+        run: echo 'load "src/starfarer"; run' > user/startup.ms
       - name: Zip user to user.minidisk
         run: |
           cd user
           zip -r ../user.minidisk *
+          cd ..
       - name: copy user.minidisk into webgl folder
         run: cp user.minidisk minimicro-webgl/MiniMicro/StreamingAssets/
       - name: Zip Starfarer
