@@ -22,8 +22,6 @@ jobs:
         run: curl https://miniscript.org/files/minimicro-webgl.zip --output minimicro-webgl.zip
       - name: Extract minimicro-webgl archive
         run: unzip minimicro-webgl.zip -d minimicro-webgl
-      - name: Copy user folder
-        run: cp -R $GITHUB_WORKSPACE/user user
       - name: Overwrite startup.ms
         run: echo "load "src/starfarer"; run" > user/startup.ms
 
