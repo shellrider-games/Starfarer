@@ -32,5 +32,6 @@ jobs:
       - name: Zip Starfarer
         run: zip -r minimicro-webgl/Starfarer.zip minimicro-webgl/MiniMicro
       - name: Push to itch.io
+        env: BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: ./butler push minimicro-webgl/Starfarer.zip shellrider/starfarer:html5
 
