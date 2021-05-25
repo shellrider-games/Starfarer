@@ -1,0 +1,41 @@
+name: Deploy to itch.io
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    environment: itch-deploy
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Install zip and unzip
+        run: sudo apt install zip unzip -y
+      - name: Install butler
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+      - name: Checkout WebGL template
+        run: curl https://miniscript.org/files/minimicro-webgl.zip --output minimicro-webgl.zip
+      - name: Extract minimicro-webgl archive
+        run: unzip minimicro-webgl.zip -d minimicro-webgl
+      - name: Overwrite startup.ms
+        run: echo 'load "src/starfarer"; run' > user/startup.ms
+      - name: Zip user to user.minidisk
+        run: |
+          cd user
+          zip -r ../user.minidisk *
+          cd ..
+      - name: copy user.minidisk into webgl folder
+        run: cp user.minidisk minimicro-webgl/MiniMicro/StreamingAssets/
+      - name: Zip Starfarer
+        run: zip -r minimicro-webgl/Starfarer.zip minimicro-webgl/MiniMicro
+      - name: Push to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: ./butler push minimicro-webgl/Starfarer.zip shellrider/starfarer:html5
+
