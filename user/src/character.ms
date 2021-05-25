@@ -181,6 +181,7 @@ end function
 // it will pick it up immediately.  If not, it will path-find to it, and
 // then pick it up once it's next to it.
 Character.pickUp = function(item)
+	if self.carrying != null then return
 	dcol = item.col - self.col; drow = item.row - self.row
 	if abs(dcol) > 1 or abs(drow) > 1 then
 		// Too far away!  Walk over there, and THEN pick it up.
@@ -201,14 +202,15 @@ end function
 // Drop the item we're carrying into the cell at the given position.
 // If that position is more than 1 square away, walk to it first.
 Character.dropItem = function(onPos)
-	item = self.carrying
-	if item == null then return
-
 	if onPos isa map then
 		col = onPos.col; row = onPos.row
 	else
 		col = onPos[0]; row = onPos[1]
 	end if
+	if self.ship.getCell(col,row).contents != null then return
+	item = self.carrying
+	if item == null then return
+
 	dcol = col - self.col; drow = row - self.row
 	if abs(dcol) > 1 or abs(drow) > 1 then
 		// Too far away!  Hoof it over there.
