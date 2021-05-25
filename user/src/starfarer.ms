@@ -141,7 +141,6 @@ Starfarer.handlePrimaryClick = function(pos)
 		if self.selectedMinion.contains(minion) then
 			self.selectedMinion.removeVal minion
 		else
-			// with left-shift, add to selection; otherwise replace selection
 			if key.pressed("left shift") then
 				self.selectedMinion.push minion
 			else

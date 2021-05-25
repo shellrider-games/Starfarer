@@ -67,7 +67,6 @@ end function
 demo = function()
     disp.uiPixel.clear
 	disp.uiSprites.clear
-	//text.clear
 
     show
     showTravel {"name":"Demo"}, 0, false

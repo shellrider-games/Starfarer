@@ -59,7 +59,6 @@ planEncounters = function(sourceStation, destStation)
 	outer.elapsed = 0
 	if not possibilities then return
 	// For now, we'll just shuffle and take the first 1-3.
-	// ToDo: pay attention to priority.
 	max = ceil(rnd*3)
 	outer.pending = possibilities
 	if pending.len > max then

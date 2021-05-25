@@ -15,14 +15,6 @@ frameSize = 16		// width and height of each frame in the sprite sheet
 
 defaultSheet = file.loadImage("/usr/pics/pixelguy.png")
 
-// functions to get a delta X and Y given a facing direction
-// dx = function(dir)
-// 	return [0, 1, 0, -1][dir]
-// end function
-// dy = function(dir)
-// 	return [1, 0, -1, 0][dir]
-// end function
-
 getAnim = function(sheet, row=0, fromCol=0, count=1)
 	frames = []
 	for i in range(0, count-1)

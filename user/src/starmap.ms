@@ -46,30 +46,6 @@ init = function()
 	// prepare star selection sprite
 	outer.selectionSprite = new Sprite
 	selectionSprite.image = file.loadImage("/usr/pics/starCursor.png")
-	
-//
-//	create stars
-//	for i in range(99)
-//		spr = new Sprite
-//		spr.mapX = mathUtil.randRange(-WIDTH/2, WIDTH/2)
-//		spr.mapY = mathUtil.randRange(-HEIGHT/2, HEIGHT/2)
-//		imgNum = mathUtil.randRange(0, starImages.len)
-//		if imgNum < starImages.len/2 then
-//			spr.mapScale = mathUtil.randRange(0.125, 0.25)
-//			small stars can be any color
-//			colorNum = floor(mathUtil.randRange(0, 4))
-//		else
-//			spr.mapScale = mathUtil.randRange(0.25, 0.5)
-//			big stars can only be blue or red
-//			small stars can be any color
-//			colorNum = floor(mathUtil.randRange(0, 2))
-//		end if
-//		spr.image = starImages[imgNum]
-//		if colorNum == 0 then spr.tint = "#AAAAFF"
-//		if colorNum == 1 then spr.tint = "#FF8888"
-//		if colorNum == 2 then spr.tint = "#FFFF88"
-//		starSprites.push spr
-//	end for
 end function
 
 //----------------------------------------------------------------------

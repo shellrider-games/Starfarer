@@ -46,7 +46,6 @@ end function
 
 // Cell.walkable: returns whether an agent can step into this cell.
 Cell.walkable = function()
-	//print "checking walkable at " + self.col + "," + self.row
 	return self.contents == null or not self.contents.blocksWalking
 end function
 
