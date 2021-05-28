@@ -319,6 +319,56 @@ Bar.setValue = function(value)
 	self.redraw
 end function
 
+
+ValuedBar = new Widget
+ValuedBar.bar = new Bar
+ValuedBar.label = new Label
+ValuedBar.maxValue = 10
+ValuedBar.value = 10
+
+
+ValuedBar.updateBar = function()
+	self.bar.setValue self.value/self.maxValue
+end function
+
+ValuedBar.updateLabel = function()
+	text = ""+self.value+"/"+self.maxValue
+	self.label.setText text
+end function
+
+ValuedBar.draw = function()
+	self.updateBar
+	self.updateLabel
+	self.bar.redraw
+	self.label.redraw
+end function
+
+ValuedBar.initBarAndLabel = function()
+	fontDistance = 20
+	self.bar = new Bar
+	self.bar.init self.left, self.bottom+fontDistance, self.width, self.height-fontDistance
+	self.label = new Label
+	self.label.init self.left, self.bottom, self.width, fontDistance
+end function
+
+
+ValuedBar.init = function(left, bottom, width, height, maxValue = 10, currentValue = null)
+	self.maxValue = maxValue
+	if currentValue == null then
+		self.currentValue = maxValue
+	else 
+		self.currentValue = currentValue
+	end if
+	super.init left, bottom, width, height
+	self.initBarAndLabel
+end function
+
+ValuedBar.update = function(dt = 0.1)
+	self.draw
+end function
+
+
+
 //----------------------------------------------------------------------
 // Button: represents a push button.
 //----------------------------------------------------------------------
@@ -542,10 +592,16 @@ demo = function()
 	bar.init 80, 600, 160, 20
 	bar.value = -0.5
 	bar.draw
+
+	valuedBar = new ValuedBar
+	valuedBar.init 80, 400, 160, 40
+	valuedBar.value = 5
+	valuedBar.draw
 	
 	while not key.pressed("escape")
 		update 1/60
 		bar.setValue ((bar.value+1.0015)%2) - 1
+		valuedBar.value = valuedBar.value % 11
 		yield
 	end while
 	key.clear

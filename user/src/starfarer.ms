@@ -5,6 +5,8 @@ cd "/usr/src"
 import "listUtil"
 import "constants"
 import "setup"
+import "encounters"
+globals.encounters = encounters
 import "spriteUtil"
 import "item"
 import "crewStatistics"
@@ -18,6 +20,7 @@ import "stationUI"
 import "starmap"
 import "playerUI"
 import "effects"
+
 
 Starfarer = {}
 
