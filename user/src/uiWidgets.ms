@@ -298,11 +298,11 @@ Bar.draw = function()
 	
 	// fill
 	if self.value >= 0 then
-		divx = left+3 + (width-6) * self.value
+		divx = left+3 + round((width-6) * self.value)
 		disp.uiPixel.fillRect left+3, bottom+3, divx - (left+3), height-6, self.color
 		disp.uiPixel.fillRect divx, bottom+3, right-3 - divx, height-6, color.clear
 	else
-		divx = right-3 + (width-6) * self.value
+		divx = right-3 + round((width-6) * self.value)
 		disp.uiPixel.fillRect left+3, bottom+3, divx - (left+3), height-6, color.clear
 		disp.uiPixel.fillRect divx, bottom+3, right-2 - divx, height-6, self.color
 	end if
@@ -319,13 +319,15 @@ Bar.setValue = function(value)
 	self.redraw
 end function
 
+//----------------------------------------------------------------------
+// ValuedBar: Combines a Bar with a label showing current/max.
+//----------------------------------------------------------------------
 
 ValuedBar = new Widget
 ValuedBar.bar = new Bar
 ValuedBar.label = new Label
 ValuedBar.maxValue = 10
 ValuedBar.value = 10
-
 
 ValuedBar.updateBar = function()
 	self.bar.setValue self.value/self.maxValue
@@ -351,20 +353,25 @@ ValuedBar.initBarAndLabel = function()
 	self.label.init self.left, self.bottom, self.width, fontDistance
 end function
 
-
 ValuedBar.init = function(left, bottom, width, height, maxValue = 10, currentValue = null)
 	self.maxValue = maxValue
 	if currentValue == null then
-		self.currentValue = maxValue
+		self.value = maxValue
 	else 
-		self.currentValue = currentValue
+		self.value = currentValue
 	end if
 	super.init left, bottom, width, height
 	self.initBarAndLabel
 end function
 
-ValuedBar.update = function(dt = 0.1)
-	self.draw
+ValuedBar.setValue = function(value, maxValue=null)
+	if maxValue == null then maxValue = self.maxValue
+	if value == self.value and maxValue == self.maxValue then return // (no change)
+	qa.assert value >= 0 and value <= self.maxValue
+	self.value = value
+	self.maxValue = maxValue
+	self.updateBar
+	self.updateLabel
 end function
 
 
@@ -537,6 +544,13 @@ update = function(dt = 0.1)
 	end for
 
 	outer.mouseWasPressed = mousePressed
+end function
+
+reset = function()
+	for w in _allWidgets
+		w.erase
+	end for
+	outer._allWidgets = []
 end function
 
 //----------------------------------------------------------------------

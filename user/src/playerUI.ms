@@ -9,12 +9,35 @@ travelModeLabel = null
 travelStationLabel = null
 travelProgressBar = null
 
+hullBar = null
+lastHull = [null,null]  // current, max value
+
+fuelBar = null
+lastFuel = [null,null]	// current, max value
+
 show = function()
-    moneyLabel = new uiWidgets.Label
-    moneyLabel.init 0, 620, 200, 20, "Credits: " + crewStatistics.money
+	uiWidgets.reset
+	
+    outer.moneyLabel = new uiWidgets.Label
+    moneyLabel.init 0, 620, 150, 20, "Credits: " + crewStatistics.money
 	moneyLabel.draw
 
-    outer.moneyLabel = moneyLabel
+	outer.hullBar = new uiWidgets.ValuedBar
+	hullBar.init 200, 600, 200, 40, crewStatistics.maxHull, crewStatistics.hull
+	hullBar.draw
+	outer.hullBarLabel = new uiWidgets.Label
+	hullBarLabel.init hullBar.left-8-100, 620, 100, 20, "Hull:"
+	hullBarLabel.alignment = uiWidgets.ALIGNRIGHT
+	hullBarLabel.draw
+
+	outer.fuelBar = new uiWidgets.ValuedBar
+	fuelBar.init 500, 600, 200, 40, crewStatistics.maxFuel, crewStatistics.fuel
+	fuelBar.draw
+	outer.fuelBarLabel = new uiWidgets.Label
+	fuelBarLabel.init fuelBar.left-8-100, 620, 100, 20, "Fuel:"
+	fuelBarLabel.alignment = uiWidgets.ALIGNRIGHT
+	fuelBarLabel.draw
+
 end function
 
 // Show travel progress: we're the given distance (0-1)
@@ -62,6 +85,16 @@ update = function(dt = 0.1)
 		outer.lastMoney = crewStatistics.money
 	    moneyLabel.setText "Credits: " + crewStatistics.money
 	end if
+	if crewStatistics.hull != lastHull[0] or crewStatistics.maxHull != lastHull[1] then
+		lastHull[0] = crewStatistics.hull
+		lastHull[1] = crewStatistics.maxHull
+		hullBar.setValue crewStatistics.hull, crewStatistics.maxHull
+	end if
+	if crewStatistics.fuel != lastFuel[0] or crewStatistics.maxFuel != lastFuel[1] then
+		lastFuel[0] = crewStatistics.fuel
+		lastFuel[1] = crewStatistics.maxFuel
+		fuelBar.setValue crewStatistics.fuel, crewStatistics.maxFuel
+	end if
 end function
 
 demo = function()
@@ -75,8 +108,11 @@ demo = function()
     while not key.pressed("q")
         wait 1
         crewStatistics.money = crewStatistics.money - 10
+        if rnd < 0.3 then crewStatistics.hull = crewStatistics.hull - 1
+        if rnd < 0.3 then crewStatistics.fuel = crewStatistics.fuel - 1
         showTravel {"name":"Demo"}, progress, false
-        progress = progress + 0.1
+        progress = progress + 0.2
+        if progress > 1 then progress = -1
         update
     end while
 end function

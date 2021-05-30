@@ -84,6 +84,11 @@ draw = function(stationList, curStation=null, jumpLimit=200)
 	// selection sprite
 	disp.uiSprites.sprites.push selectionSprite
 	
+	// fuel label, if any
+	// actually let's just have the player UI draw that
+	// a bit of a hack, I know, but...
+	playerUI.fuelBar.draw
+	
 	// cancel (back) button
 	outer.backBtn = new uiWidgets.Button
 	backBtn.init 900, 610, 60, 30, "BACK"

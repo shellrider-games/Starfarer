@@ -3,6 +3,7 @@
 
 cd "/usr/src"
 import "listUtil"
+import "miscUtil"; for f in ["min", "max"]; globals[f] = miscUtil[f]; end for
 import "constants"
 import "setup"
 import "encounters"
@@ -70,15 +71,16 @@ Starfarer.enterState = function(newState)
 	self.exitState newState
 	
 	if newState == self.STATE_AT_STATION then
+		playerUI.show
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP
 		end function
 		crewStatistics.currentStation = self.station
-		playerUI.show
 		
 	else if newState == self.STATE_NAVMAP then
-		starmap.draw self.stations, self.station
+		if crewStatistics.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
+		starmap.draw self.stations, self.station, jumpLimit
 		starmap.backBtn.action = function()
 			game.enterState Starfarer.STATE_AT_STATION
 		end function
@@ -92,6 +94,7 @@ Starfarer.enterState = function(newState)
 		end function
 		
 	else if newState == self.STATE_TRAVEL then
+		playerUI.show
 		encounters.planEncounters self.station, self.nextStation
 		
 	end if
@@ -116,10 +119,15 @@ end function
 Starfarer.updateTravel = function(dt)
 	t = self.timeInState / 2
 	if t > 2 then
+		// arrived
 		self.nextStation = null
 		self.enterState self.STATE_AT_STATION
 	else if t > 1 then
-		self.station = self.nextStation
+		// approaching destination
+		if self.station != self.nextStation then
+			self.station = self.nextStation
+			crewStatistics.fuel = max(crewStatistics.fuel - 1, 0)
+		end if
 		playerUI.showTravel self.nextStation, 2-t, true
 	else
 		playerUI.showTravel self.station, t, false
