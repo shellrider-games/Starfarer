@@ -38,6 +38,20 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 		addCommodity left, y, width, 40, commodity.itemType, commodity.buyPrice, commodity.sellPrice 
 	end for
 	
+	if crewStatistics.fuel < crewStatistics.maxFuel and crewStatistics.money > 10 then
+		outer.buyFuelBtn = new Button
+		buyFuelBtn.init right - 100, bottom + 10, 80, 30, "Fuel ($10)"
+		buyFuelBtn.backColor = background.mainColor
+		buyFuelBtn.start
+		buyFuelBtn.action = function()
+			crewStatistics.fuel = crewStatistics.fuel + 1
+			crewStatistics.money = crewStatistics.money - 10
+			if crewStatistics.fuel >= crewStatistics.maxFuel or crewStatistics.money < 10 then
+				self.stop
+			end if 
+		end function
+	end if
+	
 	// navigation (depart/jump) button
 	outer.navBtn = new Button
 	navBtn.init 900, 610, 60, 30, "NAV"
