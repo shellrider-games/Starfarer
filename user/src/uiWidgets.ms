@@ -608,14 +608,13 @@ demo = function()
 	bar.draw
 
 	valuedBar = new ValuedBar
-	valuedBar.init 80, 400, 160, 40
+	valuedBar.init 80, 300, 160, 40
 	valuedBar.value = 5
 	valuedBar.draw
 	
 	while not key.pressed("escape")
 		update 1/60
 		bar.setValue ((bar.value+1.0015)%2) - 1
-		valuedBar.value = valuedBar.value % 11
 		yield
 	end while
 	key.clear
