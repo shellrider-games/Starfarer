@@ -9,6 +9,9 @@ if not globals.hasIndex("item") then import "item"
 if not globals.hasIndex("stationModel") then import "stationModel"
 if not globals.hasIndex("crewStatistics") then import "crewStatistics"
 
+costPerFuel = 10
+costPerRepair = 15
+
 // Import the widget classes directly into this module for more readable code:
 for idx in uiWidgets.indexes
 	if (idx[0] >= "A" and idx[0] <= "Z") or idx.startsWith("load") then
@@ -38,31 +41,20 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 		addCommodity left, y, width, 40, commodity.itemType, commodity.buyPrice, commodity.sellPrice 
 	end for
 	
-	if crewStatistics.fuel < crewStatistics.maxFuel and crewStatistics.money > 10 then
-		outer.buyFuelBtn = new Button
-		buyFuelBtn.init right - 100, bottom + 10, 80, 30, "Fuel ($10)"
-		buyFuelBtn.backColor = background.mainColor
-		buyFuelBtn.start
-		buyFuelBtn.action = function()
-			crewStatistics.fuel = crewStatistics.fuel + 1
-			crewStatistics.money = crewStatistics.money - 10
-			if crewStatistics.fuel >= crewStatistics.maxFuel or crewStatistics.money < 10 then
-				self.stop
-			end if 
-		end function
+	// Buy (1) Fuel button
+	x = right - 20
+	if crewStatistics.fuel < crewStatistics.maxFuel and crewStatistics.money > costPerFuel then
+		outer.buyFuelBtn = addBottomButton("Fuel ($" + costPerFuel + ")", x)
+		buyFuelBtn.action = @buyFuel
 	end if
-
-	if crewStatistics.hull < crewStatistics.maxHull and crewStatistics.money > 100 then
-		outer.repairButton = new Button
-		repairButton.init right - 210, bottom + 10, 100, 30, "Repair ($100)"
-		repairButton.backColor = background.mainColor
-		repairButton.start
-		repairButton.action = function()
-			crewStatistics.hull = crewStatistics.maxHull
-			crewStatistics.money = crewStatistics.money - 100
-			self.stop
-		end function
+	x = x - 120
+	
+	// Repair (1) button
+	if crewStatistics.hull < crewStatistics.maxHull and crewStatistics.money > costPerRepair then
+		outer.repairButton = addBottomButton("Repair ($" + costPerRepair + ")", x)
+		repairButton.action = @buyRepair
 	end if
+	x = x - 120
 	
 	// navigation (depart/jump) button
 	outer.navBtn = new Button
@@ -70,6 +62,26 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 	navBtn.backColor = color.black
 	navBtn.start
 	
+end function
+
+buyFuel = function()
+	crewStatistics.fuel = crewStatistics.fuel + 1
+	crewStatistics.money = crewStatistics.money - costPerFuel
+	if crewStatistics.fuel >= crewStatistics.maxFuel  or crewStatistics.money < costPerFuel then buyFuelBtn.stop
+end function
+
+buyRepair = function()
+	crewStatistics.hull = crewStatistics.hull + 1
+	crewStatistics.money = crewStatistics.money - costPerRepair
+	if crewStatistics.hull >= crewStatistics.maxHull  or crewStatistics.money < costPerFuel then repairButton.stop
+end function
+
+addBottomButton = function(caption, right, width=100)
+	button = new Button
+	button.init right - width, background.bottom + 10, width, 30, caption
+	button.backColor = background.mainColor
+	button.start
+	return button
 end function
 
 hide = function()

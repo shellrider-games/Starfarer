@@ -1,4 +1,4 @@
-// An alien fungus gives you a chance to turn food into medicine.
+// You find some debris: risk damage to search it for valuables?
 
 if not globals.hasIndex("Encounter") then
 	if env.importPaths.indexOf("/usr/src") == null then
@@ -32,13 +32,12 @@ end function
 // this present method, with the data returned from consider():
 encounter.present = function(data)
 	value = floor(rnd * 10) + 5
-	description = "You find debris of an unknown spaceship floating around." +
-     "You can search the debris for valuables but there is a risk of it damaging your ship if you stay too long."
+	description = "You find debris of an unknown spaceship floating around. " +
+     " You can search the debris for valuables but there is a risk of it" +
+     " damaging your ship if you stay too long."
 
 	choice = self.showDialog(data, description, ["Search the debris.", "Ignore it"])
 	if choice == 1 then return		// declined to try
-
-
 	
 	success = (rnd < 0.80)
 	if success then
@@ -52,8 +51,11 @@ encounter.present = function(data)
 	else
 		description = "Your search yields no results."
 	end if
-    description = description + " Unfortunately your ship got hit and your hull damaged in the process."
-    crewStatistics.hull = crewStatistics.hull - 2
+	if rnd < 0.50 then
+	    description = description + 
+	      " Unfortunately your ship got hit and your hull damaged in the process."
+	    crewStatistics.hull = crewStatistics.hull - 2
+	end if
 	self.showDialog data, description
 end function
 
