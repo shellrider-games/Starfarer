@@ -51,6 +51,18 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 			end if 
 		end function
 	end if
+
+	if crewStatistics.hull < crewStatistics.maxHull and crewStatistics.money > 100 then
+		outer.repairButton = new Button
+		repairButton.init right - 210, bottom + 10, 100, 30, "Repair ($100)"
+		repairButton.backColor = background.mainColor
+		repairButton.start
+		repairButton.action = function()
+			crewStatistics.hull = crewStatistics.maxHull
+			crewStatistics.money = crewStatistics.money - 100
+			self.stop
+		end function
+	end if
 	
 	// navigation (depart/jump) button
 	outer.navBtn = new Button
