@@ -171,6 +171,18 @@ Ship.getAnyFreeCargoInCell = function()
 	return null
 end function
 
+Ship.getAnyFreeCellPreferCargoInCell = function()
+	result = self.getAnyFreeCargoInCell()
+	if result == null then
+		for col in self.columnRange
+			for row in self.rowRange
+				if self.getCell(col, row).contents == null then result = self.getCell(col,row)
+			end for
+		end for
+	end if
+	return result
+end function
+
 Ship.getFullCargoInCells = function()
 	result = []
 	for col in self.columnRange
