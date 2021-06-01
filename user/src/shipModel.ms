@@ -58,6 +58,12 @@ Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
 	return wallInDirection.isOpen or (assumeDoorsOpen and wallInDirection.canOpen)
 end function
 
+System = {}
+System.col = 0
+System.row = 0
+System.width = 1
+System.height = 1
+
 //----------------------------------------------------------------------
 // Ship: everything there is to know about a ship.
 //----------------------------------------------------------------------
@@ -71,6 +77,7 @@ Ship.mapOffset = [0,0]  // x,y offset for map image
 Ship.minions = []		// living things on a ship
 Ship.incomingTypes = []	// list of ItemTypes bought but not yet loaded
 Ship.outgoingTypes = []	// list of ItemTypes sold but not yet unloaded
+Ship.systems = []
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -305,6 +312,10 @@ Ship.placeRightWalls = function(left, bottom, length)
 	for row in range(bottom,bottom+length-1)
 		self.place left, row, EAST, new Wall
 	end for
+end function
+
+Ship.addSystem = function(system)
+	self.systems.push system
 end function
 
 //----------------------------------------------------------------------
@@ -614,6 +625,10 @@ runUnitTests = function()
 	testShip.getCell(0,0).type = Celltype.CARGO_OUT
 	qa.assertEqual testShip.isCargoOutCell(0,0), true
 	qa.assertEqual testShip.getCargoOutCells, [testShip.getCell(0,0)]
+
+	setupTestShip
+	testShip.addSystem(new System)
+	qa.assertEqual testShip.systems, [new System]
 
 end function
 
