@@ -64,6 +64,13 @@ System.row = 0
 System.width = 1
 System.height = 1
 
+System.make = function(col, row, width=1, height=1)
+	noob = new System
+	noob.col = col; noob.row = row
+	noob.width = width; noob.height = height
+	return noob
+end function
+
 //----------------------------------------------------------------------
 // Ship: everything there is to know about a ship.
 //----------------------------------------------------------------------
@@ -627,8 +634,8 @@ runUnitTests = function()
 	qa.assertEqual testShip.getCargoOutCells, [testShip.getCell(0,0)]
 
 	setupTestShip
-	testShip.addSystem(new System)
-	qa.assertEqual testShip.systems, [new System]
+	testShip.addSystem(System.make)
+	qa.assertEqual testShip.systems, [System.make]
 
 end function
 
