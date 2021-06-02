@@ -55,6 +55,7 @@ Character.path = []
 Character.usingDoor = null
 Character.col = 0			// horizontal position within the ship
 Character.row = 0			// vertical position within the ship
+Character.usingSystem = null
 
 Character.boardShip = function(ship)
 	self.ship = ship
@@ -141,6 +142,7 @@ Character.update = function(dt=0.1)
 
 	self.updateAnimation dt
 	self.updateCarriedItem
+	if self.usingSystem then self.useSystem dt
 end function
 
 Character.updateCarriedItem = function()
@@ -224,6 +226,18 @@ end function
 
 Character.goTo = function(mapPos)
 
+end function
+
+Character.useSystem = function(dt)
+	self.usingSystem.use self, dt
+end function
+
+Character.setUseSystem = function(system)
+	self.usingSystem = system
+end function
+
+Character.clearUseSystem = function()
+	self.usingSystem = null
 end function
 
 Character.setScreenPos = function(point)

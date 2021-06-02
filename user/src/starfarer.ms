@@ -187,7 +187,14 @@ Starfarer.handlePrimaryClick = function(pos)
 end function
 
 Starfarer.handleSecondaryClick = function(pos)
-	// Right-click not currently used.
+	if self.selectedMinion then
+		systemarray = playerShip.systemAt(self.renderer.screenToMapPosition(pos).col, self.renderer.screenToMapPosition(pos).row)
+		if  playerShip.systemAt(self.selectedMinion[0].col, self.selectedMinion[0].row) == systemarray and systemarray.len >= 1 then 
+			self.selectedMinion[0].setUseSystem systemarray[0]
+		else
+			self.selectedMinion[0].clearUseSystem
+		end if
+	end if
 end function
 
 

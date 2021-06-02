@@ -59,16 +59,23 @@ Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
 end function
 
 System = {}
+System.name = "GENERIC"
 System.col = 0
 System.row = 0
 System.width = 1
 System.height = 1
 
-System.make = function(col, row, width=1, height=1)
+System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
 	noob.col = col; noob.row = row
 	noob.width = width; noob.height = height
+	noob.name = name
 	return noob
+end function
+
+//This function should be overwritten by child classes
+System.use = function(character, dt = 0.1)
+	print character.name + " is using " + self.name + " for " + dt + " seconds."
 end function
 
 //----------------------------------------------------------------------
@@ -248,6 +255,14 @@ Ship.findItemOfType = function(type)
 		end for
 	end for
 	return null
+end function
+
+Ship.systemAt = function(col, row)
+	result = []
+	for system in self.systems
+		if (col >= system.col and col <= system.col + system.width) and (row >= system.row and row <= system.row + system.height) then result.push system
+	end for
+	return result
 end function
 
 
