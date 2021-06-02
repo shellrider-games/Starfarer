@@ -637,6 +637,7 @@ runUnitTests = function()
 	testShip.addSystem(System.make)
 	qa.assertEqual testShip.systems, [System.make]
 
+	print "shipModel unit tests complete."
 end function
 
 if locals == globals then

@@ -23,7 +23,7 @@ SpriteLerper.startScale = 1
 SpriteLerper.endScale = 1
 SpriteLerper.fadeIn = false
 SpriteLerper.fadeOut = false
-SpriteLerper.display = disp.shipSprites
+if globals.hasIndex("disp") then SpriteLerper.display = disp.shipSprites
 
 SpriteLerper.init = function(sprite)
 	self.startPos = {"x": sprite.x, "y": sprite.y}
