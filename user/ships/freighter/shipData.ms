@@ -56,4 +56,4 @@ ship.map[1][0].placeItem new item.GunsItem
 ship.map[1][1].placeItem new item.MedsItem
 ship.map[9][2].placeItem new item.WaterItem
 
-
+ship.addSystem(shipModel.System.make(1, 12, 2, 2))

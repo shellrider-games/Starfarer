@@ -68,6 +68,8 @@ Renderer.renderShip = function(ship)
 	for m in ship.minions
 		self.renderMinion m
 	end for
+
+	self.renderShipSystems
 end function
 
 Renderer.renderMinion = function(minion)
@@ -148,6 +150,13 @@ Renderer.putItem = function(item, mapPos)
 	end for
 	targetCell.contents = item
 	self.renderContents targetCell
+end function
+
+Renderer.renderShipSystems = function()
+	for system in self.ship.systems
+		disp.uiPixel.color = color.rgba(0,0,255,127)
+		disp.uiPixel.fillRect self.mapZeroZero.x + system.col*CELLSIZE, self.mapZeroZero.y + system.row*CELLSIZE, system.width*CELLSIZE, system.height*CELLSIZE
+	end for
 end function
 
 // Update just this one ship renderer.  Here we check for cargo bought/sold, etc.
