@@ -58,6 +58,11 @@ Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
 	return wallInDirection.isOpen or (assumeDoorsOpen and wallInDirection.canOpen)
 end function
 
+
+//----------------------------------------------------------------------
+// System: base class of any system that can be installed on a ship.
+//----------------------------------------------------------------------
+
 System = {}
 System.name = "GENERIC"
 System.col = 0
