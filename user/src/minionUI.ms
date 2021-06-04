@@ -2,9 +2,21 @@ if not globals.hasIndex("uiWidgets") then import "uiWidgets"
 if not globals.hasIndex("character") then import "character"
 
 minions = []
+nametags = []
+healthbars = []
 
 init = function(minions)
     outer.minions = minions
+end function
+
+show = function()
+    uiWidgets.reset
+
+    for i in range(0, minions.len-1)
+        nametag = new uiWidgets.Label
+        nametag.init 20, 530-60*i, 160, 20, minions[i].name
+        nametag.draw
+    end for
 end function
 
 demo = function()
@@ -17,6 +29,11 @@ demo = function()
     demoCharacter2.name = "Becca"
     demoCharacter2.maxHealth = 8
     demoCharacter2.health = 6
+
+    minions = [demoCharacter1, demoCharacter2]
+
+    init(minions)
+    show()
 
     print demoCharacter1.name + " HP: " + demoCharacter1.health + "/" + demoCharacter1.maxHealth
     print demoCharacter2.name + " HP: " + demoCharacter2.health + "/" + demoCharacter2.maxHealth
