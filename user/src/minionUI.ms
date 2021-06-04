@@ -26,6 +26,13 @@ show = function()
     end for
 end function
 
+update = function(dt = 0.1)
+    for i in range(0, minions.len-1)
+        nametags[i].setText minions[i].name
+        healthbars[i].setValue minions[i].health, minions[i].maxHealth
+    end for
+end function
+
 demo = function()
     disp.uiPixel.clear
 	disp.uiSprites.clear
@@ -41,12 +48,10 @@ demo = function()
 
     init(minions)
     show()
-
-    print demoCharacter1.name + " HP: " + demoCharacter1.health + "/" + demoCharacter1.maxHealth
-    print demoCharacter2.name + " HP: " + demoCharacter2.health + "/" + demoCharacter2.maxHealth
-
     while not key.pressed("q")
         wait 1
+        demoCharacter2.health = (demoCharacter2.health+1) % demoCharacter2.maxHealth
+        update(1)
     end while
 end function
 
