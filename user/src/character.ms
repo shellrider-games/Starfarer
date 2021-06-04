@@ -56,6 +56,8 @@ Character.usingDoor = null
 Character.col = 0			// horizontal position within the ship
 Character.row = 0			// vertical position within the ship
 Character.usingSystem = null
+Character.maxHealth = 10
+Character.health = 10
 
 Character.boardShip = function(ship)
 	self.ship = ship
