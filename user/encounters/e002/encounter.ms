@@ -31,7 +31,7 @@ encounter.consider = function(station, arriving)
 		// We can gain a crewman only on the departing leg
 		if arriving then return null
 		// and even there, only with low probability
-		probability = 0.10
+		probability = 0.1
 		if rnd > probability then return null
 	
 		return self.consideration(station, arriving, 0)
@@ -65,6 +65,8 @@ encounter.presentGain = function(data)
 
 	newbie = new character.Character
 	newbie.name = charName
+	newbie.maxHealth = 6 + ceil(6*rnd)
+	newbie.health = newbie.maxHealth
 	newbie.setMapPos [0, 2]
 	newbie.boardShip playerShip
 	game.renderer.renderMinion newbie
