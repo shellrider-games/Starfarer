@@ -374,7 +374,10 @@ ValuedBar.setValue = function(value, maxValue=null)
 	self.updateLabel
 end function
 
-
+ValuedBar.setColor = function(color)
+	self.bar.color = color
+	self.label.color = color
+end function
 
 //----------------------------------------------------------------------
 // Button: represents a push button.

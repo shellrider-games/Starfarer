@@ -14,8 +14,15 @@ show = function()
 
     for i in range(0, minions.len-1)
         nametag = new uiWidgets.Label
-        nametag.init 20, 530-60*i, 160, 20, minions[i].name
+        nametag.init 20, 530-60*i, 100, 20, minions[i].name
         nametag.draw
+        nametags.push nametag
+
+        healthbar = new uiWidgets.ValuedBar
+        healthbar.init 20, 490-60*i, 100, 40, minions[i].maxHealth, minions[i].health
+        healthbar.setColor color.lime
+        healthbar.draw
+        healthbars.push healthbar
     end for
 end function
 
