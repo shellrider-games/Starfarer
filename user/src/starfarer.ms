@@ -20,6 +20,7 @@ import "uiWidgets"
 import "stationUI"
 import "starmap"
 import "playerUI"
+import "minionUI"
 import "effects"
 
 
@@ -48,7 +49,11 @@ Starfarer.init = function()
 	// generate a random galaxy full of stations
 	self.stations = stationModel.manyRandomStations(30)
 	self.station = self.stations.any
-		
+
+	// Setup minion UI
+	minionUI.init playerShip.minions
+	minionUI.show
+
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
 	self.renderer.renderShip playerShip
@@ -72,6 +77,7 @@ Starfarer.enterState = function(newState)
 	
 	if newState == self.STATE_AT_STATION then
 		playerUI.show
+		minionUI.show
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP
@@ -95,6 +101,7 @@ Starfarer.enterState = function(newState)
 		
 	else if newState == self.STATE_TRAVEL then
 		playerUI.show
+		minionUI.show
 		encounters.planEncounters self.station, self.nextStation
 		
 	end if
@@ -232,6 +239,7 @@ Starfarer.run = function()
 		playerShip.update deltaTime
 		uiWidgets.update deltaTime
 		playerUI.update deltaTime
+		minionUI.update deltaTime
 
 		if self.state == self.STATE_NAVMAP then
 			starmap.update deltaTime
