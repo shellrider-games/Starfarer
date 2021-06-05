@@ -50,10 +50,6 @@ Starfarer.init = function()
 	self.stations = stationModel.manyRandomStations(30)
 	self.station = self.stations.any
 
-	// Setup minion UI
-	minionUI.init playerShip.minions
-	minionUI.show
-
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
 	self.renderer.renderShip playerShip
@@ -77,7 +73,7 @@ Starfarer.enterState = function(newState)
 	
 	if newState == self.STATE_AT_STATION then
 		playerUI.show
-		minionUI.show
+		minionUI.show playerShip.minions
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP

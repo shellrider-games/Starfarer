@@ -66,10 +66,11 @@ encounter.presentGain = function(data)
 	newbie = new character.Character
 	newbie.name = charName
 	newbie.maxHealth = 6 + ceil(6*rnd)
-	newbie.health = newbie.maxHealth
+	newbie.health = ceil(newbie.maxHealth * rnd)
 	newbie.setMapPos [0, 2]
 	newbie.boardShip playerShip
 	game.renderer.renderMinion newbie
+	minionUI.addMinion newbie
 	self.newChar = newbie
 	self.origin = data.station
 end function
@@ -84,6 +85,7 @@ encounter.presentLoss = function(data)
 
 	self.newChar.leaveShip
 	disp.shipSprites.sprites.removeVal self.newChar
+	minionUI.removeMinion self.newChar
 	self.done = true
 end function
 

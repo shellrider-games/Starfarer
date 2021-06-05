@@ -47,7 +47,7 @@ end function
 
 removeMinion = function(minion)
 	idx = minions.indexOf(minion)  // idx always means "index", Georg :)
-	if idx < 0 then return
+	if idx == null then return
 	minions.remove idx
 
 	crew = minions
