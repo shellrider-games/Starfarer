@@ -8,6 +8,7 @@ import "listUtil"
 if not globals.hasIndex("Door") then import "door"
 if not globals.hasIndex("Item") then import "item"
 if not globals.hasIndex("Character") then import "character"
+if not globals.hasIndex("systems") then import "systems"
 
 //----------------------------------------------------------------------
 // Wall: an ordinary wall between cells.  Considered unbreachable.
@@ -60,30 +61,6 @@ end function
 
 
 //----------------------------------------------------------------------
-// System: base class of any system that can be installed on a ship.
-//----------------------------------------------------------------------
-
-System = {}
-System.name = "GENERIC"
-System.col = 0
-System.row = 0
-System.width = 1
-System.height = 1
-
-System.make = function(col, row, width=1, height=1, name="GENERIC")
-	noob = new System
-	noob.col = col; noob.row = row
-	noob.width = width; noob.height = height
-	noob.name = name
-	return noob
-end function
-
-//This function should be overwritten by child classes
-System.use = function(character, dt = 0.1)
-	print character.name + " is using " + self.name + " for " + dt + " seconds."
-end function
-
-//----------------------------------------------------------------------
 // Ship: everything there is to know about a ship.
 //----------------------------------------------------------------------
 
@@ -96,7 +73,7 @@ Ship.mapOffset = [0,0]  // x,y offset for map image
 Ship.minions = []		// living things on a ship
 Ship.incomingTypes = []	// list of ItemTypes bought but not yet loaded
 Ship.outgoingTypes = []	// list of ItemTypes sold but not yet unloaded
-Ship.systems = []
+Ship.systems = []		// list of System instances installed in the ship
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -263,11 +240,11 @@ Ship.findItemOfType = function(type)
 end function
 
 Ship.systemAt = function(col, row)
-	result = []
 	for system in self.systems
-		if (col >= system.col and col <= system.col + system.width) and (row >= system.row and row <= system.row + system.height) then result.push system
+		if col >= system.col and col <= system.col + system.width and 
+		   row >= system.row and row <= system.row + system.height then return system
 	end for
-	return result
+	return null
 end function
 
 

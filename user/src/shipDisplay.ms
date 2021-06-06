@@ -55,6 +55,9 @@ Renderer.renderShip = function(ship)
 	self.mapZeroZero = {
 		"x": self.x - playerShipImage.width/2 + ship.offset[0] * CELLSIZE,
 	    "y": self.y - playerShipImage.height/2 + ship.offset[1] * CELLSIZE }
+
+	// load ship systems
+	self.renderShipSystems
 	
 	// load the doors and any items (ship contents)
 	for row in ship.rowRange
@@ -69,7 +72,6 @@ Renderer.renderShip = function(ship)
 		self.renderMinion m
 	end for
 
-	self.renderShipSystems
 end function
 
 Renderer.renderMinion = function(minion)
@@ -154,8 +156,12 @@ end function
 
 Renderer.renderShipSystems = function()
 	for system in self.ship.systems
-		disp.uiPixel.color = color.rgba(0,0,255,127)
-		disp.uiPixel.fillRect self.mapZeroZero.x + system.col*CELLSIZE, self.mapZeroZero.y + system.row*CELLSIZE, system.width*CELLSIZE, system.height*CELLSIZE
+		width = CELLSIZE * system.width
+		height = CELLSIZE * system.height
+		xy = self.mapToScreenPosition(system)
+		sp = addSprite(system.image, xy.x + width/2 - CELLSIZE/2, 
+			xy.y + height/2 - CELLSIZE/2)
+		sp.scale = width / system.image.width
 	end for
 end function
 

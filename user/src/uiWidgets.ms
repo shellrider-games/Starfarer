@@ -328,13 +328,14 @@ ValuedBar.bar = new Bar
 ValuedBar.label = new Label
 ValuedBar.maxValue = 10
 ValuedBar.value = 10
+ValuedBar.roundDigits = 0
 
 ValuedBar.updateBar = function()
 	self.bar.setValue self.value/self.maxValue
 end function
 
 ValuedBar.updateLabel = function()
-	text = ""+self.value+"/"+self.maxValue
+	text = round(self.value, self.roundDigits) + "/" + round(self.maxValue, self.roundDigits)
 	self.label.setText text
 end function
 

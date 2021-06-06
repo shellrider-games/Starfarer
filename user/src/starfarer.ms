@@ -10,6 +10,7 @@ import "encounters"
 globals.encounters = encounters
 import "spriteUtil"
 import "item"
+import "systems"
 import "crewStatistics"
 import "shipModel"
 import "stationModel"
@@ -43,6 +44,7 @@ Starfarer.init = function()
 
 	// give us a character
 	minion = new character.Character
+	minion.health = 5
 	minion.setMapPos [2, 2]
 	minion.boardShip playerShip
 
@@ -190,14 +192,8 @@ Starfarer.handlePrimaryClick = function(pos)
 end function
 
 Starfarer.handleSecondaryClick = function(pos)
-	if self.selectedMinion then
-		systemarray = playerShip.systemAt(self.renderer.screenToMapPosition(pos).col, self.renderer.screenToMapPosition(pos).row)
-		if  playerShip.systemAt(self.selectedMinion[0].col, self.selectedMinion[0].row) == systemarray and systemarray.len >= 1 then 
-			self.selectedMinion[0].setUseSystem systemarray[0]
-		else
-			self.selectedMinion[0].clearUseSystem
-		end if
-	end if
+	// Let's try not to use right-click for anything but debugging.
+	// If we can help it.  I want to run on mobile someday!
 end function
 
 

@@ -107,6 +107,7 @@ Character.update = function(dt=0.1)
 		if not self.walking then
 			self.walking = true
 			self.openDoorIfNeeded
+			if self.usingSystem then self.clearUseSystem
 		end if
 		moved = self.moveTowards(renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		if not moved then
@@ -135,6 +136,7 @@ Character.update = function(dt=0.1)
 					self.moveTowards renderer.mapToScreenPosition(nextPos), self.speed * dt
 				end if
 			end if
+			if not self.path then self.autoUseSystem
 		end if
 		newPos = renderer.screenToMapPosition(self)
 		self.col = newPos.col; self.row = newPos.row
@@ -240,6 +242,11 @@ end function
 
 Character.clearUseSystem = function()
 	self.usingSystem = null
+end function
+
+Character.autoUseSystem = function()
+	// if we are standing on a system square, start using that system
+	self.setUseSystem self.ship.systemAt(self.col, self.row)
 end function
 
 Character.setScreenPos = function(point)
