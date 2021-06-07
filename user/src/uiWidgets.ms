@@ -654,7 +654,7 @@ demo = function()
 	while not key.pressed("escape")
 		update 1/60
 		bar.setValue ((bar.value+1.0015)%2) - 1
-		thinBar.setValue ((bar.value+1.0015)%2) - 1
+		thinBar.setValue ((thinBar.value+1.0015)%2) - 1
 		yield
 	end while
 	key.clear
