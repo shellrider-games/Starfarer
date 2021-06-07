@@ -375,6 +375,19 @@ end function
 
 VerticalEqualizer.redraw = @VerticalEqualizer.draw
 
+VerticalEqualizer.setValue = function(value)
+	self.value = value
+	self.redraw
+end function
+
+VerticalEqualizer.update = function(dt = 0.1)
+	if mouseDown and self.contains(mouse) then
+		mouseTarget = mouse.y - (self.bounds.y - self.bounds.height/2)
+		clickedValue = ceil((mouseTarget/self.bounds.height)*self.maxValue)
+		self.setValue clickedValue
+	end if
+end function
+
 //----------------------------------------------------------------------
 // ValuedBar: Combines a Bar with a label showing current/max.
 //----------------------------------------------------------------------
@@ -681,6 +694,7 @@ demo = function()
 	energyBar = new VerticalEqualizer
 	energyBar.init 80, 20, 8, 32
 	energyBar.draw
+	energyBar.start
 
 	while not key.pressed("escape")
 		update 1/60
