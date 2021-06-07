@@ -347,6 +347,33 @@ end function
 
 ThinBar.redraw = @ThinBar.draw
 
+//----------------------------------------------------------------------
+// VerticalEqualizer: Vertical slider for Starfarer Energy System
+//----------------------------------------------------------------------
+
+VerticalEqualizer = new Widget
+VerticalEqualizer.color = color.gray
+VerticalEqualizer.secondaryColor = "#333333"
+VerticalEqualizer.maxValue = 3
+VerticalEqualizer.value = 2
+
+VerticalEqualizer.draw = function()
+	left = self.bounds.x - self.bounds.width/2
+	bottom = self.bounds.y - self.bounds.height/2
+	width = self.bounds.width
+	height = self.bounds.height
+
+	disp.uiPixel.color = self.secondaryColor
+	for i in range(0, self.maxValue-1)
+		disp.uiPixel.fillRect left, bottom + i*round(height/self.maxValue), width, round(height/self.maxValue)-1
+	end for
+	disp.uiPixel.color = self.color
+	for i in range(0, self.value-1)
+		disp.uiPixel.fillRect left, bottom + i*round(height/self.maxValue), width, round(height/self.maxValue)-1
+	end for
+end function
+
+VerticalEqualizer.redraw = @VerticalEqualizer.draw
 
 //----------------------------------------------------------------------
 // ValuedBar: Combines a Bar with a label showing current/max.
@@ -651,6 +678,10 @@ demo = function()
 	valuedBar.value = 5
 	valuedBar.draw
 	
+	energyBar = new VerticalEqualizer
+	energyBar.init 80, 20, 8, 32
+	energyBar.draw
+
 	while not key.pressed("escape")
 		update 1/60
 		bar.setValue ((bar.value+1.0015)%2) - 1
