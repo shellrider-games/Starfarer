@@ -40,7 +40,7 @@ Brain.init = function()
 	self.heal = Need.make("heal")
 	self.work = Need.make("work")
 	self.relax = Need.make("relax", 0.01)
-	self.needs = [self.hunger, self.sleep, self.heal, self.work]
+	self.needs = [self.hunger, self.sleep, self.heal, self.work, self.relax]
 end function
 
 Brain.printNeeds = function()
