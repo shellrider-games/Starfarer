@@ -320,6 +320,35 @@ Bar.setValue = function(value)
 end function
 
 //----------------------------------------------------------------------
+// ThinBar: A bar but drawn to take up less space
+//----------------------------------------------------------------------
+ThinBar = new Bar
+ThinBar.secondaryColor = "#333333"
+
+ThinBar.draw = function()
+	left = self.bounds.x - self.bounds.width/2
+	bottom = self.bounds.y - self.bounds.height/2
+	width = self.bounds.width
+	height = self.bounds.height
+	right = left + width
+
+	disp.uiPixel.fillRect left, bottom, width, height, color.clear
+
+	if self.value >= 0 then
+		divx = left + round(width * self.value)
+		disp.uiPixel.fillRect left, bottom, divx - left, height, self.color
+		disp.uiPixel.fillRect divx, bottom, right - divx, height, self.secondaryColor
+	else
+		divx = right + round(width * self.value)
+		disp.uiPixel.fillRect left, bottom, divx - left, height, self.secondaryColor
+		disp.uiPixel.fillRect divx, bottom, right - divx, height, self.color
+	end if
+end function
+
+ThinBar.redraw = @ThinBar.draw
+
+
+//----------------------------------------------------------------------
 // ValuedBar: Combines a Bar with a label showing current/max.
 //----------------------------------------------------------------------
 
@@ -611,6 +640,12 @@ demo = function()
 	bar.value = -0.5
 	bar.draw
 
+	thinBar = new ThinBar
+	thinBar.init 80, 100, 50, 4
+	thinBar.value = 0.5
+	thinBar.color = color.lime
+	thinBar.draw
+
 	valuedBar = new ValuedBar
 	valuedBar.init 80, 300, 160, 40
 	valuedBar.value = 5
@@ -619,6 +654,7 @@ demo = function()
 	while not key.pressed("escape")
 		update 1/60
 		bar.setValue ((bar.value+1.0015)%2) - 1
+		thinBar.setValue ((bar.value+1.0015)%2) - 1
 		yield
 	end while
 	key.clear
