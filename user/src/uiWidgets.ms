@@ -523,6 +523,22 @@ Button.update = function(dt = 0.1)
 	end if
 end function
 
+//----------------------------------------------------------------------
+// TabButton: Like a button but once pressed stays down
+//----------------------------------------------------------------------
+TabButton = new Button
+
+TabButton.update = function(dt = 0.1)
+	if self.state == Button.NORMAL and mouseDown and self.contains(mouse) then
+		self.action
+		self.state = Button.PRESSED
+		self.redraw
+	end if
+end function
+
+TabButton.action = function()
+	print "TabButton: " + self.name + " clicked. State was: " + self.state
+end function
 
 //----------------------------------------------------------------------
 // LineEdit: Represents a line tall input field
@@ -695,6 +711,48 @@ demo = function()
 	energyBar.init 80, 20, 8, 32
 	energyBar.draw
 	energyBar.start
+
+	tabButtons = []
+
+	tabButton1 = new TabButton
+	tabButton1.init 400, 500, 98, 24, "Tab Button 1"
+	tabButton1.draw
+	tabButton1.start
+
+	tabButtons.push tabButton1
+
+	tabButton2 = new TabButton
+	tabButton2.init 500, 500, 98, 24, "Tab Button 2"
+	tabButton2.draw
+	tabButton2.start
+
+	tabButtons.push tabButton2
+
+	tabButton3 = new TabButton
+	tabButton3.init 600, 500, 98, 24, "Tab Button 3"
+	tabButton3.draw
+	tabButton3.start
+
+	tabButtons.push tabButton3
+
+	tabButton1.action = function()
+		for button in tabButtons
+			if button != self then button.state = Button.NORMAL
+			button.redraw
+		end for
+	end function
+	tabButton2.action = function()
+		for button in tabButtons
+			if button != self then button.state = Button.NORMAL
+			button.redraw
+		end for
+	end function
+	tabButton3.action = function()
+		for button in tabButtons
+			if button != self then button.state = Button.NORMAL
+			button.redraw
+		end for
+	end function
 
 	while not key.pressed("escape")
 		update 1/60
