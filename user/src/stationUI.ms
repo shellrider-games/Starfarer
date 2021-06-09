@@ -12,6 +12,11 @@ if not globals.hasIndex("crewStatistics") then import "crewStatistics"
 costPerFuel = 10
 costPerRepair = 15
 
+SHOW_MARKET = 0
+SHOW_CANTEEN = 1
+
+currentTab = 0
+
 // Import the widget classes directly into this module for more readable code:
 for idx in uiWidgets.indexes
 	if (idx[0] >= "A" and idx[0] <= "Z") or idx.startsWith("load") then
@@ -23,12 +28,19 @@ end for
 
 // Draw station UI according to station model
 show = function(station,left=550, bottom=150, width=350, height=400)
-	right = left + width
-	top = bottom + height
 	
 	outer.background = new Panel
 	background.init left, bottom, width, height, "background", load9SliceImage("panel")
 	background.draw
+	
+	if currentTab == SHOW_MARKET then showMarket station, left, bottom, width, height
+	
+end function
+
+
+showMarket = function(station,left=550, bottom=150, width=350, height=400)
+	right = left + width
+	top = bottom + height
 	
 	font = fonts.ArialBlack14
 	font.setColor color.black
@@ -61,7 +73,6 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 	navBtn.init 900, 610, 60, 30, "NAV"
 	navBtn.backColor = color.black
 	navBtn.start
-	
 end function
 
 buyFuel = function()
