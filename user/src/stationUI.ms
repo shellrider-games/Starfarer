@@ -32,6 +32,8 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 	outer.background = new Panel
 	background.init left, bottom, width, height, "background", load9SliceImage("panel")
 	background.draw
+
+	showNavButton
 	
 	if currentTab == SHOW_MARKET then showMarket station, left, bottom, width, height
 	
@@ -68,6 +70,9 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	end if
 	x = x - 120
 	
+end function
+
+showNavButton = function()
 	// navigation (depart/jump) button
 	outer.navBtn = new Button
 	navBtn.init 900, 610, 60, 30, "NAV"
