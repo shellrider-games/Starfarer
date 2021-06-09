@@ -16,6 +16,7 @@ SHOW_MARKET = 0
 SHOW_CANTEEN = 1
 
 currentTab = 0
+tabs = []
 
 // Import the widget classes directly into this module for more readable code:
 for idx in uiWidgets.indexes
@@ -33,12 +34,58 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 	background.init left, bottom, width, height, "background", load9SliceImage("panel")
 	background.draw
 
+	if outer.tabs == [] then showTabs station, left, bottom+height, width, 24
+
 	showNavButton
-	
+
 	if currentTab == SHOW_MARKET then showMarket station, left, bottom, width, height
 	
 end function
 
+setCurrentTab = function(currentTab)
+	outer.currentTab = currentTab
+end function
+
+showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
+	tabs = outer.tabs
+
+	marketTabButton = new TabButton
+	marketTabButton.init left, bottom, 98, height, "Market"
+	marketTabButton.draw
+	
+	canteenTabButton = new TabButton
+	canteenTabButton.init left+100, bottom, 98, height, "Canteen"
+	canteenTabButton.draw
+
+	resetTab = function(tab)
+		for iTab in outer.tabs
+			if tab != iTab then iTab.state = uiWidgets.Button.NORMAL
+			iTab.redraw
+		end for
+	end function
+
+	printCurrentTab = function()
+		print outer.currentTab
+	end function
+
+	marketTabButton.action = function()
+		resetTab self
+		stationUI.setCurrentTab stationUI.SHOW_MARKET
+		stationUI.show station
+	end function
+
+	canteenTabButton.action = function()
+		resetTab self
+		stationUI.setCurrentTab stationUI.SHOW_CANTEEN
+		stationUI.show station
+	end function
+
+	outer.tabs.push marketTabButton
+	outer.tabs.push canteenTabButton
+	
+	marketTabButton.start
+	canteenTabButton.start
+end function
 
 showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	right = left + width
@@ -69,7 +116,6 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 		repairButton.action = @buyRepair
 	end if
 	x = x - 120
-	
 end function
 
 showNavButton = function()
