@@ -85,6 +85,16 @@ Ship.init = function(columns, rows)
 	self.columnRange = range(0, columns-1)
 	self.rowRange = range(0, rows-1)
 	self.map = list.init2d(columns, rows)
+	
+	// Also set up some default systems.
+	self.systems = []
+	self.systems.push systems.System.makeInvisible("REACTOR", 12)
+	self.systems[0].curPower = 0
+	self.systems.push systems.System.makeInvisible("O2", 3)
+	self.systems.push systems.System.makeInvisible("ENGINES", 3)
+	self.systems.push systems.System.makeInvisible("CONTROLS", 2)
+	self.systems.push systems.System.makeInvisible("DOORS", 2)
+	self.systems.push systems.System.makeInvisible("SENSORS", 3)
 end function
 
 // Ship.walkable: return whether an agent can step in the given

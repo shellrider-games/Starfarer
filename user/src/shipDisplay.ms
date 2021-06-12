@@ -156,12 +156,15 @@ end function
 
 Renderer.renderShipSystems = function()
 	for system in self.ship.systems
-		width = CELLSIZE * system.width
-		height = CELLSIZE * system.height
-		xy = self.mapToScreenPosition(system)
-		sp = addSprite(system.image, xy.x + width/2 - CELLSIZE/2, 
-			xy.y + height/2 - CELLSIZE/2)
-		sp.scale = width / system.image.width
+		if system.width and system.height then
+			// create a representation of the system on the ship map
+			width = CELLSIZE * system.width
+			height = CELLSIZE * system.height
+			xy = self.mapToScreenPosition(system)
+			sp = addSprite(system.image, xy.x + width/2 - CELLSIZE/2, 
+				xy.y + height/2 - CELLSIZE/2)
+			sp.scale = width / system.image.width
+		end if
 	end for
 end function
 

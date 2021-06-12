@@ -2,6 +2,10 @@
 // which represent things that can be installed on a ship.  Systems
 // generally consume power and provide some benefit to the ship/crew.
 
+// Note that systems with a width or height of 0 are not visible on
+// the ship map, but may still be part of the ship.  These invisible
+// systems are inherent to the ship itself.
+
 import "miscUtil"
 
 //----------------------------------------------------------------------
@@ -15,12 +19,25 @@ System.row = 0
 System.width = 1
 System.height = 1
 System.image = null
+System.maxPower = 3
+System.curPower = 3
+System.setPoint = 3
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
 	noob.col = col; noob.row = row
 	noob.width = width; noob.height = height
 	noob.name = name
+	return noob
+end function
+
+System.makeInvisible = function(name="INVISIBLE", maxPower=3)
+	noob = new System
+	noob.width = 0; noob.height = 0
+	noob.name = name
+	noob.maxPower = maxPower
+	noob.curPower = maxPower
+	noob.setPoint = maxPower
 	return noob
 end function
 

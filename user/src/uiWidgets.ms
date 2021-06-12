@@ -372,6 +372,7 @@ PowerControl.initQtyBars = function(qtyBars)
 	self.qtyBars = qtyBars
 	self.repairLevel = qtyBars
 	self.setPoint = qtyBars
+	self.setPowerToMax
 	bottom = self.bottom
 	self.bounds.height = self.barHeight * qtyBars + self.barGap * (qtyBars-1) + 20
 	self.bounds.y = bottom + self.bounds.height/2
@@ -715,6 +716,7 @@ demo = function()
 	disp.text.clear; disp.text.row = 0
 	disp.uiPixel.clear
 	disp.uiSprites.clear
+	text.clear; text.row = 0
 	
 	panel = new Panel
 	panel.init 400, 300, 300, 200, "panel"
@@ -778,6 +780,7 @@ demo = function()
 	energyBar.init 80, 20, 32, 32
 	energyBar.initQtyBars 3
 	energyBar.repairLevel = 2.3
+	energyBar.setPowerToMax
 	energyBar.draw
 	energyBar.start
 

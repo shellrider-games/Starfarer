@@ -38,6 +38,21 @@ show = function()
 	fuelBarLabel.alignment = uiWidgets.ALIGNRIGHT
 	fuelBarLabel.draw
 
+	
+	powerColumn = 0
+	for system in playerShip.systems
+		if system.maxPower == 0 then continue
+		// create the power control for this system
+		control = new uiWidgets.PowerControl
+		control.init powerColumn * 40, 0, 32, 32
+		control.initQtyBars system.maxPower
+		control.powerLevel = system.curPower
+		control.setPoint = system.setPoint
+		control.draw
+		control.start
+		powerColumn = powerColumn + 1
+	end for
+
 end function
 
 // Show travel progress: we're the given distance (0-1)
