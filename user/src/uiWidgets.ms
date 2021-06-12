@@ -8,6 +8,7 @@ if not globals.hasIndex("disp") then import "setup"
 if not globals.hasIndex("qa") then import "qa"
 import "stringUtil"
 import "listUtil"
+import "miscUtil"; max = @miscUtil.max; min = @miscUtil.min
 
 //----------------------------------------------------------------------
 // Constants
@@ -348,43 +349,108 @@ end function
 ThinBar.redraw = @ThinBar.draw
 
 //----------------------------------------------------------------------
-// VerticalEqualizer: Vertical slider for Starfarer Energy System
+// PowerControl: Vertical slider and energy bars for Starfarer Energy
+// System.  This is a rather complex control with several parts: a
+// slider that lets the user set the desired power level, and then a 
+// series of bars that show the actual power level and system status
+// (i.e. damage, temporarily disabled, etc.).  Subclasses will add
+// additional functionality (weapon charge/control, etc.).
 //----------------------------------------------------------------------
 
-VerticalEqualizer = new Widget
-VerticalEqualizer.color = color.gray
-VerticalEqualizer.secondaryColor = "#333333"
-VerticalEqualizer.maxValue = 3
-VerticalEqualizer.value = 2
+PowerControl = new Widget
+PowerControl.qtyBars = 3		// how many power bars in this control
+PowerControl.powerLevel = 2		// how many bars are powered
+PowerControl.setPoint = 2		// desired power (slider value)
+PowerControl.repairLevel = 3	// how many bars are fully repaired
+PowerControl.barHeight = 10		// height of individual bar
+PowerControl.barGap = 2			// gap between bars
+PowerControl.disabled = 0		// how many bars (top-down) are disabled
+PowerControl.powerColor = "#00FF00"
+PowerControl.disabledColor = color.aqua
 
-VerticalEqualizer.draw = function()
-	left = self.bounds.x - self.bounds.width/2
-	bottom = self.bounds.y - self.bounds.height/2
-	width = self.bounds.width
-	height = self.bounds.height
-
-	disp.uiPixel.color = self.secondaryColor
-	for i in range(0, self.maxValue-1)
-		disp.uiPixel.fillRect left, bottom + i*round(height/self.maxValue), width, round(height/self.maxValue)-1
-	end for
-	disp.uiPixel.color = self.color
-	for i in range(0, self.value-1)
-		disp.uiPixel.fillRect left, bottom + i*round(height/self.maxValue), width, round(height/self.maxValue)-1
-	end for
+PowerControl.initQtyBars = function(qtyBars)
+	self.qtyBars = qtyBars
+	self.repairLevel = qtyBars
+	self.setPoint = qtyBars
+	bottom = self.bottom
+	self.bounds.height = self.barHeight * qtyBars + self.barGap * (qtyBars-1) + 20
+	self.bounds.y = bottom + self.bounds.height/2
 end function
 
-VerticalEqualizer.redraw = @VerticalEqualizer.draw
+PowerControl.setPowerToMax = function()
+	self.powerLevel = min(self.setPoint, floor(self.repairLevel))
+	self.powerLevel = min(self.powerLevel, self.qtyBars - self.disabled)
+end function
 
-VerticalEqualizer.setValue = function(value)
+// PowerControl.drawBar: draw just one bar of the control.
+//		barNum: which bar to draw, from 0 (bottom) to qtyBars-1
+//		repairLevel: repair of just this bar, from 0 (broken) to 1 (fine)
+//		powered: if true, fill in green showing this bar powered
+//		disabled: if true, this bar is disabled by ion attack etc.
+PowerControl.drawBar = function(barNum, repairLevel, powered, disabled)
+	// ensure our parameters make sense
+	qa.assert not (powered and disabled), "bar " + barNum + " both powered and disabled"
+	qa.assert not (powered and repairLevel<1), "bar " + barNum + " both powered and broken"
+
+	// calculate bar coordinates on screen
+	left = self.left
+	bottom = self.bottom + 10 + (self.barHeight + self.barGap) * barNum
+	width = self.width - 8
+	height = self.barHeight
+	
+	if repairLevel < 1 then
+		// draw "X" indicating broken bar
+		disp.uiPixel.line left+1, bottom+1, left+width-1, bottom+height-1, color.red
+		disp.uiPixel.line left+1, bottom+height-1, left+width-1, bottom+1, color.red
+		// and fill with yellow to indicate repaired amount
+		if repairLevel > 0 then
+			disp.uiPixel.fillRect left+1, bottom+1, (width-2)*repairLevel, height-2, color.yellow
+		end if
+	end if
+	
+	// draw frame
+	if disabled then frameColor = self.disabledColor else frameColor = self.powerColor
+	disp.uiPixel.drawRect left, bottom, width, height, frameColor
+	
+	// draw fill
+	if powered then disp.uiPixel.fillRect left+1, bottom+1, width-2, height-2, self.powerColor
+end function	
+
+PowerControl.draw = function()
+	// draw bars
+	remainingRepair = self.repairLevel
+	for barNum in range(0, self.qtyBars-1)
+		isDisabled = (barNum >= self.qtyBars - self.disabled)
+		isPowered = (barNum < self.powerLevel)
+		self.drawBar barNum, min(remainingRepair, 1), isPowered, isDisabled
+		remainingRepair = max(remainingRepair - 1, 0)
+	end for
+	
+	// draw set slider
+	y = self.bottom + 10 + (self.barHeight + self.barGap) * self.setPoint - self.barGap/2
+	x = self.right - 8
+	disp.uiPixel.fillPoly [[x,y], [x+8, y+8], [x+8, y-8]], color.silver
+end function
+
+PowerControl.setValue = function(value)
 	self.value = value
 	self.redraw
 end function
 
-VerticalEqualizer.update = function(dt = 0.1)
+PowerControl.update = function(dt = 0.1)
 	if mouseDown and self.contains(mouse) then
-		mouseTarget = mouse.y - (self.bounds.y - self.bounds.height/2)
-		clickedValue = ceil((mouseTarget/self.bounds.height)*self.maxValue)
-		self.setValue clickedValue
+		while mouse.button
+			hitLevel = round((mouse.y - self.bottom - 10) / (self.barHeight + self.barGap))
+			if hitLevel < 0 then hitLevel = 0
+			if hitLevel > self.qtyBars then hitLevel = self.qtyBars
+			if hitLevel != self.setPoint then
+				self.setPoint = hitLevel
+				// For now, we'll assume there is plenty of power available.
+				self.setPowerToMax
+				self.redraw
+			end if
+			yield
+		end while
 	end if
 end function
 
@@ -646,6 +712,7 @@ end function
 // Demo/testing functions
 //----------------------------------------------------------------------
 demo = function()
+	disp.text.clear; disp.text.row = 0
 	disp.uiPixel.clear
 	disp.uiSprites.clear
 	
@@ -707,8 +774,10 @@ demo = function()
 	valuedBar.value = 5
 	valuedBar.draw
 	
-	energyBar = new VerticalEqualizer
-	energyBar.init 80, 20, 8, 32
+	energyBar = new PowerControl
+	energyBar.init 80, 20, 32, 32
+	energyBar.initQtyBars 3
+	energyBar.repairLevel = 2.3
 	energyBar.draw
 	energyBar.start
 
