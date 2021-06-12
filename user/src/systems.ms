@@ -21,7 +21,9 @@ System.height = 1
 System.image = null
 System.maxPower = 3
 System.curPower = 3
-System.setPoint = 3
+System.setPoint = 3	
+System.repairLevel = 3	// how many bars are fully repaired
+System.disabled = 0		// how many bars (top-down) are disabled
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
@@ -36,6 +38,7 @@ System.makeInvisible = function(name="INVISIBLE", maxPower=3)
 	noob.width = 0; noob.height = 0
 	noob.name = name
 	noob.maxPower = maxPower
+	noob.repairLevel = maxPower
 	noob.curPower = maxPower
 	noob.setPoint = maxPower
 	return noob
@@ -44,6 +47,15 @@ end function
 //This function should be overwritten by child classes
 System.use = function(character, dt = 0.1)
 	print character.name + " is using " + self.name + " for " + dt + " seconds."
+end function
+
+System.maxPossiblePower = function()
+	// Compute the power that should be supplied to this system,
+	// if we have plenty of power available.
+	self.repairLevel = self.maxPower		// ToDo
+	result = min(self.setPoint, floor(self.repairLevel))
+	// Also ToDo: result = min(result, self.qtyBars - self.disabled)
+	return result
 end function
 
 //----------------------------------------------------------------------

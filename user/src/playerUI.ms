@@ -15,6 +15,8 @@ lastHull = [null,null]  // current, max value
 fuelBar = null
 lastFuel = [null,null]	// current, max value
 
+powerControls = []
+
 show = function()
 	uiWidgets.reset
 	
@@ -37,22 +39,24 @@ show = function()
 	fuelBarLabel.init fuelBar.left-8-100, 620, 100, 20, "Fuel:"
 	fuelBarLabel.alignment = uiWidgets.ALIGNRIGHT
 	fuelBarLabel.draw
-
 	
+	outer.powerControls = []
 	powerColumn = 0
 	for system in playerShip.systems
 		if system.maxPower == 0 then continue
 		// create the power control for this system
 		control = new uiWidgets.PowerControl
 		control.init powerColumn * 40, 0, 32, 32
-		control.initQtyBars system.maxPower
-		control.powerLevel = system.curPower
-		control.setPoint = system.setPoint
+		control.initSystem system
+		control.onChange = function()
+			playerShip.distributePower
+			for c in playerUI.powerControls; c.draw; end for
+		end function
 		control.draw
 		control.start
+		powerControls.push control
 		powerColumn = powerColumn + 1
 	end for
-
 end function
 
 // Show travel progress: we're the given distance (0-1)

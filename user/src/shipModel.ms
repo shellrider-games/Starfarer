@@ -87,14 +87,30 @@ Ship.init = function(columns, rows)
 	self.map = list.init2d(columns, rows)
 	
 	// Also set up some default systems.
+	self.reactor = systems.System.makeInvisible("REACTOR", 12)
+	self.reactor.curPower = 0
 	self.systems = []
-	self.systems.push systems.System.makeInvisible("REACTOR", 12)
-	self.systems[0].curPower = 0
+	self.systems.push self.reactor
 	self.systems.push systems.System.makeInvisible("O2", 3)
 	self.systems.push systems.System.makeInvisible("ENGINES", 3)
 	self.systems.push systems.System.makeInvisible("CONTROLS", 2)
 	self.systems.push systems.System.makeInvisible("DOORS", 2)
 	self.systems.push systems.System.makeInvisible("SENSORS", 3)
+end function
+
+Ship.distributePower = function()
+	// Calculate power output from the reactor, and distribute it to
+	// all other systems, left to right, leaving any excess power
+	// in the reactor itself.
+	powerLeft = self.reactor.setPoint
+	for system in self.systems
+		if system == self.reactor then continue
+		power = system.maxPossiblePower
+		if power > powerLeft then power = powerLeft
+		system.curPower = power
+		powerLeft = powerLeft - power
+	end for
+	self.reactor.curPower = powerLeft
 end function
 
 // Ship.walkable: return whether an agent can step in the given

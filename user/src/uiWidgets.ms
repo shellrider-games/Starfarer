@@ -358,29 +358,19 @@ ThinBar.redraw = @ThinBar.draw
 //----------------------------------------------------------------------
 
 PowerControl = new Widget
-PowerControl.qtyBars = 3		// how many power bars in this control
-PowerControl.powerLevel = 2		// how many bars are powered
-PowerControl.setPoint = 2		// desired power (slider value)
-PowerControl.repairLevel = 3	// how many bars are fully repaired
+PowerControl.system = null		// systems.System that we represent
 PowerControl.barHeight = 10		// height of individual bar
 PowerControl.barGap = 2			// gap between bars
-PowerControl.disabled = 0		// how many bars (top-down) are disabled
 PowerControl.powerColor = "#00FF00"
 PowerControl.disabledColor = color.aqua
+PowerControl.onChange = null	// function() called when set point changed
 
-PowerControl.initQtyBars = function(qtyBars)
-	self.qtyBars = qtyBars
-	self.repairLevel = qtyBars
-	self.setPoint = qtyBars
-	self.setPowerToMax
+PowerControl.initSystem = function(system)
+	self.system = system
+	qtyBars = system.maxPower
 	bottom = self.bottom
 	self.bounds.height = self.barHeight * qtyBars + self.barGap * (qtyBars-1) + 20
 	self.bounds.y = bottom + self.bounds.height/2
-end function
-
-PowerControl.setPowerToMax = function()
-	self.powerLevel = min(self.setPoint, floor(self.repairLevel))
-	self.powerLevel = min(self.powerLevel, self.qtyBars - self.disabled)
 end function
 
 // PowerControl.drawBar: draw just one bar of the control.
@@ -401,6 +391,7 @@ PowerControl.drawBar = function(barNum, repairLevel, powered, disabled)
 	
 	if repairLevel < 1 then
 		// draw "X" indicating broken bar
+		disp.uiPixel.fillRect left+1, bottom+1, width-2, height-2, color.black
 		disp.uiPixel.line left+1, bottom+1, left+width-1, bottom+height-1, color.red
 		disp.uiPixel.line left+1, bottom+height-1, left+width-1, bottom+1, color.red
 		// and fill with yellow to indicate repaired amount
@@ -414,40 +405,38 @@ PowerControl.drawBar = function(barNum, repairLevel, powered, disabled)
 	disp.uiPixel.drawRect left, bottom, width, height, frameColor
 	
 	// draw fill
-	if powered then disp.uiPixel.fillRect left+1, bottom+1, width-2, height-2, self.powerColor
+	if powered then fillColor = self.powerColor else fillColor = color.black
+	disp.uiPixel.fillRect left+1, bottom+1, width-2, height-2, fillColor
 end function	
 
 PowerControl.draw = function()
 	// draw bars
-	remainingRepair = self.repairLevel
-	for barNum in range(0, self.qtyBars-1)
-		isDisabled = (barNum >= self.qtyBars - self.disabled)
-		isPowered = (barNum < self.powerLevel)
+	sys = self.system
+	qtyBars = sys.maxPower
+	remainingRepair = sys.repairLevel
+	for barNum in range(0, qtyBars-1)
+		isDisabled = (barNum >= qtyBars - sys.disabled)
+		isPowered = (barNum < sys.curPower)
 		self.drawBar barNum, min(remainingRepair, 1), isPowered, isDisabled
 		remainingRepair = max(remainingRepair - 1, 0)
 	end for
 	
 	// draw set slider
-	y = self.bottom + 10 + (self.barHeight + self.barGap) * self.setPoint - self.barGap/2
+	y = self.bottom + 10 + (self.barHeight + self.barGap) * sys.setPoint - self.barGap/2
 	x = self.right - 8
 	disp.uiPixel.fillPoly [[x,y], [x+8, y+8], [x+8, y-8]], color.silver
 end function
 
-PowerControl.setValue = function(value)
-	self.value = value
-	self.redraw
-end function
-
 PowerControl.update = function(dt = 0.1)
 	if mouseDown and self.contains(mouse) then
+		sys = self.system
 		while mouse.button
 			hitLevel = round((mouse.y - self.bottom - 10) / (self.barHeight + self.barGap))
 			if hitLevel < 0 then hitLevel = 0
-			if hitLevel > self.qtyBars then hitLevel = self.qtyBars
-			if hitLevel != self.setPoint then
-				self.setPoint = hitLevel
-				// For now, we'll assume there is plenty of power available.
-				self.setPowerToMax
+			if hitLevel > sys.maxPower then hitLevel = sys.maxPower
+			if hitLevel != sys.setPoint then
+				sys.setPoint = hitLevel
+				self.onChange
 				self.redraw
 			end if
 			yield
@@ -713,10 +702,12 @@ end function
 // Demo/testing functions
 //----------------------------------------------------------------------
 demo = function()
+	import "systems"
+	
 	disp.text.clear; disp.text.row = 0
 	disp.uiPixel.clear
 	disp.uiSprites.clear
-	text.clear; text.row = 0
+	//text.clear; text.row = 0
 	
 	panel = new Panel
 	panel.init 400, 300, 300, 200, "panel"
@@ -776,11 +767,12 @@ demo = function()
 	valuedBar.value = 5
 	valuedBar.draw
 	
+	fakeSystem = systems.System.makeInvisible()
 	energyBar = new PowerControl
 	energyBar.init 80, 20, 32, 32
-	energyBar.initQtyBars 3
-	energyBar.repairLevel = 2.3
-	energyBar.setPowerToMax
+	energyBar.initSystem fakeSystem
+	fakeSystem.repairLevel = 2.3
+	fakeSystem.curLevel = fakeSystem.maxPossiblePower
 	energyBar.draw
 	energyBar.start
 
