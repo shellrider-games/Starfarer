@@ -41,12 +41,12 @@ show = function()
 	fuelBarLabel.draw
 	
 	outer.powerControls = []
-	powerColumn = 0
+	x = 0
 	for system in playerShip.systems
 		if system.maxPower == 0 then continue
 		// create the power control for this system
 		control = new uiWidgets.PowerControl
-		control.init powerColumn * 40, 0, 32, 32
+		control.init x, 0, 40, 0
 		control.initSystem system
 		control.onChange = function()
 			playerShip.distributePower
@@ -55,7 +55,8 @@ show = function()
 		control.draw
 		control.start
 		powerControls.push control
-		powerColumn = powerColumn + 1
+		if x == 0 then x = 20
+		x = x + 48
 	end for
 end function
 

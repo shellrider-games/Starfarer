@@ -33,7 +33,7 @@ System.make = function(col, row, width=1, height=1, name="GENERIC")
 	return noob
 end function
 
-System.makeInvisible = function(name="INVISIBLE", maxPower=3)
+System.makeInvisible = function(name="invisible", maxPower=3)
 	noob = new System
 	noob.width = 0; noob.height = 0
 	noob.name = name
@@ -41,6 +41,7 @@ System.makeInvisible = function(name="INVISIBLE", maxPower=3)
 	noob.repairLevel = maxPower
 	noob.curPower = maxPower
 	noob.setPoint = maxPower
+	noob.icon = file.loadImage("/usr/pics/systemIcons/" + name + ".png")
 	return noob
 end function
 
@@ -52,9 +53,8 @@ end function
 System.maxPossiblePower = function()
 	// Compute the power that should be supplied to this system,
 	// if we have plenty of power available.
-	self.repairLevel = self.maxPower		// ToDo
 	result = min(self.setPoint, floor(self.repairLevel))
-	// Also ToDo: result = min(result, self.qtyBars - self.disabled)
+	result = min(result, self.maxPower - self.disabled)
 	return result
 end function
 
@@ -62,10 +62,11 @@ end function
 // Med Bay: heals crew standing over the system (while powered).
 //----------------------------------------------------------------------
 MedBay = new System
-MedBay.name = "MedBay"
+MedBay.name = "medbay"
 MedBay.width = 2
 MedBay.height = 2
 MedBay.image = file.loadImage("/usr/pics/systems/medbay.png")
+MedBay.icon = file.loadImage("/usr/pics/systemIcons/medbay.png")
 
 MedBay.make = function(col, row)
 	noob = new MedBay

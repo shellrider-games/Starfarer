@@ -87,15 +87,15 @@ Ship.init = function(columns, rows)
 	self.map = list.init2d(columns, rows)
 	
 	// Also set up some default systems.
-	self.reactor = systems.System.makeInvisible("REACTOR", 12)
+	self.reactor = systems.System.makeInvisible("reactor", 12)
 	self.reactor.curPower = 0
 	self.systems = []
 	self.systems.push self.reactor
 	self.systems.push systems.System.makeInvisible("O2", 3)
-	self.systems.push systems.System.makeInvisible("ENGINES", 3)
-	self.systems.push systems.System.makeInvisible("CONTROLS", 2)
-	self.systems.push systems.System.makeInvisible("DOORS", 2)
-	self.systems.push systems.System.makeInvisible("SENSORS", 3)
+	self.systems.push systems.System.makeInvisible("engines", 3)
+	self.systems.push systems.System.makeInvisible("controls", 2)
+	self.systems.push systems.System.makeInvisible("doors", 2)
+	self.systems.push systems.System.makeInvisible("sensors", 3)
 end function
 
 Ship.distributePower = function()
