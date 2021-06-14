@@ -349,6 +349,31 @@ end function
 ThinBar.redraw = @ThinBar.draw
 
 //----------------------------------------------------------------------
+// HorizontalSlider: A bar but drawn to take up less space
+//----------------------------------------------------------------------
+HorizontalSlider = new Widget
+HorizontalSlider.bar = new ThinBar
+
+HorizontalSlider.init = function(left, bottom, width, height, name="")
+	self.bar.init left, bottom+2, width, height-4
+	super.init left, bottom, width, height, name
+end function
+
+HorizontalSlider.draw = function()
+	left = self.bounds.x - self.bounds.width/2
+	bottom = self.bounds.y - self.bounds.height/2
+	width = self.bounds.width
+	height = self.bounds.height
+	right = left + width
+	self.bar.draw
+
+	disp.uiPixel.fillRect left+width*self.bar.value-4, bottom, 8, height, "#AAAAAA"
+
+end function
+
+HorizontalSlider.redraw = @HorizontalSlider.draw
+
+//----------------------------------------------------------------------
 // PowerControl: Vertical slider and energy bars for Starfarer Energy
 // System.  This is a rather complex control with several parts: a
 // slider that lets the user set the desired power level, and then a 
@@ -771,6 +796,10 @@ demo = function()
 	valuedBar.init 80, 300, 160, 40
 	valuedBar.value = 5
 	valuedBar.draw
+
+	horizontalSlider = new HorizontalSlider
+	horizontalSlider.init 180, 180, 50, 8
+	horizontalSlider.draw
 	
 	fakeSystem = systems.System.makeInvisible()
 	fakeSystem.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
