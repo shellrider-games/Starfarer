@@ -353,6 +353,7 @@ ThinBar.redraw = @ThinBar.draw
 //----------------------------------------------------------------------
 HorizontalSlider = new Widget
 HorizontalSlider.bar = new ThinBar
+HorizontalSlider.trackingPress = false
 
 HorizontalSlider.init = function(left, bottom, width, height, name="")
 	self.bar.init left, bottom+2, width, height-4
@@ -364,11 +365,31 @@ HorizontalSlider.draw = function()
 	bottom = self.bounds.y - self.bounds.height/2
 	width = self.bounds.width
 	height = self.bounds.height
-	right = left + width
+	disp.uiPixel.fillRect left-4, bottom, width+8, height, color.clear
 	self.bar.draw
 
 	disp.uiPixel.fillRect left+width*self.bar.value-4, bottom, 8, height, "#AAAAAA"
 
+end function
+
+HorizontalSlider.update = function(dt = 0.1)
+	left = self.bounds.x - self.bounds.width/2
+	width = self.bounds.width
+
+	if not self.trackingPress then
+		if mouseDown and self.contains(mouse) then
+			self.bar.setValue min(max(0,(mouse.x - left)/width),1)
+			self.trackingPress = true
+			self.redraw
+		end if
+	else
+		if not mousePressed then
+			self.trackingPress = false
+		else
+			self.bar.setValue min(max(0,(mouse.x - left)/width),1)
+			self.redraw
+		end if
+	end if
 end function
 
 HorizontalSlider.redraw = @HorizontalSlider.draw
@@ -800,6 +821,7 @@ demo = function()
 	horizontalSlider = new HorizontalSlider
 	horizontalSlider.init 180, 180, 50, 8
 	horizontalSlider.draw
+	horizontalSlider.start
 	
 	fakeSystem = systems.System.makeInvisible()
 	fakeSystem.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
