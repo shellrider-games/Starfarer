@@ -51,6 +51,7 @@ showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
 
 	marketTabButton = new TabButton
 	marketTabButton.init left, bottom, 98, height, "Market"
+	marketTabButton.state = Button.PRESSED
 	marketTabButton.draw
 	
 	canteenTabButton = new TabButton
