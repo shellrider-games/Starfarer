@@ -86,16 +86,10 @@ Ship.init = function(columns, rows)
 	self.rowRange = range(0, rows-1)
 	self.map = list.init2d(columns, rows)
 	
-	// Also set up some default systems.
-	self.reactor = systems.System.makeInvisible("reactor", 12)
-	self.reactor.curPower = 0
+	// NOTE: we no longer set up some default systems.
+	// Ship files will need to set them up themselves.
+	// Always put the reactor first, followed by others.
 	self.systems = []
-	self.systems.push self.reactor
-	self.systems.push systems.System.makeInvisible("O2", 3)
-	self.systems.push systems.System.makeInvisible("engines", 3)
-	self.systems.push systems.System.makeInvisible("controls", 2)
-	self.systems.push systems.System.makeInvisible("doors", 2)
-	self.systems.push systems.System.makeInvisible("sensors", 3)
 end function
 
 Ship.distributePower = function()
@@ -345,6 +339,9 @@ Ship.placeRightWalls = function(left, bottom, length)
 end function
 
 Ship.addSystem = function(system)
+	system.repairLevel = system.maxPower
+	system.curPower = system.maxPower
+	system.setPoint = system.maxPower
 	self.systems.push system
 end function
 
