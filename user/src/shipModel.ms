@@ -343,6 +343,7 @@ Ship.addSystem = function(system)
 	system.curPower = system.maxPower
 	system.setPoint = system.maxPower
 	self.systems.push system
+	if self.systems.len == 1 then self.reactor = system
 end function
 
 //----------------------------------------------------------------------

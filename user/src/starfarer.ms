@@ -41,6 +41,7 @@ Starfarer.init = function()
 	import "shipData"
 	globals.playerShip = shipData.ship
 	cd "/usr/src"
+	playerShip.distributePower
 
 	// give us a character
 	minion = new character.Character
