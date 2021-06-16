@@ -54,14 +54,14 @@ encounter.present = function(data)
 	if rnd < 0.50 then
 	    description = description + 
 	      " Unfortunately your ship got hit and your hull damaged in the process."
-	    crewStatistics.hull = crewStatistics.hull - 2
+	    Starfarer.hull = Starfarer.hull - 2
 	end if
 	self.showDialog data, description
 end function
 
 
 if locals == globals then
-	crewStatistics = {"money": 0}
+	Starfarer = {"money": 0}
 	enc = new encounter
 	enc.present enc.consideration({"name":"Demo"}, true)
 end if

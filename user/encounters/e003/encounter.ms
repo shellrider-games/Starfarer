@@ -70,7 +70,7 @@ end function
 
 
 if locals == globals then
-	crewStatistics = {"money": 0}
+	Starfarer = {"money": 0}
 	enc = new encounter
 	enc.present enc.consideration({"name":"Demo"}, true)
 end if

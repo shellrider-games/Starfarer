@@ -1,6 +1,6 @@
 
 if not globals.hasIndex("uiWidgets") then import "uiWidgets"
-if not globals.hasIndex("crewStatistics") then import "crewStatistics"
+
 
 moneyLabel = null
 lastMoney = null
@@ -21,11 +21,11 @@ show = function()
 	uiWidgets.reset
 	
     outer.moneyLabel = new uiWidgets.Label
-    moneyLabel.init 0, 620, 150, 20, "Credits: " + crewStatistics.money
+    moneyLabel.init 0, 620, 150, 20, "Credits: " + Starfarer.money
 	moneyLabel.draw
 
 	outer.hullBar = new uiWidgets.ValuedBar
-	hullBar.init 200, 600, 200, 40, crewStatistics.maxHull, crewStatistics.hull
+	hullBar.init 200, 600, 200, 40, Starfarer.maxHull, Starfarer.hull
 	hullBar.draw
 	outer.hullBarLabel = new uiWidgets.Label
 	hullBarLabel.init hullBar.left-8-100, 620, 100, 20, "Hull:"
@@ -33,7 +33,7 @@ show = function()
 	hullBarLabel.draw
 
 	outer.fuelBar = new uiWidgets.ValuedBar
-	fuelBar.init 500, 600, 200, 40, crewStatistics.maxFuel, crewStatistics.fuel
+	fuelBar.init 500, 600, 200, 40, Starfarer.maxFuel, Starfarer.fuel
 	fuelBar.draw
 	outer.fuelBarLabel = new uiWidgets.Label
 	fuelBarLabel.init fuelBar.left-8-100, 620, 100, 20, "Fuel:"
@@ -101,19 +101,19 @@ hideTravel = function()
 end function
 
 update = function(dt = 0.1)
-	if crewStatistics.money != lastMoney then
-		outer.lastMoney = crewStatistics.money
-	    moneyLabel.setText "Credits: " + crewStatistics.money
+	if Starfarer.money != lastMoney then
+		outer.lastMoney = Starfarer.money
+	    moneyLabel.setText "Credits: " + Starfarer.money
 	end if
-	if crewStatistics.hull != lastHull[0] or crewStatistics.maxHull != lastHull[1] then
-		lastHull[0] = crewStatistics.hull
-		lastHull[1] = crewStatistics.maxHull
-		hullBar.setValue crewStatistics.hull, crewStatistics.maxHull
+	if Starfarer.hull != lastHull[0] or Starfarer.maxHull != lastHull[1] then
+		lastHull[0] = Starfarer.hull
+		lastHull[1] = Starfarer.maxHull
+		hullBar.setValue Starfarer.hull, Starfarer.maxHull
 	end if
-	if crewStatistics.fuel != lastFuel[0] or crewStatistics.maxFuel != lastFuel[1] then
-		lastFuel[0] = crewStatistics.fuel
-		lastFuel[1] = crewStatistics.maxFuel
-		fuelBar.setValue crewStatistics.fuel, crewStatistics.maxFuel
+	if Starfarer.fuel != lastFuel[0] or Starfarer.maxFuel != lastFuel[1] then
+		lastFuel[0] = Starfarer.fuel
+		lastFuel[1] = Starfarer.maxFuel
+		fuelBar.setValue Starfarer.fuel, Starfarer.maxFuel
 	end if
 end function
 
@@ -127,9 +127,9 @@ demo = function()
 	progress = 0.1    
     while not key.pressed("q")
         wait 1
-        crewStatistics.money = crewStatistics.money - 10
-        if rnd < 0.3 then crewStatistics.hull = crewStatistics.hull - 1
-        if rnd < 0.3 then crewStatistics.fuel = crewStatistics.fuel - 1
+        Starfarer.money = Starfarer.money - 10
+        if rnd < 0.3 then Starfarer.hull = Starfarer.hull - 1
+        if rnd < 0.3 then Starfarer.fuel = Starfarer.fuel - 1
         showTravel {"name":"Demo"}, progress, false
         progress = progress + 0.2
         if progress > 1 then progress = -1

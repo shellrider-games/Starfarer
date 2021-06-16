@@ -11,7 +11,7 @@ import "spriteControllers"
 if not globals.hasIndex("Door") then import "door"
 if not globals.hasIndex("Item") then import "item"
 if not globals.hasIndex("constants") then import "constants"
-if not globals.hasIndex("crewStatistics") then import "crewStatistics"
+
 
 // addSprite: Helper method to create and add a sprite from an image
 addSprite = function(image, x, y, baseClass)
@@ -178,7 +178,7 @@ Renderer.update = function(dt = 0.1)
 		if cell != null then
 			itemType = new self.ship.incomingTypes.pull
 			cell.placeItem itemType
-			crewStatistics.money = crewStatistics.money - crewStatistics.currentStation.getCommodityBuyPrice(itemType.name)
+			Starfarer.money = Starfarer.money - Starfarer.currentStation.getCommodityBuyPrice(itemType.name)
 			self.renderContents cell
 			cell.contents.fadeIn
 		end if
@@ -189,7 +189,7 @@ Renderer.update = function(dt = 0.1)
 		if cell.contents == null or cell.contents.lerper then continue
 		item = cell.contents
 		if self.ship.outgoingTypes.indexOf(item.__isa) != null then
-			crewStatistics.money = crewStatistics.money + crewStatistics.currentStation.getCommoditySellPrice(item.name)
+			Starfarer.money = Starfarer.money + Starfarer.currentStation.getCommoditySellPrice(item.name)
 			cell.contents = null
 			item.fadeOut 16, 0
 		end if

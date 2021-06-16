@@ -11,7 +11,6 @@ globals.encounters = encounters
 import "spriteUtil"
 import "item"
 import "systems"
-import "crewStatistics"
 import "shipModel"
 import "stationModel"
 import "shipDisplay"
@@ -34,6 +33,13 @@ Starfarer.STATE_TRAVEL = "Travel"
 Starfarer.state = Starfarer.STATE_NONE
 Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
+
+Starfarer.money = 1000
+Starfarer.currentStation = null
+Starfarer.hull = 18
+Starfarer.maxHull = 20
+Starfarer.fuel = 10
+Starfarer.maxFuel = 12
 
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
@@ -80,10 +86,10 @@ Starfarer.enterState = function(newState)
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP
 		end function
-		crewStatistics.currentStation = self.station
+		Starfarer.currentStation = self.station
 		
 	else if newState == self.STATE_NAVMAP then
-		if crewStatistics.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
+		if Starfarer.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
 		starmap.draw self.stations, self.station, jumpLimit
 		starmap.backBtn.action = function()
 			game.enterState Starfarer.STATE_AT_STATION
@@ -131,7 +137,7 @@ Starfarer.updateTravel = function(dt)
 		// approaching destination
 		if self.station != self.nextStation then
 			self.station = self.nextStation
-			crewStatistics.fuel = max(crewStatistics.fuel - 1, 0)
+			Starfarer.fuel = max(Starfarer.fuel - 1, 0)
 		end if
 		playerUI.showTravel self.nextStation, 2-t, true
 	else

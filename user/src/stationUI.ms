@@ -7,7 +7,7 @@ import "qa"
 if not globals.hasIndex("uiWidgets") then import "uiWidgets"
 if not globals.hasIndex("item") then import "item"
 if not globals.hasIndex("stationModel") then import "stationModel"
-if not globals.hasIndex("crewStatistics") then import "crewStatistics"
+
 
 costPerFuel = 10
 costPerRepair = 15
@@ -105,14 +105,14 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	
 	// Buy (1) Fuel button
 	x = right - 20
-	if crewStatistics.fuel < crewStatistics.maxFuel and crewStatistics.money > costPerFuel then
+	if Starfarer.fuel < Starfarer.maxFuel and Starfarer.money > costPerFuel then
 		outer.buyFuelBtn = addBottomButton("Fuel ($" + costPerFuel + ")", x)
 		buyFuelBtn.action = @buyFuel
 	end if
 	x = x - 120
 	
 	// Repair (1) button
-	if crewStatistics.hull < crewStatistics.maxHull and crewStatistics.money > costPerRepair then
+	if Starfarer.hull < Starfarer.maxHull and Starfarer.money > costPerRepair then
 		outer.repairButton = addBottomButton("Repair ($" + costPerRepair + ")", x)
 		repairButton.action = @buyRepair
 	end if
@@ -128,15 +128,15 @@ showNavButton = function()
 end function
 
 buyFuel = function()
-	crewStatistics.fuel = crewStatistics.fuel + 1
-	crewStatistics.money = crewStatistics.money - costPerFuel
-	if crewStatistics.fuel >= crewStatistics.maxFuel  or crewStatistics.money < costPerFuel then buyFuelBtn.stop
+	Starfarer.fuel = Starfarer.fuel + 1
+	Starfarer.money = Starfarer.money - costPerFuel
+	if Starfarer.fuel >= Starfarer.maxFuel  or Starfarer.money < costPerFuel then buyFuelBtn.stop
 end function
 
 buyRepair = function()
-	crewStatistics.hull = crewStatistics.hull + 1
-	crewStatistics.money = crewStatistics.money - costPerRepair
-	if crewStatistics.hull >= crewStatistics.maxHull  or crewStatistics.money < costPerFuel then repairButton.stop
+	Starfarer.hull = Starfarer.hull + 1
+	Starfarer.money = Starfarer.money - costPerRepair
+	if Starfarer.hull >= Starfarer.maxHull  or Starfarer.money < costPerFuel then repairButton.stop
 end function
 
 addBottomButton = function(caption, right, width=100)

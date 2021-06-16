@@ -36,12 +36,12 @@ encounter.present = function(data)
 	  value + " credits."
 
 	self.showDialog data, description
-	crewStatistics.money = crewStatistics.money + value
+	Starfarer.money = Starfarer.money + value
 end function
 
 
 if locals == globals then
-	crewStatistics = {"money": 0}
+	Starfarer = {"money": 0}
 	enc = new encounter
 	enc.present enc.consideration({"name":"Demo"}, true)
 end if
