@@ -86,16 +86,10 @@ Ship.init = function(columns, rows)
 	self.rowRange = range(0, rows-1)
 	self.map = list.init2d(columns, rows)
 	
-	// Also set up some default systems.
-	self.reactor = systems.System.makeInvisible("reactor", 12)
-	self.reactor.curPower = 0
+	// NOTE: we no longer set up some default systems.
+	// Ship files will need to set them up themselves.
+	// Always put the reactor first, followed by others.
 	self.systems = []
-	self.systems.push self.reactor
-	self.systems.push systems.System.makeInvisible("O2", 3)
-	self.systems.push systems.System.makeInvisible("engines", 3)
-	self.systems.push systems.System.makeInvisible("controls", 2)
-	self.systems.push systems.System.makeInvisible("doors", 2)
-	self.systems.push systems.System.makeInvisible("sensors", 3)
 end function
 
 Ship.distributePower = function()
@@ -345,7 +339,11 @@ Ship.placeRightWalls = function(left, bottom, length)
 end function
 
 Ship.addSystem = function(system)
+	system.repairLevel = system.maxPower
+	system.curPower = system.maxPower
+	system.setPoint = system.maxPower
 	self.systems.push system
+	if self.systems.len == 1 then self.reactor = system
 end function
 
 //----------------------------------------------------------------------
@@ -406,17 +404,18 @@ end function
 Ship.draw = function()
 	gfx.clear
 	
-	drawWall = function(wallOrDoor, x1, y1, x2, y2)
+	drawWall = function(wallOrDoor, x1, y1, x2, y2, c)
 		if wallOrDoor == null then return
 		if wallOrDoor isa shipModel.Wall then
-			gfx.line x1, y1, x2, y2, color.gray
+			gfx.line x1, y1, x2, y2, c
 		else if wallOrDoor.isOpen then
 			gfx.line x1, y1, x2, y2, color.aqua
 		else
 			gfx.line x1, y1, x2, y2, color.red
 		end if
 	end function
-	
+
+	// draw floor/contents	
 	for col in self.columnRange
 		x = col * CELLSIZE
 		for row in self.rowRange
@@ -435,44 +434,51 @@ Ship.draw = function()
 				end if
 				gfx.fillRect x+1, y+1, CELLSIZE-2, CELLSIZE-2, cellcolor
 				gfx.drawRect x, y, CELLSIZE, CELLSIZE, color.white
-				drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y
-				drawWall cell.walls[WEST], x, y, x, y+CELLSIZE
-				drawWall cell.walls[NORTH], x, y+CELLSIZE-1, x+CELLSIZE, y+CELLSIZE-1
-				drawWall cell.walls[EAST], x+CELLSIZE-1, y, x+CELLSIZE-1, y+CELLSIZE
 				if cell.contents != null then
 					gfx.fillRect x+3, y+3, CELLSIZE-6, CELLSIZE-6, color.yellow
 				end if
 			end if
 		end for
 	end for
+	
+	// draw walls
+	for col in self.columnRange
+		x = col * CELLSIZE
+		for row in self.rowRange
+			y = row * CELLSIZE
+			cell = self.map[col][row]
+			if cell == null then continue
+			drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y, color.green
+			drawWall cell.walls[WEST], x, y, x, y+CELLSIZE, color.brown
+			drawWall cell.walls[NORTH], x, y+CELLSIZE-1, x+CELLSIZE, y+CELLSIZE-1, color.navy
+			drawWall cell.walls[EAST], x+CELLSIZE-1, y, x+CELLSIZE-1, y+CELLSIZE, color.purple
+		end for
+	end for
 end function
+	
 
-
-demo = function()
+demo = function(shipName="freighter")
 	clear
 	
-	// for our demo, we'll load the "freighter" ship we're building for the prototype
 	dir = pwd
 	globals.shipModel = outer
-	cd "/usr/ships/freighter"
+	cd "/usr/ships/" + shipName
 	import "shipData"
 	cd dir
 
 	globals.ship = shipData.ship
 	ship.draw
-	print "Neighbors of [1,7]: " + ship.walkableNeighbors([1,7])
-	print "Neighbors of [5,11]: " + ship.walkableNeighbors([5,11])
 	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
-	ship.addCargo(new Item)
+	ship.addCargo new Item
 	ship.draw
 	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
-	ship.addCargo(new Item)
+	ship.addCargo new Item
 	ship.draw
 	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
-	ship.addCargo(new Item)
+	ship.addCargo new Item
 	ship.draw
 	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1
@@ -486,7 +492,8 @@ demo = function()
 end function
 
 runUnitTests = function()
-
+	import "systems"
+	
 	setupTestCell = function()
 		outer.testCell = shipModel.Cell.make(0,0)
 	end function
@@ -527,16 +534,8 @@ runUnitTests = function()
 	qa.assertEqual testCell.canExitInDir(globals.NORTH), true
 	qa.assertEqual testCell.canExitInDir(globals.NORTH, false), false
 
-	testShip = new Ship
-	compareShip = new Ship
-	compareShip.init(10,10)
-
-	testShip.rows = 10; testShip.columns = 10; testShip.rowRange = range(0,9); testShip.columnRange = range(0,9); testShip.map = list.init2d(10, 10)
-	qa.assertEqual testShip, compareShip
-
 	setupTestShip
-	qa.assertEqual testShip,compareShip
-	testShip.digRoom(0,0,1,1)
+	testShip.digRoom 0,0,1,1
 	qa.assertEqual testShip.map[0][0], Cell.make(0,0)
 	qa.assertEqual testShip.map[0][1], null
 
@@ -657,8 +656,9 @@ runUnitTests = function()
 	qa.assertEqual testShip.getCargoOutCells, [testShip.getCell(0,0)]
 
 	setupTestShip
-	testShip.addSystem(System.make)
-	qa.assertEqual testShip.systems, [System.make]
+	sys = systems.System.make
+	testShip.addSystem sys
+	qa.assertEqual testShip.systems, [sys]
 
 	print "shipModel unit tests complete."
 end function

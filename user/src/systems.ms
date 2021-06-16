@@ -77,3 +77,92 @@ end function
 MedBay.use = function(character, dt = 0.1)
 	character.health = miscUtil.min(character.health + dt, character.maxHealth)
 end function
+
+//----------------------------------------------------------------------
+// O2: generates oxygen (life support) while powered.
+//----------------------------------------------------------------------
+O2 = new System
+O2.name = "O2"
+O2.width = 2
+O2.height = 1
+O2.image = file.loadImage("/usr/pics/systems/O2.png")
+O2.icon = file.loadImage("/usr/pics/systemIcons/O2.png")
+
+O2.make = function(col, row)
+	noob = new O2
+	noob.col = col; noob.row = row
+	return noob
+end function
+
+//----------------------------------------------------------------------
+// Sensors: allows the player to see what's happening, by power level:
+//		1 bar: see in your own ship, even where there is no crew.
+//		2 bars: see inside opponent ship
+//		3 bars: also see opponent's weapon charge status
+//----------------------------------------------------------------------
+Sensors = new System
+Sensors.name = "O2"
+Sensors.width = 2
+Sensors.height = 1
+Sensors.image = file.loadImage("/usr/pics/systems/sensors.png")
+Sensors.icon = file.loadImage("/usr/pics/systemIcons/sensors.png")
+
+Sensors.make = function(col, row)
+	noob = new Sensors
+	noob.col = col; noob.row = row
+	return noob
+end function
+
+//----------------------------------------------------------------------
+// Controls: allows the player to see what's happening, by power level:
+//		1 bar: see in your own ship, even where there is no crew.
+//		2 bars: see inside opponent ship
+//		3 bars: also see opponent's weapon charge status
+//----------------------------------------------------------------------
+Controls = new System
+Controls.name = "O2"
+Controls.width = 2
+Controls.height = 1
+Controls.maxPower = 2
+Controls.image = file.loadImage("/usr/pics/systems/controls.png")
+Controls.icon = file.loadImage("/usr/pics/systemIcons/controls.png")
+
+Controls.make = function(col, row)
+	noob = new Controls
+	noob.col = col; noob.row = row
+	return noob
+end function
+
+//----------------------------------------------------------------------
+// Engines: make the ship go.
+//----------------------------------------------------------------------
+Engines = new System
+Engines.name = "O2"
+Engines.width = 2
+Engines.height = 1
+Engines.image = file.loadImage("/usr/pics/systems/engines.png")
+Engines.icon = file.loadImage("/usr/pics/systemIcons/engines.png")
+
+Engines.make = function(col, row)
+	noob = new Engines
+	noob.col = col; noob.row = row
+	return noob
+end function
+
+//----------------------------------------------------------------------
+// Reactor: provides power for the ship.
+//----------------------------------------------------------------------
+Reactor = new System
+Reactor.name = "O2"
+Reactor.maxPower = 12
+Reactor.width = 2
+Reactor.height = 2
+Reactor.image = file.loadImage("/usr/pics/systems/reactor.png")
+Reactor.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
+
+Reactor.make = function(col, row)
+	noob = new Reactor
+	noob.col = col; noob.row = row
+	return noob
+end function
+
