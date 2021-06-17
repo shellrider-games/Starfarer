@@ -39,6 +39,7 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 	showNavButton
 
 	if currentTab == SHOW_MARKET then showMarket station, left, bottom, width, height
+	if currentTab == SHOW_CANTINA then showCantina station, left, bottom, width, height
 	
 end function
 
@@ -92,9 +93,7 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	right = left + width
 	top = bottom + height
 	
-	font = fonts.ArialBlack14
-	font.setColor color.black
-	font.print station.name + " Station : MARKET", left+4, top-14
+	printPanelTitle "MARKET", station, left, bottom, height
 	
 	y = top - 60
 
@@ -119,8 +118,22 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	x = x - 120
 end function
 
-showCantina = function()
+printPanelTitle = function(text, station, left=550, bottom=150, height=400)
+	top = bottom + height
+	font = fonts.ArialBlack14
+	font.setColor color.black
+	font.print station.name + " Station : " + text, left+4, top-14
+end function
 
+showCantina = function(station,left=550, bottom=150, width=350, height=400)
+	right = left + width
+	top = bottom + height
+
+	printPanelTitle "CANTINA", station, left, bottom, height
+
+	availableQuestBackground = new Panel
+	availableQuestBackground.init left+40, bottom+40, width-80, height-100, "availableQuestBackground", load9SliceImage("subPanel")
+	availableQuestBackground.draw
 end function
 
 showNavButton = function()
