@@ -17,6 +17,7 @@ SHOW_CANTINA = 1
 
 currentTab = 0
 tabs = []
+activeButtons = []
 
 // Import the widget classes directly into this module for more readable code:
 for idx in uiWidgets.indexes
@@ -30,6 +31,10 @@ end for
 // Draw station UI according to station model
 show = function(station,left=550, bottom=150, width=350, height=400)
 	
+	for button in activeButtons
+		button.stop
+	end for
+
 	outer.background = new Panel
 	background.init left, bottom, width, height, "background", load9SliceImage("panel")
 	background.draw
@@ -142,6 +147,7 @@ showNavButton = function()
 	navBtn.init 900, 610, 60, 30, "NAV"
 	navBtn.backColor = color.black
 	navBtn.start
+	activeButtons.push navBtn
 end function
 
 buyFuel = function()
@@ -190,6 +196,7 @@ addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPri
 	btn.action = function()
 		playerShip.incomingTypes.push itemType
 	end function
+	activeButtons.push btn
 	
 	// column 2: sell button
 	btn = new Button
@@ -200,6 +207,7 @@ addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPri
 	btn.action = function()
 		playerShip.outgoingTypes.push itemType
 	end function
+	activeButtons.push btn
 	
 end function
 
