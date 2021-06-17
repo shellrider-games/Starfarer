@@ -13,7 +13,7 @@ costPerFuel = 10
 costPerRepair = 15
 
 SHOW_MARKET = 0
-SHOW_CANTEEN = 1
+SHOW_CANTINA = 1
 
 currentTab = 0
 tabs = []
@@ -54,9 +54,9 @@ showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
 	marketTabButton.state = Button.PRESSED
 	marketTabButton.draw
 	
-	canteenTabButton = new TabButton
-	canteenTabButton.init left+100, bottom, 98, height, "Canteen"
-	canteenTabButton.draw
+	cantinaTabButton = new TabButton
+	cantinaTabButton.init left+100, bottom, 98, height, "Cantina"
+	cantinaTabButton.draw
 
 	resetTab = function(tab)
 		for iTab in outer.tabs
@@ -75,17 +75,17 @@ showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
 		stationUI.show station
 	end function
 
-	canteenTabButton.action = function()
+	cantinaTabButton.action = function()
 		resetTab self
-		stationUI.setCurrentTab stationUI.SHOW_CANTEEN
+		stationUI.setCurrentTab stationUI.SHOW_CANTINA
 		stationUI.show station
 	end function
 
 	outer.tabs.push marketTabButton
-	outer.tabs.push canteenTabButton
+	outer.tabs.push cantinaTabButton
 	
 	marketTabButton.start
-	canteenTabButton.start
+	cantinaTabButton.start
 end function
 
 showMarket = function(station,left=550, bottom=150, width=350, height=400)
@@ -117,6 +117,10 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 		repairButton.action = @buyRepair
 	end if
 	x = x - 120
+end function
+
+showCantina = function()
+
 end function
 
 showNavButton = function()
