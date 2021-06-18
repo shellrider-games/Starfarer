@@ -12,6 +12,10 @@ min = function(a,b)
 	if a < b then return a else return b
 end function
 
+// Get back the result of a die roll with a certain number of sides
+rollDie = function(sides = 6)
+	return ceil(rnd * sides)
+end function
 
 runUnitTests = function()
 	qa.assert max(2,5) == 5
