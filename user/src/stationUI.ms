@@ -60,11 +60,12 @@ showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
 
 	marketTabButton = new TabButton
 	marketTabButton.init left, bottom, 98, height, "Market"
-	marketTabButton.state = Button.PRESSED
+	if currentTab == SHOW_MARKET then marketTabButton.state = Button.PRESSED
 	marketTabButton.draw
 	
 	cantinaTabButton = new TabButton
 	cantinaTabButton.init left+100, bottom, 98, height, "Cantina"
+	if currentTab == SHOW_CANTINA then cantinaTabButton.state = Button.PRESSED
 	cantinaTabButton.draw
 
 	resetTab = function(tab)

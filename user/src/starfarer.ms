@@ -112,7 +112,6 @@ Starfarer.enterState = function(newState)
 		encounters.planEncounters self.station, self.nextStation
 		
 	end if
-	
 	self.state = newState
 	self.timeInState = 0
 end function
