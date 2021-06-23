@@ -15,6 +15,8 @@ costPerRepair = 15
 SHOW_MARKET = 0
 SHOW_CANTINA = 1
 
+NPC_PORTRAIT = file.loadImage("/usr/pics/portraits/person_male01.png") 
+
 currentTab = 0
 tabs = []
 activeButtons = []
@@ -139,6 +141,8 @@ showCantina = function(station,left=550, bottom=150, width=350, height=400)
 	availableQuestBackground = new Panel
 	availableQuestBackground.init left+40, bottom+40, width-80, height-100, "availableQuestBackground", load9SliceImage("subPanel")
 	availableQuestBackground.draw
+
+	addCantinaNPC left + 44, top - 136, width - 88, 72, "placeholder"
 end function
 
 showNavButton = function()
@@ -172,6 +176,13 @@ end function
 
 hide = function()
 	uiWidgets.clearAll
+end function
+
+addCantinaNPC = function(left, bottom, width, height, name)
+	background = new Panel
+	background.init left, bottom, width, height, "background", load9SliceImage("panel")
+	background.draw
+	disp.uiPixel.drawImage NPC_PORTRAIT, left + 4, bottom + 4, 64, 64
 end function
 
 // Add a row of widgets for one market commodity.
