@@ -147,7 +147,7 @@ showCantina = function(station,left=550, bottom=150, width=350, height=400)
 	y = top - 136
 	for npc in station.cantina
 		addCantinaNPC left + 44, y, width - 88, 72, npc.name
-		y = y - 72
+		y = y - 74
 	end for
 end function
 
