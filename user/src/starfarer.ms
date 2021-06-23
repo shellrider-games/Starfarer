@@ -83,6 +83,8 @@ Starfarer.enterState = function(newState)
 	if newState == self.STATE_AT_STATION then
 		playerUI.show
 		minionUI.show playerShip.minions
+		stationUI.tabs = []
+		stationUI.activeButtons = []
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP

@@ -8,12 +8,14 @@ import "mathUtil"
 Station = {}
 Station.name = "DEFAULT NAME"
 Station.market = null		// a list of Commodity instances
+Station.cantina = null		// a list of NPCs currently in cantina
 Station.x = null
 Station.y = null
 
 Station.init = function(name, x = floor(rnd * 100), y = floor(rnd * 100))
 	self.name = name
 	self.market = []
+	self.cantina = []
 	self.x = x
 	self.y = y
 end function
@@ -24,6 +26,19 @@ Commodity.buyPrice = 0
 Commodity.sellPrice = 0
 Commodity.name = function()
 	return self.itemType.name
+end function
+
+CantinaNPC = {}
+CantinaNPC.name = "Placeholder"
+
+Station.fillCantina = function()
+	self.cantina = []
+	noob = new CantinaNPC
+	noob.name = randomNames.human
+	self.cantina.push noob
+	noob = new CantinaNPC
+	noob.name = randomNames.human
+	self.cantina.push noob
 end function
 
 Station.addCommodityToMarket = function(itemType, buyPrice, sellPrice)
@@ -99,7 +114,8 @@ manyRandomStations = function(quantity=30)
 			noob = randomStation
 			closest = closestStation(noob, result)
 			if closest == null or mathUtil.distance(closest, noob) > 50 then break
-		end while	
+		end while
+		noob.fillCantina
 		result.push noob
 	end for
 	return result

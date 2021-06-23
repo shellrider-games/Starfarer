@@ -21,6 +21,7 @@ currentTab = 0
 tabs = []
 activeButtons = []
 
+
 // Import the widget classes directly into this module for more readable code:
 for idx in uiWidgets.indexes
 	if (idx[0] >= "A" and idx[0] <= "Z") or idx.startsWith("load") then
@@ -142,7 +143,11 @@ showCantina = function(station,left=550, bottom=150, width=350, height=400)
 	availableQuestBackground.init left+40, bottom+40, width-80, height-100, "availableQuestBackground", load9SliceImage("subPanel")
 	availableQuestBackground.draw
 
-	addCantinaNPC left + 44, top - 136, width - 88, 72, "Placeholder"
+	y = top - 136
+	for npc in station.cantina
+		addCantinaNPC left + 44, y, width - 88, 72, npc.name
+		y = y - 72
+	end for
 end function
 
 showNavButton = function()
@@ -150,6 +155,11 @@ showNavButton = function()
 	outer.navBtn = new Button
 	navBtn.init 900, 610, 60, 30, "NAV"
 	navBtn.backColor = color.black
+
+	outer.navBtn.action = function()
+		game.enterState Starfarer.STATE_NAVMAP
+	end function
+	
 	navBtn.start
 	activeButtons.push navBtn
 end function
