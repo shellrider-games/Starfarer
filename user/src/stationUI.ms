@@ -142,7 +142,7 @@ showCantina = function(station,left=550, bottom=150, width=350, height=400)
 	availableQuestBackground.init left+40, bottom+40, width-80, height-100, "availableQuestBackground", load9SliceImage("subPanel")
 	availableQuestBackground.draw
 
-	addCantinaNPC left + 44, top - 136, width - 88, 72, "placeholder"
+	addCantinaNPC left + 44, top - 136, width - 88, 72, "Placeholder"
 end function
 
 showNavButton = function()
@@ -183,6 +183,11 @@ addCantinaNPC = function(left, bottom, width, height, name)
 	background.init left, bottom, width, height, "background", load9SliceImage("panel")
 	background.draw
 	disp.uiPixel.drawImage NPC_PORTRAIT, left + 4, bottom + 4, 64, 64
+	
+	nameLabel = new Label
+	nameLabel.init left + width - 104, bottom + height -20 , 100, 20, name, ALIGNRIGHT
+	nameLabel.draw
+
 end function
 
 // Add a row of widgets for one market commodity.
