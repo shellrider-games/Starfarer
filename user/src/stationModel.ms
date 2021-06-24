@@ -3,6 +3,7 @@ if not globals.hasIndex("setup") then import "setup"
 if not globals.hasIndex("qa") then import "qa"
 if not globals.hasIndex("item") then import "item"
 if not globals.hasIndex("randomNames") then import "randomNames"
+if not globals.hasIndex("miscUtil") then import "miscUtil"
 import "mathUtil"
 
 Station = {}
@@ -33,12 +34,11 @@ CantinaNPC.name = "Placeholder"
 
 Station.fillCantina = function()
 	self.cantina = []
-	noob = new CantinaNPC
-	noob.name = randomNames.human
-	self.cantina.push noob
-	noob = new CantinaNPC
-	noob.name = randomNames.human
-	self.cantina.push noob
+	for i in range(1, ceil((miscUtil.rollDie + miscUtil.rollDie)/4))
+		noob = new CantinaNPC
+		noob.name = randomNames.human
+		self.cantina.push noob
+	end for
 end function
 
 Station.addCommodityToMarket = function(itemType, buyPrice, sellPrice)
