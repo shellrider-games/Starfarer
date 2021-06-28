@@ -75,7 +75,11 @@ MedBay.make = function(col, row)
 end function
 
 MedBay.use = function(character, dt = 0.1)
-	character.health = miscUtil.min(character.health + dt, character.maxHealth)
+	// regenerates the health of the user at a rate that
+	// depends on our current power
+	regenPerSec = self.curPower
+	character.health = miscUtil.min(character.health + regenPerSec * dt,
+	   character.maxHealth)
 end function
 
 //----------------------------------------------------------------------
