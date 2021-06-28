@@ -74,6 +74,7 @@ Ship.minions = []		// living things on a ship
 Ship.incomingTypes = []	// list of ItemTypes bought but not yet loaded
 Ship.outgoingTypes = []	// list of ItemTypes sold but not yet unloaded
 Ship.systems = []		// list of System instances installed in the ship
+Ship.reactor = null		// reactor system (always self.systems[0])
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -301,7 +302,13 @@ Ship.digRoom = function(left, bottom, width, height)
 end function
 
 Ship.place = function(col, row, direction, wallOrDoor)
-	self.map[col][row].walls[direction] = wallOrDoor
+	cell = self.getCell(col, row)
+	if not cell isa Cell then
+		print "Couldn't place " + wallOrDoor + " at " + col + "," + row
+		return
+	end if
+	qa.assert cell isa Cell
+	cell.walls[direction] = wallOrDoor
 	nextCol = col + constants.dx(direction)
 	nextRow = row + constants.dy(direction)
 	if self.walkable([nextCol, nextRow]) then
@@ -343,7 +350,7 @@ Ship.addSystem = function(system)
 	system.curPower = system.maxPower
 	system.setPoint = system.maxPower
 	self.systems.push system
-	if self.systems.len == 1 then self.reactor = system
+	if system isa systems.Reactor then self.reactor = system
 end function
 
 //----------------------------------------------------------------------

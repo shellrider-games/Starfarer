@@ -1,5 +1,6 @@
 
 ship = new shipModel.Ship
+globals.ship = ship
 
 ship.directory = file.curdir
 ship.init 6,9
@@ -39,7 +40,7 @@ ship.placeLeftWalls 4,0, 4
 ship.placeLeftWalls 4,5, 3
 
 ship.placeRightWalls 1,0, 4
-ship.placeRightWalls 1,5, 4
+ship.placeRightWalls 1,4, 4
 ship.placeRightWalls 3,0, 4
 ship.placeRightWalls 3,5, 3
 ship.placeRightWalls 3,5, 4
@@ -49,7 +50,6 @@ ship.placeRightWalls 5,5, 3
 ship.placeDoor 0,3, NORTH
 ship.placeDoor 1,4, NORTH
 ship.placeDoor 1,6, NORTH
-ship.placeDoor 1,4, EAST
 
 //ship.placeDoor 3, 3, NORTH
 //ship.placeDoor 5, 3, NORTH
@@ -69,7 +69,7 @@ ship.getCell(5,4).type = Celltype.CARGO_OUT
 //ship.map[1][1].placeItem new item.MedsItem
 //ship.map[9][2].placeItem new item.WaterItem
 //
-//ship.addSystem systems.Reactor.make(4,2)
+ship.addSystem systems.Reactor.make(2,2)
 //ship.addSystem systems.Controls.make(7,13)
 //ship.addSystem systems.Engines.make(4,0)
 //ship.addSystem systems.O2.make(3,11)
