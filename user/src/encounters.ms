@@ -77,6 +77,22 @@ update = function(dt)
 	end if
 end function
 
+addNPCsToCantina = function(station)
+	for enc in encounterList
+		prevLen = station.cantina.len
+		enc.addNPCsToCantina station
+		// if the encounter added any NPCs, make sure they have their
+		// 'encounter' and 'station' properties set so we can call back
+		// to the same encounter if the player clicks on the NPC.
+		if station.cantina.len > prevLen then
+			for i in range(prevLen, station.cantina.len-1)
+				station.cantina[i].encounter = enc
+				station.cantina[i].station = station
+			end for
+		end if
+	end for
+end function
+
 init
 	
 if locals == globals then

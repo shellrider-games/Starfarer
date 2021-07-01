@@ -40,6 +40,12 @@ clearAll = function()
 	outer._allWidgets = []
 end function
 
+// redrawAll: redraw all widgets
+redrawAll = function()
+	for widget in _allWidgets
+		widget.redraw
+	end for
+end function
 
 //----------------------------------------------------------------------
 // Image9Slice class: an image wrapper with margins that are not stretched,
@@ -591,7 +597,7 @@ Button.draw = function()
 		f = fonts[self.font]
 		f.setColor color.black
 		f.printCentered self.caption, self.bounds.x, y - f.lineHeight * 0.2
-	else
+	else if self.caption isa Widget then
 		self.caption.bounds.x = self.bounds.x
 		self.caption.bounds.y = y
 		self.caption.draw

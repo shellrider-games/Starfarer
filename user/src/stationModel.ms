@@ -31,14 +31,11 @@ end function
 
 CantinaNPC = {}
 CantinaNPC.name = "Placeholder"
+CantinaNPC.encounter = null
 
 Station.fillCantina = function()
 	self.cantina = []
-	for i in range(1, ceil((miscUtil.rollDie + miscUtil.rollDie)/4))
-		noob = new CantinaNPC
-		noob.name = randomNames.human
-		self.cantina.push noob
-	end for
+	encounters.addNPCsToCantina self
 end function
 
 Station.addCommodityToMarket = function(itemType, buyPrice, sellPrice)
@@ -115,7 +112,9 @@ manyRandomStations = function(quantity=30)
 			closest = closestStation(noob, result)
 			if closest == null or mathUtil.distance(closest, noob) > 50 then break
 		end while
-		noob.fillCantina
+		// Note: we won't fill the cantinas now; instead we will do
+		// that for each cantina when we land, so they can respond
+		// easily to the changing conditions of the game.
 		result.push noob
 	end for
 	return result

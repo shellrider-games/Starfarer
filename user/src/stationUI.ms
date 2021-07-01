@@ -55,6 +55,14 @@ setCurrentTab = function(currentTab)
 	outer.currentTab = currentTab
 end function
 
+resetTab = function(tab)
+	for iTab in outer.tabs
+		if tab != iTab then iTab.state = uiWidgets.Button.NORMAL
+		iTab.redraw
+	end for
+end function
+
+
 showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
 	tabs = outer.tabs
 
@@ -68,25 +76,18 @@ showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
 	if currentTab == SHOW_CANTINA then cantinaTabButton.state = Button.PRESSED
 	cantinaTabButton.draw
 
-	resetTab = function(tab)
-		for iTab in outer.tabs
-			if tab != iTab then iTab.state = uiWidgets.Button.NORMAL
-			iTab.redraw
-		end for
-	end function
-
 	printCurrentTab = function()
 		print outer.currentTab
 	end function
 
 	marketTabButton.action = function()
-		resetTab self
+		stationUI.resetTab self
 		stationUI.setCurrentTab stationUI.SHOW_MARKET
 		stationUI.show station
 	end function
 
 	cantinaTabButton.action = function()
-		resetTab self
+		stationUI.resetTab self
 		stationUI.setCurrentTab stationUI.SHOW_CANTINA
 		stationUI.show station
 	end function
@@ -141,12 +142,13 @@ showCantina = function(station,left=550, bottom=150, width=350, height=400)
 	printPanelTitle "CANTINA", station, left, bottom, height
 
 	availableQuestBackground = new Panel
-	availableQuestBackground.init left+40, bottom+40, width-80, height-100, "availableQuestBackground", load9SliceImage("subPanel")
+	availableQuestBackground.init left+40, bottom+40, width-80, height-100,
+	   "availableQuestBackground", load9SliceImage("subPanel")
 	availableQuestBackground.draw
 
 	y = top - 136
 	for npc in station.cantina
-		addCantinaNPC left + 44, y, width - 88, 72, npc.name
+		addCantinaNPC left + 44, y, width - 88, 72, npc
 		y = y - 74
 	end for
 end function
@@ -189,16 +191,31 @@ hide = function()
 	uiWidgets.clearAll
 end function
 
-addCantinaNPC = function(left, bottom, width, height, name)
-	background = new Panel
-	background.init left, bottom, width, height, "background", load9SliceImage("panel")
-	background.draw
-	disp.uiPixel.drawImage NPC_PORTRAIT, left + 4, bottom + 4, 64, 64
-	
-	nameLabel = new Label
-	nameLabel.init left + width - 104, bottom + height -20 , 100, 20, name, ALIGNRIGHT
-	nameLabel.draw
+NPCButton = new Button
+NPCButton.npc = null  // a stationModel.CantinaNPC instance
+NPCButton.backColor = color.silver
+NPCButton.draw = function()
+	super.draw
+	dy = 0
+	if self.state == Button.PRESSED then dy = -2
+	disp.uiPixel.drawImage NPC_PORTRAIT, self.left + 4, self.bottom + 6 + dy, 64, 64
+	fonts.ArialBlack14.printRight self.npc.name, self.right - 8, self.top - 14 + dy
+end function
 
+addCantinaNPC = function(left, bottom, width, height, npc)
+	button = new NPCButton
+	button.init left, bottom, width, height, "NPC Button"
+	button.caption = null	// (we don't use captions; instead override draw)
+	button.npc = npc
+	button.action = function()
+		npc.encounter.presentNPC npc
+		stationUI.resetTab self
+		stationUI.setCurrentTab stationUI.SHOW_CANTINA
+		stationUI.show npc.station
+	end function
+	button.start
+	activeButtons.push button
+	return button
 end function
 
 // Add a row of widgets for one market commodity.

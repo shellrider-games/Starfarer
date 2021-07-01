@@ -22,7 +22,8 @@ import "starmap"
 import "playerUI"
 import "minionUI"
 import "effects"
-
+import "qa"
+globals.qa = qa
 
 Starfarer = {}
 
@@ -43,7 +44,7 @@ Starfarer.maxFuel = 12
 
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
-	cd "../ships/freighter"
+	cd "../ships/robin"
 	import "shipData"
 	globals.playerShip = shipData.ship
 	cd "/usr/src"
@@ -85,6 +86,7 @@ Starfarer.enterState = function(newState)
 		minionUI.show playerShip.minions
 		stationUI.tabs = []
 		stationUI.activeButtons = []
+		self.station.fillCantina
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP

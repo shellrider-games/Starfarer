@@ -33,8 +33,20 @@ end function
 
 // This method is called when the encounter should be presented.
 // The data given is the same object returned from consider().
-// Subclasses will usually override this.
+// Transit-encounter subclasses will usually override this.
 Encounter.present = function(data)
+
+end function
+
+// Use this method to add any NPCs related to this encounter to
+// the given station.  Subclasses will often override this.
+Encounter.addNPCsToCantina = function(station)
+
+end function
+
+// This method is called when the player clicks on an NPC in the cantina.
+// NPC-encounter subclasses will usually override this.
+Encounter.presentNPC = function(npc)
 
 end function
 
@@ -43,11 +55,12 @@ end function
 // options (not yet supported).
 //
 // Parameters:
-//	data: data object passed from consider() to present()
+//	dataOrStation: data object passed from consider() to present(),
+//			OR a station object in the case of a cantina encounter
 //	text: main descriptive text to show
 //	options: optional set of options the player can choose
 // Returns: index of the option chosen, or null if none
-Encounter.showDialog = function(data, text, options=[])
+Encounter.showDialog = function(dataOrStation, text, options=[])
 	
 	textBox = new uiWidgets.Label
 	textBox.init 480-150, 0, 300, 20, "textBox"
@@ -104,7 +117,12 @@ Encounter.showDialog = function(data, text, options=[])
 	whereLabel.init panel.right-204, panel.top-18, 200, 18
 	whereLabel.color = "#CCCCFF"
 	whereLabel.alignment = uiWidgets.ALIGNRIGHT
-	whereLabel.text = round(data.distance * 100000) + " km from " + data.station.name
+	if dataOrStation isa stationModel.Station then
+		whereLabel.text = dataOrStation.name + " Cantina"
+	else
+		whereLabel.text = round(dataOrStation.distance * 100000) + 
+		   " km from " + dataOrStation.station.name
+	end if
 	whereLabel.draw
 
 	okButton = null
