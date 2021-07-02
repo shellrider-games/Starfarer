@@ -30,14 +30,19 @@ end function
 // If the host app decides to present this encounter, then it will call
 // this present method, with the data returned from consider():
 encounter.presentNPC = function(npc)
-	responses = [
-		"Leave me alone.",
-		"Don't bother me.",
-		"Beat it, pal.",
-		"Can't a guy drink in peace?"]
-	
-	description = npc.name + ": " + responses.any
-	self.showDialog npc.station, description
+	starsystem = null
+	while starsystem == null or starsystem == Starfarer.currentStation
+	starsystem = game.stations.any
+	end while
+	dialogue = "Hey, you look like someone that can relay a datastick to a friend of mine in the " + starsystem.name +" system." +
+	" I need to get some data there without any so called authorities snooping around. Ya get what I mean?" +
+	" There are 500 credits in it for you..."
+	description = npc.name + ": " + dialogue
+	self.showDialog(npc.station, description, ["Accept", "Decline"])
+	if choice == 1 then return		//declined
+
+	print "I AM NOT IMPLENTED YET PLEASE IMPLEMENT ME!"
+
 end function
 
 
