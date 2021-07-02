@@ -262,8 +262,8 @@ end function
 
 Ship.systemAt = function(col, row)
 	for system in self.systems
-		if col >= system.col and col <= system.col + system.width and 
-		   row >= system.row and row <= system.row + system.height then return system
+		if col >= system.col and col <= system.col + system.width - 1 and 
+		   row >= system.row and row <= system.row + system.height - 1 then return system
 	end for
 	return null
 end function
