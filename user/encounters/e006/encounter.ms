@@ -39,6 +39,7 @@ encounter.presentNPC = function(npc)
 	" There are 500 credits in it for you..."
 	description = npc.name + ": " + dialogue
 	choice  = self.showDialog(npc.station, description, ["Accept", "Decline"])
+	game.currentStation.cantina.removeVal npc
 	if choice == 1 then return		//declined
 
 	print "I AM NOT IMPLENTED YET PLEASE IMPLEMENT ME!"
