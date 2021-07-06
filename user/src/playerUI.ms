@@ -101,19 +101,19 @@ hideTravel = function()
 end function
 
 update = function(dt = 0.1)
-	if Starfarer.money != lastMoney then
-		outer.lastMoney = Starfarer.money
-	    moneyLabel.setText "Credits: " + Starfarer.money
+	if game.money != lastMoney then
+		outer.lastMoney = game.money
+	    moneyLabel.setText "Credits: " + game.money
 	end if
-	if Starfarer.hull != lastHull[0] or Starfarer.maxHull != lastHull[1] then
-		lastHull[0] = Starfarer.hull
-		lastHull[1] = Starfarer.maxHull
-		hullBar.setValue Starfarer.hull, Starfarer.maxHull
+	if game.hull != lastHull[0] or game.maxHull != lastHull[1] then
+		lastHull[0] = game.hull
+		lastHull[1] = game.maxHull
+		hullBar.setValue game.hull, game.maxHull
 	end if
-	if Starfarer.fuel != lastFuel[0] or Starfarer.maxFuel != lastFuel[1] then
-		lastFuel[0] = Starfarer.fuel
-		lastFuel[1] = Starfarer.maxFuel
-		fuelBar.setValue Starfarer.fuel, Starfarer.maxFuel
+	if game.fuel != lastFuel[0] or game.maxFuel != lastFuel[1] then
+		lastFuel[0] = game.fuel
+		lastFuel[1] = game.maxFuel
+		fuelBar.setValue game.fuel, game.maxFuel
 	end if
 end function
 

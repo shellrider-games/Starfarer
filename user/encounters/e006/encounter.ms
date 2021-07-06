@@ -11,6 +11,7 @@ if not globals.hasIndex("Encounter") then
 	import "item"
 	import "listUtil"
 	import "stationModel"
+	import "quest"
 end if
 
 npc = new stationModel.CantinaNPC
@@ -24,6 +25,9 @@ encounter.consider = function(station, arriving)
 end function
 
 encounter.addNPCsToCantina = function(station)
+	for quest in game.quests
+		if quest.id == "datastick_delivery" then return //guards us from offering this quest twice
+	end for
 	if rnd < 0.5 then station.cantina.push npc
 end function
 
@@ -42,7 +46,16 @@ encounter.presentNPC = function(npc)
 	game.currentStation.cantina.removeVal npc
 	if choice == 1 then return		//declined
 
-	print "I AM NOT IMPLENTED YET PLEASE IMPLEMENT ME!"
+	messageDeliveryQuest = new quest.Quest
+	messageDeliveryQuest.id = "datastick_delivery"
+	messageDeliveryQuest.done = false
+	messageDeliveryQuest.checkConditions = function()
+		if game.currentStation.name == starsystem.name and self.done == false then
+			self.done = true
+			game.money = game.money + 500
+		end if
+	end function
+	game.quests.push messageDeliveryQuest
 
 end function
 

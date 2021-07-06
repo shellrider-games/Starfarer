@@ -23,6 +23,7 @@ import "playerUI"
 import "minionUI"
 import "effects"
 import "qa"
+import "quest"
 globals.qa = qa
 
 Starfarer = {}
@@ -34,6 +35,7 @@ Starfarer.STATE_TRAVEL = "Travel"
 Starfarer.state = Starfarer.STATE_NONE
 Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
+Starfarer.quests = [] //collection of quests
 
 Starfarer.money = 1000
 Starfarer.currentStation = null
@@ -224,6 +226,12 @@ Starfarer.processInput = function()
 	disp.background.scrollY = gfx.height - (mouse.y*.01)
 end function
 
+Starfarer.checkQuestConditions = function()
+	for quest in self.quests
+		quest.checkConditions
+	end for
+end function
+
 // Start Game/Main loop
 Starfarer.run = function()
 	//Main Loop
@@ -248,6 +256,8 @@ Starfarer.run = function()
 		else if self.state == self.STATE_TRAVEL then
 			self.updateTravel deltaTime
 		end if
+
+		self.checkQuestConditions
 
 		yield
 	end while
