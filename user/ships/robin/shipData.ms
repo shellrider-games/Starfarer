@@ -46,33 +46,31 @@ ship.placeRightWalls 3,5, 4
 ship.placeRightWalls 5,0, 4
 ship.placeRightWalls 5,5, 3
 
-ship.placeDoor 0,3, NORTH
+ship.placeDoor 0,6, NORTH
+ship.placeDoor 1,3, NORTH
 ship.placeDoor 1,4, NORTH
-ship.placeDoor 1,6, NORTH
-
-//ship.placeDoor 3, 3, NORTH
-//ship.placeDoor 5, 3, NORTH
-//ship.placeDoor 4, 6, NORTH
-//ship.placeDoor 1, 6, NORTH
-//ship.placeDoor 7, 6, NORTH
-//ship.placeDoor 1, 11, NORTH
-//ship.placeDoor 8, 9, NORTH
-//ship.placeDoor 2, 10, EAST
+ship.placeDoor 2,1, NORTH
+ship.placeDoor 2,4, NORTH
+ship.placeDoor 2,5, NORTH
+ship.placeDoor 3,3, NORTH
+ship.placeDoor 3,7, NORTH
+ship.placeDoor 4,3, NORTH
+ship.placeDoor 4,4, NORTH
+ship.placeDoor 5,6, NORTH
+ship.placeDoor 0,1, WEST
+ship.placeDoor 0,4, WEST
+ship.placeDoor 1,0, EAST
+ship.placeDoor 1,7, EAST
+ship.placeDoor 3,2, EAST
+ship.placeDoor 3,6, EAST
+ship.placeDoor 5,1, EAST
+ship.placeDoor 5,4, EAST
 
 ship.getCell(0,4).type = Celltype.CARGO_IN
 ship.getCell(5,4).type = Celltype.CARGO_OUT
 
-//And for prototyping purposes: let's start out with some items, too.
-//ship.map[0][0].placeItem new item.FoodItem
-//ship.map[1][0].placeItem new item.GunsItem
-//ship.map[1][1].placeItem new item.MedsItem
-//ship.map[9][2].placeItem new item.WaterItem
-//
 ship.addSystem systems.Reactor.make(2,2)
-//ship.addSystem systems.Controls.make(7,13)
-//ship.addSystem systems.Engines.make(4,0)
-//ship.addSystem systems.O2.make(3,11)
-//ship.addSystem systems.Sensors.make(7,10)
-//ship.addSystem systems.System.makeInvisible("shields", 4)
-//ship.addSystem systems.System.makeInvisible("doors", 3)
-//ship.addSystem systems.MedBay.make(1, 12)
+ship.addSystem systems.Engines.make(2,0)
+ship.addSystem systems.Controls.make(2,8)
+ship.addSystem systems.O2.make(0,7)
+ship.addSystem systems.MedBay.make(4,5)

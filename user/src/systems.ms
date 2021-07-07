@@ -141,9 +141,9 @@ end function
 // Engines: make the ship go.
 //----------------------------------------------------------------------
 Engines = new System
-Engines.name = "O2"
+Engines.name = "Engines"
 Engines.width = 2
-Engines.height = 1
+Engines.height = 2
 Engines.image = file.loadImage("/usr/pics/systems/engines.png")
 Engines.icon = file.loadImage("/usr/pics/systemIcons/engines.png")
 
