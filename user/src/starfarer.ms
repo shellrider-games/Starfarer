@@ -23,7 +23,6 @@ import "playerUI"
 import "minionUI"
 import "effects"
 import "qa"
-import "quest"
 globals.qa = qa
 
 Starfarer = {}
@@ -35,7 +34,6 @@ Starfarer.STATE_TRAVEL = "Travel"
 Starfarer.state = Starfarer.STATE_NONE
 Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
-Starfarer.quests = [] //collection of quests
 
 Starfarer.money = 1000
 Starfarer.currentStation = null
@@ -93,7 +91,6 @@ Starfarer.enterState = function(newState)
 		stationUI.navBtn.action = function()
 			game.enterState Starfarer.STATE_NAVMAP
 		end function
-		Starfarer.currentStation = self.station
 		
 	else if newState == self.STATE_NAVMAP then
 		if Starfarer.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
@@ -226,12 +223,6 @@ Starfarer.processInput = function()
 	disp.background.scrollY = gfx.height - (mouse.y*.01)
 end function
 
-Starfarer.checkQuestConditions = function()
-	for quest in self.quests
-		quest.checkConditions
-	end for
-end function
-
 // Start Game/Main loop
 Starfarer.run = function()
 	//Main Loop
@@ -256,8 +247,6 @@ Starfarer.run = function()
 		else if self.state == self.STATE_TRAVEL then
 			self.updateTravel deltaTime
 		end if
-
-		self.checkQuestConditions
 
 		yield
 	end while

@@ -11,13 +11,15 @@ if not globals.hasIndex("Encounter") then
 	import "item"
 	import "listUtil"
 	import "stationModel"
-	import "quest"
 end if
 
 npc = new stationModel.CantinaNPC
 npc.name = randomNames.human
 
 encounter = new encounterBase.Encounter
+encounter.started = false
+encounter.done = false
+encounter.starsystem = null
 
 encounter.consider = function(station, arriving)
 	// This encounter happens only at cantinas, not during transit.
@@ -25,38 +27,33 @@ encounter.consider = function(station, arriving)
 end function
 
 encounter.addNPCsToCantina = function(station)
-	for quest in game.quests
-		if quest.id == "datastick_delivery" then return //guards us from offering this quest twice
-	end for
-	if rnd < 0.5 then station.cantina.push npc
+	if self.done then return
+	if self.started == false and rnd < 0.5 then
+		station.cantina.push npc
+	end if
+	print game.currentStation.name
+	if self.started == true and game.currentStation == self.starsystem.name then
+		dialogue = "End condition"
+		self.showDialog(game.currentStation, dialogue)
+		game.money = game.money + 500
+		self.done = true
+	end if
 end function
 
 // If the host app decides to present this encounter, then it will call
 // this present method, with the data returned from consider():
 encounter.presentNPC = function(npc)
-	starsystem = null
-	while starsystem == null or starsystem == Starfarer.currentStation
-	starsystem = game.stations.any
+	while self.starsystem == null or self.starsystem == Starfarer.currentStation
+		self.starsystem = game.stations.any
 	end while
-	dialogue = "Hey, you look like someone that can relay a datastick to a friend of mine in the " + starsystem.name +" system." +
+	dialogue = "Hey, you look like someone that can relay a datastick to a friend of mine in the " + self.starsystem.name +" system." +
 	" I need to get some data there without any so called authorities snooping around. Ya get what I mean?" +
 	" There are 500 credits in it for you..."
 	description = npc.name + ": " + dialogue
 	choice  = self.showDialog(npc.station, description, ["Accept", "Decline"])
 	game.currentStation.cantina.removeVal npc
 	if choice == 1 then return		//declined
-
-	messageDeliveryQuest = new quest.Quest
-	messageDeliveryQuest.id = "datastick_delivery"
-	messageDeliveryQuest.done = false
-	messageDeliveryQuest.checkConditions = function()
-		if game.currentStation.name == starsystem.name and self.done == false then
-			self.done = true
-			game.money = game.money + 500
-		end if
-	end function
-	game.quests.push messageDeliveryQuest
-
+	self.started = true
 end function
 
 
