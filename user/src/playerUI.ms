@@ -21,11 +21,11 @@ show = function()
 	uiWidgets.reset
 	
     outer.moneyLabel = new uiWidgets.Label
-    moneyLabel.init 0, 620, 150, 20, "Credits: " + Starfarer.money
+    moneyLabel.init 0, 620, 150, 20, "Credits: " + game.money
 	moneyLabel.draw
 
 	outer.hullBar = new uiWidgets.ValuedBar
-	hullBar.init 200, 600, 200, 40, Starfarer.maxHull, Starfarer.hull
+	hullBar.init 200, 600, 200, 40, game.maxHull, game.hull
 	hullBar.draw
 	outer.hullBarLabel = new uiWidgets.Label
 	hullBarLabel.init hullBar.left-8-100, 620, 100, 20, "Hull:"
@@ -33,7 +33,7 @@ show = function()
 	hullBarLabel.draw
 
 	outer.fuelBar = new uiWidgets.ValuedBar
-	fuelBar.init 500, 600, 200, 40, Starfarer.maxFuel, Starfarer.fuel
+	fuelBar.init 500, 600, 200, 40, game.maxFuel, game.fuel
 	fuelBar.draw
 	outer.fuelBarLabel = new uiWidgets.Label
 	fuelBarLabel.init fuelBar.left-8-100, 620, 100, 20, "Fuel:"
@@ -127,9 +127,9 @@ demo = function()
 	progress = 0.1    
     while not key.pressed("q")
         wait 1
-        Starfarer.money = Starfarer.money - 10
-        if rnd < 0.3 then Starfarer.hull = Starfarer.hull - 1
-        if rnd < 0.3 then Starfarer.fuel = Starfarer.fuel - 1
+        game.money = game.money - 10
+        if rnd < 0.3 then game.hull = game.hull - 1
+        if rnd < 0.3 then game.fuel = game.fuel - 1
         showTravel {"name":"Demo"}, progress, false
         progress = progress + 0.2
         if progress > 1 then progress = -1

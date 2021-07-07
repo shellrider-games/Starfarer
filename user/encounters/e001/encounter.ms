@@ -36,7 +36,7 @@ encounter.present = function(data)
 	  value + " credits."
 
 	self.showDialog data, description
-	Starfarer.money = Starfarer.money + value
+	game.money = game.money + value
 end function
 
 

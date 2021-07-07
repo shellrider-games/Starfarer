@@ -36,7 +36,6 @@ Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
 
 Starfarer.money = 1000
-Starfarer.currentStation = null
 Starfarer.hull = 18
 Starfarer.maxHull = 20
 Starfarer.fuel = 10
@@ -93,13 +92,13 @@ Starfarer.enterState = function(newState)
 		end function
 		
 	else if newState == self.STATE_NAVMAP then
-		if Starfarer.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
+		if self.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
 		starmap.draw self.stations, self.station, jumpLimit
 		starmap.backBtn.action = function()
 			game.enterState Starfarer.STATE_AT_STATION
 		end function
 		starmap.jumpCallback = function(newStation)
-			if newStation == game.station then
+			if newStation == self.station then
 				game.enterState Starfarer.STATE_AT_STATION
 			else
 				game.nextStation = newStation
@@ -140,7 +139,7 @@ Starfarer.updateTravel = function(dt)
 		// approaching destination
 		if self.station != self.nextStation then
 			self.station = self.nextStation
-			Starfarer.fuel = max(Starfarer.fuel - 1, 0)
+			self.fuel = max(self.fuel - 1, 0)
 		end if
 		playerUI.showTravel self.nextStation, 2-t, true
 	else

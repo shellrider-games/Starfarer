@@ -31,10 +31,10 @@ encounter.addNPCsToCantina = function(station)
 	if self.started == false and rnd < 0.5 then
 		station.cantina.push npc
 	end if
-	print game.currentStation.name
-	if self.started == true and game.currentStation == self.starsystem.name then
-		dialogue = "End condition"
-		self.showDialog(game.currentStation, dialogue)
+	if self.started == true and game.station.name == self.starsystem.name then
+		dialogue = "You made the trip to " + self.starsystem.name + " as the man requested. You find the woman he described on the station. " + 
+		"She seems nervous when you approach her but after exchanging the datastick she relaxes a bit. She thanks you and wires you 500 credits."
+		self.showDialog(game.station, dialogue)
 		game.money = game.money + 500
 		self.done = true
 	end if
@@ -43,7 +43,7 @@ end function
 // If the host app decides to present this encounter, then it will call
 // this present method, with the data returned from consider():
 encounter.presentNPC = function(npc)
-	while self.starsystem == null or self.starsystem == Starfarer.currentStation
+	while self.starsystem == null or self.starsystem == game.station
 		self.starsystem = game.stations.any
 	end while
 	dialogue = "Hey, you look like someone that can relay a datastick to a friend of mine in the " + self.starsystem.name +" system." +
@@ -51,7 +51,7 @@ encounter.presentNPC = function(npc)
 	" There are 500 credits in it for you..."
 	description = npc.name + ": " + dialogue
 	choice  = self.showDialog(npc.station, description, ["Accept", "Decline"])
-	game.currentStation.cantina.removeVal npc
+	game.station.cantina.removeVal npc
 	if choice == 1 then return		//declined
 	self.started = true
 end function

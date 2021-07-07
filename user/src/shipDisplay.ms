@@ -178,7 +178,7 @@ Renderer.update = function(dt = 0.1)
 		if cell != null then
 			itemType = new self.ship.incomingTypes.pull
 			cell.placeItem itemType
-			Starfarer.money = Starfarer.money - Starfarer.currentStation.getCommodityBuyPrice(itemType.name)
+			game.money = game.money - game.station.getCommodityBuyPrice(itemType.name)
 			self.renderContents cell
 			cell.contents.fadeIn
 		end if
@@ -189,7 +189,7 @@ Renderer.update = function(dt = 0.1)
 		if cell.contents == null or cell.contents.lerper then continue
 		item = cell.contents
 		if self.ship.outgoingTypes.indexOf(item.__isa) != null then
-			Starfarer.money = Starfarer.money + Starfarer.currentStation.getCommoditySellPrice(item.name)
+			game.money = game.money + game.station.getCommoditySellPrice(item.name)
 			cell.contents = null
 			item.fadeOut 16, 0
 		end if

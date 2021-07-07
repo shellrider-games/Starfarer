@@ -114,14 +114,14 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	
 	// Buy (1) Fuel button
 	x = right - 20
-	if Starfarer.fuel < Starfarer.maxFuel and Starfarer.money > costPerFuel then
+	if game.fuel < game.maxFuel and game.money > costPerFuel then
 		outer.buyFuelBtn = addBottomButton("Fuel ($" + costPerFuel + ")", x)
 		buyFuelBtn.action = @buyFuel
 	end if
 	x = x - 120
 	
 	// Repair (1) button
-	if Starfarer.hull < Starfarer.maxHull and Starfarer.money > costPerRepair then
+	if game.hull < game.maxHull and game.money > costPerRepair then
 		outer.repairButton = addBottomButton("Repair ($" + costPerRepair + ")", x)
 		repairButton.action = @buyRepair
 	end if
@@ -168,15 +168,15 @@ showNavButton = function()
 end function
 
 buyFuel = function()
-	Starfarer.fuel = Starfarer.fuel + 1
-	Starfarer.money = Starfarer.money - costPerFuel
-	if Starfarer.fuel >= Starfarer.maxFuel  or Starfarer.money < costPerFuel then buyFuelBtn.stop
+	game.fuel = game.fuel + 1
+	game.money = game.money - costPerFuel
+	if game.fuel >= game.maxFuel  or game.money < costPerFuel then buyFuelBtn.stop
 end function
 
 buyRepair = function()
-	Starfarer.hull = Starfarer.hull + 1
-	Starfarer.money = Starfarer.money - costPerRepair
-	if Starfarer.hull >= Starfarer.maxHull  or Starfarer.money < costPerFuel then repairButton.stop
+	game.hull = game.hull + 1
+	game.money = game.money - costPerRepair
+	if game.hull >= game.maxHull  or game.money < costPerFuel then repairButton.stop
 end function
 
 addBottomButton = function(caption, right, width=100)
