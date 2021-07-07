@@ -40,7 +40,6 @@ ship.placeLeftWalls 4,0, 4
 ship.placeLeftWalls 4,5, 3
 
 ship.placeRightWalls 1,0, 4
-ship.placeRightWalls 1,4, 4
 ship.placeRightWalls 3,0, 4
 ship.placeRightWalls 3,5, 3
 ship.placeRightWalls 3,5, 4
