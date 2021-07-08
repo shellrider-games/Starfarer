@@ -31,6 +31,7 @@ Starfarer.STATE_NONE = "None"  // (initial state before set up)
 Starfarer.STATE_AT_STATION = "AtStation"
 Starfarer.STATE_NAVMAP = "NavMap"
 Starfarer.STATE_TRAVEL = "Travel"
+Starfarer.STATE_COMBAT = "Combat"
 Starfarer.state = Starfarer.STATE_NONE
 Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
@@ -43,10 +44,7 @@ Starfarer.maxFuel = 12
 
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
-	cd "../ships/robin"
-	import "shipData"
-	globals.playerShip = shipData.ship
-	cd "/usr/src"
+	globals.playerShip = shipModel.newShipOfDesign("robin")
 	playerShip.distributePower
 
 	// give us a character
@@ -105,12 +103,20 @@ Starfarer.enterState = function(newState)
 				game.enterState Starfarer.STATE_TRAVEL
 			end if
 		end function
+	
+	else if newState == self.STATE_COMBAT then
+		playerUI.showCombat
 		
 	else if newState == self.STATE_TRAVEL then
 		playerUI.show
 		minionUI.show
-		encounters.planEncounters self.station, self.nextStation
-		
+		// Note that if we're entering travel from combat, then this
+		// is *resuming* a trip, not starting a new one.
+		if self.state != self.STATE_COMBAT then
+			self.travelProgress = 0
+			encounters.planEncounters self.station, self.nextStation
+		end if
+	
 	end if
 	self.state = newState
 	self.timeInState = 0
@@ -122,35 +128,51 @@ Starfarer.exitState = function(toNextState)
 		
 	else if self.state == self.STATE_NAVMAP then
 		starmap.hide
+	
+	else if self.state == self.STATE_COMBAT then
+		playerUI.hideCombat
 		
 	else if self.state == self.STATE_TRAVEL then
 		playerUI.hideTravel
-		
+	
 	end if
 end function
 
 Starfarer.updateTravel = function(dt)
-	t = self.timeInState / 2
-	if t > 2 then
+	// update progress: 0-1 departing old station, and 1-2 arriving new station.
+	self.travelProgress = self.travelProgress + dt/2
+	if self.travelProgress > 2 then
 		// arrived
 		self.nextStation = null
 		self.enterState self.STATE_AT_STATION
-	else if t > 1 then
+	else if self.travelProgress > 1 then
 		// approaching destination
 		if self.station != self.nextStation then
 			self.station = self.nextStation
 			self.fuel = max(self.fuel - 1, 0)
 		end if
-		playerUI.showTravel self.nextStation, 2-t, true
+		playerUI.showTravel self.nextStation, 2-self.travelProgress, true
 	else
-		playerUI.showTravel self.station, t, false
-		if t > 0.83 then
+		// leaving old station
+		playerUI.showTravel self.station, self.travelProgress, false
+		if self.travelProgress > 0.83 then
 			effects.Warp.speed = 3
 			effects.Warp.run
 		end if
 	end if
 	effects.Warp.update dt
 	encounters.update dt
+end function
+
+Starfarer.beginCombat = function(encounter)
+	self.combatEncounter = encounter
+	self.enterState Starfarer.STATE_COMBAT
+end function
+
+Starfarer.fleeCombat = function()
+	if self.combatEncounter.handleFlee then
+		self.enterState Starfarer.STATE_TRAVEL
+	end if
 end function
 
 Starfarer.selectedMinion = []

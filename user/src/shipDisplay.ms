@@ -13,25 +13,6 @@ if not globals.hasIndex("Item") then import "item"
 if not globals.hasIndex("constants") then import "constants"
 
 
-// addSprite: Helper method to create and add a sprite from an image
-addSprite = function(image, x, y, baseClass)
-	if baseClass == null then baseClass = Sprite
-	if image isa string then image = file.loadImage(image)
-	qa.assert image != null, "invalid image in shipDisplay.addSprite"
-	sp = {}
-	sp.__isa = baseClass
-	sp.image = image
-	sp.x = x
-	sp.y = y
-	if baseClass == Sprite then
-		// Make sure every sprite has an "update" function,
-		// even if it does nothing.
-		baseClass.update = function(dt); end function
-	end if
-	disp.shipSprites.sprites.push sp
-	return sp
-end function
-
 init = function()
 	// clear the sprite display, and load the ship background
 	disp.shipSprites.clear
@@ -43,6 +24,7 @@ Renderer = {}
 Renderer.ship = null		// the shipModel we are rendering
 Renderer.x = 240			// horizontal center of the ship on screen
 Renderer.y = 320			// vertical center of the ship on screen
+Renderer.sprites = null		// sprites owned by this particular renderer
 
 // renderShip: load the given ship model onto the display.
 Renderer.renderShip = function(ship)
@@ -51,7 +33,7 @@ Renderer.renderShip = function(ship)
 	
 	// load the ship map, and calculate our graphics offset
 	playerShipImage = file.loadImage(file.child(ship.directory, "map.png"))
-	addSprite playerShipImage, self.x, self.y
+	self.addSprite playerShipImage, self.x, self.y
 	self.mapZeroZero = {
 		"x": self.x - playerShipImage.width/2 + ship.offset[0] * CELLSIZE,
 	    "y": self.y - playerShipImage.height/2 + ship.offset[1] * CELLSIZE }
@@ -74,11 +56,34 @@ Renderer.renderShip = function(ship)
 
 end function
 
+// addSprite: Helper method to create and add a sprite from an image.
+// Also keeps it in our own sprite list so we can clean up in close().
+Renderer.addSprite = function(image, x, y, baseClass)
+	if baseClass == null then baseClass = Sprite
+	if image isa string then image = file.loadImage(image)
+	qa.assert image != null, "invalid image in shipDisplay.addSprite"
+	sp = {}
+	sp.__isa = baseClass
+	sp.image = image
+	sp.x = x
+	sp.y = y
+	if baseClass == Sprite then
+		// Make sure every sprite has an "update" function,
+		// even if it does nothing.
+		baseClass.update = function(dt); end function
+	end if
+	disp.shipSprites.sprites.push sp
+	if self.sprites == null then self.sprites = []
+	self.sprites.push sp
+	return sp
+end function
+
 Renderer.renderMinion = function(minion)
 	pos = self.mapToScreenPosition(minion)
 	minion.x = pos.x; minion.y = pos.y
 	disp.shipSprites.sprites.removeVal minion
 	disp.shipSprites.sprites.push minion
+	self.sprites.push minion
 end function
 
 Renderer.placeDoor = function(door, cell, direction)
@@ -88,6 +93,7 @@ Renderer.placeDoor = function(door, cell, direction)
 	door.rotation = 90 * (direction == NORTH or direction == SOUTH)
 	if disp.shipSprites.sprites.indexOf(door) == null then
 		disp.shipSprites.sprites.push door
+		self.sprites.push door
 	end if
 end function
 
@@ -110,6 +116,7 @@ Renderer.renderContents = function(cell)
 	pos = self.mapToScreenPosition(cell)
 	item.x = pos.x; item.y = pos.y
 	disp.shipSprites.sprites.push item
+	self.sprites.push item
 end function
 
 Renderer.screenToMapPosition = function(point)
@@ -161,11 +168,19 @@ Renderer.renderShipSystems = function()
 			width = CELLSIZE * system.width
 			height = CELLSIZE * system.height
 			xy = self.mapToScreenPosition(system)
-			sp = addSprite(system.image, xy.x + width/2 - CELLSIZE/2, 
+			sp = self.addSprite(system.image, xy.x + width/2 - CELLSIZE/2, 
 				xy.y + height/2 - CELLSIZE/2)
 			sp.scale = width / system.image.width
 		end if
 	end for
+end function
+
+Renderer.stop = function()
+	// Tear down everything we set up for this renderer.
+	for sp in self.sprites
+		disp.shipSprites.sprites.removeVal sp
+	end for
+	self.sprites = null
 end function
 
 // Update just this one ship renderer.  Here we check for cargo bought/sold, etc.

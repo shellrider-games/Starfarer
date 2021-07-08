@@ -1,6 +1,5 @@
 
 ship = new shipModel.Ship
-globals.ship = ship
 
 ship.directory = file.curdir
 ship.init 6,9

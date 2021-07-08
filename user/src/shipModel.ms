@@ -463,17 +463,23 @@ Ship.draw = function()
 	end for
 end function
 	
+//----------------------------------------------------------------------
+// Module-level utility functions
+//----------------------------------------------------------------------
+
+
+newShipOfDesign = function(designName)
+	dir = pwd
+	cd "/usr/ships/" + designName
+	import "shipData"
+	cd dir
+	return new shipData.ship
+end function
 
 demo = function(shipName="freighter")
 	clear
 	
-	dir = pwd
-	globals.shipModel = outer
-	cd "/usr/ships/" + shipName
-	import "shipData"
-	cd dir
-
-	globals.ship = shipData.ship
+	globals.ship = newShipOfDesign(shipName)
 	ship.draw
 	print "Free Cargo cells: " + ship.getFreeCargoInCells.len
 	wait 1

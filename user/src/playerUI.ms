@@ -9,6 +9,8 @@ travelModeLabel = null
 travelStationLabel = null
 travelProgressBar = null
 
+fleeButton = null
+
 hullBar = null
 lastHull = [null,null]  // current, max value
 
@@ -98,6 +100,22 @@ hideTravel = function()
 	travelModeLabel.erase;		outer.travelModeLabel = null
 	travelStationLabel.erase;	outer.travelStationLabel = null
 	travelProgressBar.erase;	outer.travelProgressBar = null
+end function
+
+// Show any extra UI needed during combat.
+showCombat = function()
+	if fleeButton == null then
+		outer.fleeButton = new uiWidgets.Button
+		fleeButton.init 900, 610, 60, 30, "FLEE"
+		fleeButton.action = function()
+			game.fleeCombat
+		end function
+		fleeButton.start
+	end if
+end function
+
+hideCombat = function()
+	fleeButton.stop;		outer.fleeButton = null
 end function
 
 update = function(dt = 0.1)
