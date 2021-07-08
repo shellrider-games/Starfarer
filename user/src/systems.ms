@@ -170,3 +170,20 @@ Reactor.make = function(col, row)
 	return noob
 end function
 
+//----------------------------------------------------------------------
+// Weapons: provides power and control for all installed weapons.
+//----------------------------------------------------------------------
+Weapons = new System
+Weapons.name = "Weapons"
+Weapons.maxPower = 6
+Weapons.width = 2
+Weapons.height = 2
+Weapons.image = file.loadImage("/usr/pics/systems/weapons.png")
+Weapons.icon = file.loadImage("/usr/pics/systemIcons/weapons.png")
+
+Weapons.make = function(col, row)
+	noob = new Weapons
+	noob.col = col; noob.row = row
+	return noob
+end function
+

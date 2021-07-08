@@ -74,3 +74,5 @@ ship.addSystem systems.Engines.make(2,0)
 ship.addSystem systems.Controls.make(2,8)
 ship.addSystem systems.O2.make(0,7)
 ship.addSystem systems.MedBay.make(4,5)
+ship.addSystem systems.Weapons.make(0,5)
+
