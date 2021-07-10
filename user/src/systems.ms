@@ -47,7 +47,9 @@ end function
 
 //This function should be overwritten by child classes
 System.use = function(character, dt = 0.1)
-	print character.name + " is using " + self.name + " for " + dt + " seconds."
+	// Subclasses should override this.
+	// For debugging:
+	// print character.name + " is using " + self.name + " for " + dt + " seconds."
 end function
 
 System.maxPossiblePower = function()
@@ -124,7 +126,7 @@ end function
 //		3 bars: also see opponent's weapon charge status
 //----------------------------------------------------------------------
 Controls = new System
-Controls.name = "O2"
+Controls.name = "Controls"
 Controls.width = 2
 Controls.height = 1
 Controls.maxPower = 2
@@ -157,7 +159,7 @@ end function
 // Reactor: provides power for the ship.
 //----------------------------------------------------------------------
 Reactor = new System
-Reactor.name = "O2"
+Reactor.name = "Reactor"
 Reactor.maxPower = 12
 Reactor.width = 2
 Reactor.height = 2

@@ -87,6 +87,10 @@ Ship.init = function(columns, rows)
 	self.rowRange = range(0, rows-1)
 	self.map = list.init2d(columns, rows)
 	
+	self.minions = []
+	self.incomingTypes = []
+	self.outgoingTypes = []
+	
 	// NOTE: we no longer set up some default systems.
 	// Ship files will need to set them up themselves.
 	// Always put the reactor first, followed by others.

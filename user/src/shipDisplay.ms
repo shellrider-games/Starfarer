@@ -28,8 +28,12 @@ Renderer.sprites = null		// sprites owned by this particular renderer
 
 // renderShip: load the given ship model onto the display.
 Renderer.renderShip = function(ship)
-	// store our ship model
+	// Store our ship model; and also a reference the other way, so
+	// that entities (like characters) that need to get from the model
+	// to the renderer can do so.  Note that this creates a circular
+	// reference, so be sure to clean it up when closing.
 	self.ship = ship
+	ship.renderer = self
 	
 	// load the ship map, and calculate our graphics offset
 	playerShipImage = file.loadImage(file.child(ship.directory, "map.png"))
@@ -181,6 +185,8 @@ Renderer.stop = function()
 		disp.shipSprites.sprites.removeVal sp
 	end for
 	self.sprites = null
+	if self.ship != null then self.ship.renderer = null
+	self.ship = null
 end function
 
 // Update just this one ship renderer.  Here we check for cargo bought/sold, etc.

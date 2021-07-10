@@ -60,7 +60,6 @@ Starfarer.init = function()
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
 	self.renderer.renderShip playerShip
-	globals.renderer = self.renderer
 	
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false

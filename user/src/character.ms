@@ -102,6 +102,7 @@ Character.updateAnimation = function(dt=0.1)
 end function
 
 Character.update = function(dt=0.1)
+	renderer = self.ship.renderer
 	// follow our path
 	if self.path then
 		if not self.walking then
@@ -217,8 +218,8 @@ Character.dropItem = function(onPos)
 	end if
 	
 	// Close enough; let's put it down now.
-	dropScreenPos = renderer.mapToScreenPosition(onPos)
-	self.turnToFaceScreenPos renderer.mapToScreenPosition(onPos)
+	dropScreenPos = self.ship.renderer.mapToScreenPosition(onPos)
+	self.turnToFaceScreenPos self.ship.renderer.mapToScreenPosition(onPos)
 	self.updateCarriedItem
 	item.lerpTo dropScreenPos, 1, 0.25
 	self.ship.map[col][row].placeItem item
