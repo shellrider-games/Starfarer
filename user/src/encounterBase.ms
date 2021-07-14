@@ -148,3 +148,9 @@ Encounter.showDialog = function(dataOrStation, text, options=[])
 	panel.erase
 	return responseIndex
 end function
+
+CombatEncounter = new Encounter
+
+CombatEncounter.updateCombat = function(dt = 0.1)
+	print "Combat for " + dt + " seconds" 
+end function

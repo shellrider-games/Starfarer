@@ -14,7 +14,7 @@ if not globals.hasIndex("Encounter") then
 	import "shipDisplay"
 end if
 
-encounter = new encounterBase.Encounter
+encounter = new encounterBase.CombatEncounter
 
 encounter.consider = function(station, arriving)
 	probability = 0.80		// 80% chance of this encounter

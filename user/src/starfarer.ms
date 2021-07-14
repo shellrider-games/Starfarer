@@ -267,7 +267,9 @@ Starfarer.run = function()
 		else if self.state == self.STATE_TRAVEL then
 			self.updateTravel deltaTime
 		end if
-
+		if self.state == self.STATE_COMBAT then
+			self.combatEncounter.updateCombat deltaTime
+		end if
 		yield
 	end while
 end function
