@@ -312,13 +312,47 @@ Ship.place = function(col, row, direction, wallOrDoor)
 		return
 	end if
 	qa.assert cell isa Cell
+
 	cell.walls[direction] = wallOrDoor
 	nextCol = col + constants.dx(direction)
 	nextRow = row + constants.dy(direction)
-	if self.walkable([nextCol, nextRow]) then
+
+	// Door placement overrides walls
+	override = false
+	if wallOrDoor isa Door and self.getCell(nextCol, nextRow) != null then
+		override = true
+	end if
+
+	if self.walkable([nextCol, nextRow]) or override then
 		nextDir = constants.inverseDir(direction)
 		self.map[nextCol][nextRow].walls[nextDir] = wallOrDoor
 	end if
+end function
+
+Ship.removeWall = function(col, row, direction)
+	cell = self.getCell(col, row)
+	if not cell isa Cell then
+		print "Couldn't remove wall/door at " + col + "," + row
+		return
+	end if
+	qa.assert cell isa Cell
+
+	cell.walls[direction] = null
+	nextCol = col + constants.dx(direction)
+	nextRow = row + constants.dy(direction)
+	nextDir = constants.inverseDir(direction)
+
+	// Remove shared wall in cell next door. 
+	if self.getCell(nextCol, nextRow) != null then
+		self.map[nextCol][nextRow].walls[nextDir] = null
+	end if
+end function
+
+Ship.placeRoom = function(left, bottom, width, height)
+	self.placeBottomWalls left, bottom, width
+	self.placeTopWalls left, bottom + height - 1, width
+	self.placeLeftWalls left, bottom, height
+	self.placeRightWalls left + width - 1, bottom, height
 end function
 
 Ship.placeDoor = function(col, row, direction)
@@ -426,11 +460,14 @@ Ship.draw = function()
 		end if
 	end function
 
+	offX = 20
+	offY = 240
+
 	// draw floor/contents	
 	for col in self.columnRange
-		x = col * CELLSIZE
+		x = (col * CELLSIZE) + offX
 		for row in self.rowRange
-			y = row * CELLSIZE
+			y = (row * CELLSIZE) + offY
 			cell = self.map[col][row]
 			if cell == null then
 				gfx.line x+2, y+2, x+CELLSIZE-4, y+CELLSIZE-4, color.gray
@@ -454,9 +491,9 @@ Ship.draw = function()
 	
 	// draw walls
 	for col in self.columnRange
-		x = col * CELLSIZE
+		x = (col * CELLSIZE) + offX
 		for row in self.rowRange
-			y = row * CELLSIZE
+			y = (row * CELLSIZE) + offY
 			cell = self.map[col][row]
 			if cell == null then continue
 			drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y, color.green

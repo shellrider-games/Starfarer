@@ -95,6 +95,17 @@ Renderer.placeDoor = function(door, cell, direction)
 	door.x = pos.x + CELLSIZE/2 * ((direction == EAST) - (direction == WEST))
 	door.y = pos.y + CELLSIZE/2 * ((direction == NORTH) - (direction == SOUTH))
 	door.rotation = 90 * (direction == NORTH or direction == SOUTH)
+	
+	// Accommodate for door image width/heights. 
+	//TODO: Get door image width/height and use those instead of these magic numbers.
+	if direction == NORTH or direction == SOUTH then 
+		door.x = door.x + 0.5
+		door.y = door.y + 1
+	else
+		door.x = door.x + 1.3
+		door.y = door.y + 0.5
+	end if
+
 	if disp.shipSprites.sprites.indexOf(door) == null then
 		disp.shipSprites.sprites.push door
 		self.sprites.push door
