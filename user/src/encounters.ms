@@ -2,8 +2,8 @@
 // encounters as the player ship travels from station to station.
 // The actual encounters are defined by the tiny modules in /usr/encounters.
 
-import "encounterBase"
-globals.encounterBase = encounterBase
+import "miscUtil"
+ensureImport "encounterBase"
 
 encounterList = []
 

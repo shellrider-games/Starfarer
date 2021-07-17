@@ -3,9 +3,12 @@
 // drawing a dialog describing what's happening, giving the user response
 // choices, etc.
 
-if not globals.hasIndex("uiWidgets") then import "uiWidgets"
+import "miscUtil"
+ensureImport "uiWidgets"
+ensureImport "randomNames"
 
 Encounter = {}
+Encounter.ship = null  // ShipModel we have encountered, if any
 
 // Consider presenting this encounter.  Subclasses will usually want to
 // override this to apply a different probability, or to present only when
@@ -152,5 +155,5 @@ end function
 CombatEncounter = new Encounter
 
 CombatEncounter.updateCombat = function(dt = 0.1)
-	print "Combat for " + dt + " seconds" 
+	//print "Combat for " + dt + " seconds" 
 end function

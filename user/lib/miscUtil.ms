@@ -1,6 +1,14 @@
 // Miscellaneous small helper functions that don't fit anywhere else.
 
-if not globals.hasIndex("qa") then import "qa"
+// ensureImport: check whether the given module has been imported already.
+// If not, then import it into the global namespace.
+globals.ensureImport = function(moduleName)
+	if globals.hasIndex(moduleName) then return
+	//print "ensureImport(" + moduleName + ") called from " + stackTrace[1]
+	globals[moduleName] = "PENDING"
+	import moduleName
+	globals[moduleName] = locals[moduleName]
+end function
 
 // Get the maximum of two values
 max = function(a,b)
@@ -18,6 +26,7 @@ rollDie = function(sides = 6)
 end function
 
 runUnitTests = function()
+	ensureImport "qa"
 	qa.assert max(2,5) == 5
 	qa.assert max(5,2) == 5
 	qa.assert min(2,5) == 2

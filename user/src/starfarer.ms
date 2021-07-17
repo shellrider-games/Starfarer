@@ -3,27 +3,27 @@
 
 cd "/usr/src"
 import "listUtil"
+import "stringUtil"
 import "miscUtil"; for f in ["min", "max"]; globals[f] = miscUtil[f]; end for
-import "constants"
-import "setup"
-import "encounters"
-globals.encounters = encounters
-import "spriteUtil"
-import "item"
-import "systems"
-import "shipModel"
-import "stationModel"
-import "shipDisplay"
-import "character"
-import "pathfinding"
-import "uiWidgets"
-import "stationUI"
-import "starmap"
-import "playerUI"
-import "minionUI"
-import "effects"
-import "qa"
+ensureImport "constants"
+ensureImport "setup"
+ensureImport "spriteUtil"
+ensureImport "item"
+ensureImport "systems"
+ensureImport "shipModel"
+ensureImport "stationModel"
+ensureImport "shipDisplay"
+ensureImport "character"
+ensureImport "pathfinding"
+ensureImport "uiWidgets"
+ensureImport "stationUI"
+ensureImport "starmap"
+ensureImport "playerUI"
+ensureImport "minionUI"
+ensureImport "effects"
+ensureImport "qa"
 globals.qa = qa
+ensureImport "encounters"
 
 Starfarer = {}
 
@@ -35,6 +35,7 @@ Starfarer.STATE_COMBAT = "Combat"
 Starfarer.state = Starfarer.STATE_NONE
 Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
+Starfarer.combatEncounter = null	// current Encounter we're fighting in
 
 Starfarer.money = 1000
 Starfarer.hull = 18
@@ -45,6 +46,7 @@ Starfarer.maxFuel = 12
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
 	globals.playerShip = shipModel.newShipOfDesign("robin")
+	playerShip.name = "Player One"	// just a name, do NOT depend on this!
 	playerShip.distributePower
 
 	// give us a character
@@ -104,6 +106,10 @@ Starfarer.enterState = function(newState)
 		end function
 	
 	else if newState == self.STATE_COMBAT then
+		playerShip.inCombat = true
+		if self.combatEncounter and self.combatEncounter.ship then
+			self.combatEncounter.ship.inCombat = true
+		end if
 		playerUI.showCombat
 		
 	else if newState == self.STATE_TRAVEL then

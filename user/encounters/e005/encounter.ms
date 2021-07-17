@@ -1,7 +1,7 @@
 // A shady NPC appears to be following you everywhere you go, showing
 // up in every cantina.  How does he DO that?
 
-if not globals.hasIndex("Encounter") then
+if not globals.hasIndex("encounterBase") then
 	if env.importPaths.indexOf("/usr/src") == null then
 		env.importPaths.push "/usr/src"
 	end if

@@ -1,6 +1,6 @@
 // Delivery mission: take a data stick to another station.
 
-if not globals.hasIndex("Encounter") then
+if not globals.hasIndex("encounterBase") then
 	if env.importPaths.indexOf("/usr/src") == null then
 		env.importPaths.push "/usr/src"
 	end if

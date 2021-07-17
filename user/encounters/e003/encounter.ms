@@ -1,6 +1,6 @@
 // An alien fungus gives you a chance to turn food into medicine.
 
-if not globals.hasIndex("Encounter") then
+if not globals.hasIndex("encounterBase") then
 	if env.importPaths.indexOf("/usr/src") == null then
 		env.importPaths.push "/usr/src"
 	end if

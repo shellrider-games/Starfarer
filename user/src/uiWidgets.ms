@@ -4,11 +4,13 @@
 // These all draw in the disp.uiPixel layer, except when they need something
 // a little more spritey, in which case they may esu disp.uiSprites.
 
-if not globals.hasIndex("disp") then import "setup"
-if not globals.hasIndex("qa") then import "qa"
-import "stringUtil"
-import "listUtil"
-import "miscUtil"; max = @miscUtil.max; min = @miscUtil.min
+import "miscUtil"
+ensureImport "setup"
+ensureImport "qa"
+ensureImport "stringUtil"
+ensureImport "listUtil"
+
+max = @miscUtil.max; min = @miscUtil.min
 
 //----------------------------------------------------------------------
 // Constants
@@ -36,6 +38,11 @@ end function
 
 // clearAll: clear all widgets (and the entire uiPixel display).
 clearAll = function()
+	if _allWidgets then
+		for i in range(_allWidgets.len-1, 0)
+			_allWidgets[i].stop
+		end for
+	end if
 	disp.uiPixel.clear color.clear
 	outer._allWidgets = []
 end function
@@ -136,6 +143,7 @@ end function
 
 Widget.start = function()
 	if _allWidgets.indexOf(self) == null then _allWidgets.push self
+//	print "started " + self.name + " with index " + _allWidgets.indexOf(self)
 	self.draw
 end function
 
@@ -411,16 +419,31 @@ HorizontalSlider.redraw = @HorizontalSlider.draw
 
 PowerControl = new Widget
 PowerControl.system = null		// systems.System that we represent
+PowerControl.width = 48			// width of this control in the layout
 PowerControl.barHeight = 10		// height of individual bar
 PowerControl.barGap = 2			// gap between bars
 PowerControl.powerColor = "#00FF00"
 PowerControl.disabledColor = color.aqua
 PowerControl.onChange = null	// function() called when set point changed
 
+// Internal properties -- only subclasses should mess with these:
+PowerControl.leftMargin = 4		// gap on left before power bars
+
+PowerControl.stop = function()
+	super.stop
+	if self.system then
+		self.system.powerControl = null
+		self.system = null
+	end if
+end function
+
 PowerControl.initSystem = function(system)
 	self.system = system
+	system.powerControl = self
+	self.name = system.name + " PC"
 	qtyBars = system.maxPower
 	bottom = self.bottom
+	self.bounds.width = self.width
 	self.bounds.height = self.barHeight * qtyBars + self.barGap * (qtyBars-1) + 60
 	self.bounds.y = bottom + self.bounds.height/2
 end function
@@ -436,9 +459,9 @@ PowerControl.drawBar = function(barNum, repairLevel, powered, disabled)
 	qa.assert not (powered and repairLevel<1), "bar " + barNum + " both powered and broken"
 
 	// calculate bar coordinates on screen
-	left = self.left + 4
+	left = self.left + self.leftMargin
 	bottom = self.bottom + 40 + (self.barHeight + self.barGap) * barNum
-	width = self.width - 12
+	width = 28
 	height = self.barHeight
 	
 	// draw fill
@@ -465,7 +488,7 @@ PowerControl.draw = function()
 	// draw icon
 	sys = self.system
 	if sys.icon != null then
-		disp.uiPixel.drawImage sys.icon, self.left, self.bottom
+		disp.uiPixel.drawImage sys.icon, self.left + self.leftMargin - 4, self.bottom
 	end if
 	
 	// draw bars
@@ -480,7 +503,7 @@ PowerControl.draw = function()
 	
 	// draw set slider
 	y = self.bottom + 40 + (self.barHeight + self.barGap) * sys.setPoint - self.barGap/2
-	x = self.right - 8
+	x = self.left + self.leftMargin + 28
 	disp.uiPixel.fillPoly [[x,y], [x+8, y+8], [x+8, y-8]], color.silver
 end function
 
@@ -498,6 +521,32 @@ PowerControl.update = function(dt = 0.1)
 			end if
 			yield
 		end while
+	end if
+end function
+
+//----------------------------------------------------------------------
+// ChargedPowerControl: a specialized PowerControl that also has a
+// vertical bar showing current charge level.
+//----------------------------------------------------------------------
+ChargedPowerControl = new PowerControl
+
+ChargedPowerControl.width = PowerControl.width + 10
+ChargedPowerControl.leftMargin = PowerControl.leftMargin + 10
+
+ChargedPowerControl.draw = function()
+	super.draw
+	bottomY = self.bottom + 40
+	topY = self.top - 20
+	disp.uiPixel.drawRect self.left+2, bottomY, 6, topY-bottomY, self.powerColor
+	bottomY = bottomY + 1
+	topY = topY - 1
+	sys = self.system
+	if sys.curCharge < sys.maxCharge then
+		fillY = bottomY + round((topY-bottomY) * sys.curCharge/sys.maxCharge)
+		disp.uiPixel.fillRect self.left+3, fillY+1, 4, topY-fillY-1, color.black
+		disp.uiPixel.fillRect self.left+3, bottomY, 4, fillY-bottomY+1, color.yellow
+	else
+		disp.uiPixel.fillRect self.left+3, bottomY, 4, topY-bottomY, self.powerColor
 	end if
 end function
 

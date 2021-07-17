@@ -1,6 +1,6 @@
 
-if not globals.hasIndex("uiWidgets") then import "uiWidgets"
-
+import "miscUtil"
+ensureImport "uiWidgets"
 
 moneyLabel = null
 lastMoney = null
@@ -47,8 +47,8 @@ show = function()
 	for system in playerShip.systems
 		if system.maxPower == 0 then continue
 		// create the power control for this system
-		control = new uiWidgets.PowerControl
-		control.init x, 0, 40, 0
+		control = new system.powerControlClass
+		control.init x, 0, control.width, 0
 		control.initSystem system
 		control.onChange = function()
 			playerShip.distributePower
@@ -58,7 +58,7 @@ show = function()
 		control.start
 		powerControls.push control
 		if x == 0 then x = 20
-		x = x + 48
+		x = x + control.width
 	end for
 end function
 

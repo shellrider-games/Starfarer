@@ -7,6 +7,7 @@
 // systems are inherent to the ship itself.
 
 import "miscUtil"
+ensureImport "uiWidgets"
 
 //----------------------------------------------------------------------
 // System base class
@@ -24,6 +25,7 @@ System.curPower = 3
 System.setPoint = 3	
 System.repairLevel = 3	// how many bars are fully repaired
 System.disabled = 0		// how many bars (top-down) are disabled
+System.powerControlClass = uiWidgets.PowerControl
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
@@ -45,7 +47,7 @@ System.makeInvisible = function(name="invisible", maxPower=3)
 	return noob
 end function
 
-//This function should be overwritten by child classes
+// A minion is using (working on/at) this system.
 System.use = function(character, dt = 0.1)
 	// Subclasses should override this.
 	// For debugging:
@@ -58,6 +60,12 @@ System.maxPossiblePower = function()
 	result = min(self.setPoint, floor(self.repairLevel))
 	result = min(result, self.maxPower - self.disabled)
 	return result
+end function
+
+// Update method called by the ship whenever it updates.
+// Subclasses may update this to charge up or otherwise
+// do whatever they need to do on each frame.
+System.update = function(ship, dt = 0.1)
 end function
 
 //----------------------------------------------------------------------
@@ -177,11 +185,14 @@ end function
 //----------------------------------------------------------------------
 Weapons = new System
 Weapons.name = "Weapons"
+Weapons.powerControlClass = uiWidgets.ChargedPowerControl
 Weapons.maxPower = 6
 Weapons.width = 2
 Weapons.height = 2
 Weapons.image = file.loadImage("/usr/pics/systems/weapons.png")
 Weapons.icon = file.loadImage("/usr/pics/systemIcons/weapons.png")
+Weapons.curCharge = 0		// current amount of charge
+Weapons.maxCharge = 30		// charge level at which we fire
 
 Weapons.make = function(col, row)
 	noob = new Weapons
@@ -189,3 +200,24 @@ Weapons.make = function(col, row)
 	return noob
 end function
 
+Weapons.update = function(ship, dt = 0.1)
+	if not ship.inCombat then
+		newCharge = 0
+	else
+		newCharge = min(self.curCharge + self.curPower * dt, self.maxCharge)
+	end if
+	if newCharge == self.curCharge then return
+	self.curCharge = newCharge
+	if self.curCharge >= self.maxCharge and ship.inCombat then
+		self.fire ship		// for now: auto-fire!
+	end if
+	if self.powerControl != null then self.powerControl.redraw
+end function
+
+// Fire this weapon.  The parameter is the ship that
+// contains this weapon system; it will need to find
+// the target ship from the current encounter.
+Weapons.fire = function(owningShip)
+	print self.name + " (on " + owningShip.name + ") fires!"
+	self.curCharge = 0
+end function

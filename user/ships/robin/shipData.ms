@@ -1,5 +1,6 @@
 
 ship = new shipModel.Ship
+ship.name = "Robin"
 
 ship.directory = file.curdir
 ship.init 6,9

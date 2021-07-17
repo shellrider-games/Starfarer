@@ -1,7 +1,7 @@
 // Our second test encounter.
 // Gain a crewman!  And lose him if you ever go back.
 
-if not globals.hasIndex("Encounter") then
+if not globals.hasIndex("encounterBase") then
 	if env.importPaths.indexOf("/usr/src") == null then
 		env.importPaths.push "/usr/src"
 	end if

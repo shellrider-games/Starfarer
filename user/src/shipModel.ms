@@ -65,6 +65,7 @@ end function
 //----------------------------------------------------------------------
 
 Ship = {}
+Ship.name = "Ship"
 Ship.maxHp = 20			// hull points (basically ship health)
 Ship.hp = Ship.maxHp
 Ship.jumpFuel = 5		// how many jumps we can make before refueling
@@ -75,6 +76,7 @@ Ship.incomingTypes = []	// list of ItemTypes bought but not yet loaded
 Ship.outgoingTypes = []	// list of ItemTypes sold but not yet unloaded
 Ship.systems = []		// list of System instances installed in the ship
 Ship.reactor = null		// reactor system (always self.systems[0])
+Ship.inCombat = false	// true when engaged in combat
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -289,7 +291,9 @@ end function
 
 
 Ship.update = function(dt)
-
+	for system in self.systems
+		system.update self, dt
+	end for
 end function
 
 //----------------------------------------------------------------------

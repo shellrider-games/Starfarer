@@ -3,14 +3,15 @@
 // floorplan, and any sprites moving about in it (representing  crew,  crates,
 // invaders, fires, etc.).
 
-if not globals.hasIndex("setup") then import "setup"
-import "listUtil"
-if not globals.hasIndex("qa") then import "qa"
-import "spriteUtil"
-import "spriteControllers"
-if not globals.hasIndex("Door") then import "door"
-if not globals.hasIndex("Item") then import "item"
-if not globals.hasIndex("constants") then import "constants"
+import "miscUtil"
+ensureImport "setup"
+ensureImport "listUtil"
+ensureImport "qa"
+ensureImport "spriteUtil"
+ensureImport "spriteControllers"
+ensureImport "door"
+ensureImport "item"
+ensureImport "constants"
 
 
 init = function()
