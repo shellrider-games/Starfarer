@@ -122,9 +122,11 @@ Encounter.showDialog = function(dataOrStation, text, options=[])
 	whereLabel.alignment = uiWidgets.ALIGNRIGHT
 	if dataOrStation isa stationModel.Station then
 		whereLabel.text = dataOrStation.name + " Cantina"
-	else
+	else if dataOrStation != null then
 		whereLabel.text = round(dataOrStation.distance * 100000) + 
 		   " km from " + dataOrStation.station.name
+	else
+		whereLabel.text = ""
 	end if
 	whereLabel.draw
 
@@ -153,7 +155,17 @@ Encounter.showDialog = function(dataOrStation, text, options=[])
 end function
 
 CombatEncounter = new Encounter
+CombatEncounter.ship = null
+CombatEncounter.renderer = null
 
 CombatEncounter.updateCombat = function(dt = 0.1)
 	//print "Combat for " + dt + " seconds" 
+end function
+
+CombatEncounter.destroyShip = function()
+	self.showDialog null, "The enemy ship has been destroyed."
+	if self.renderer != null then
+		self.renderer.stop
+		self.renderer = null
+	end if
 end function

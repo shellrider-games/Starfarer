@@ -121,7 +121,7 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	x = x - 120
 	
 	// Repair (1) button
-	if game.hull < game.maxHull and game.money > costPerRepair then
+	if playerShip.hp < playerShip.maxHp and game.money > costPerRepair then
 		outer.repairButton = addBottomButton("Repair ($" + costPerRepair + ")", x)
 		repairButton.action = @buyRepair
 	end if
@@ -174,9 +174,9 @@ buyFuel = function()
 end function
 
 buyRepair = function()
-	game.hull = game.hull + 1
+	playerShip.hp = playerShip.hp + 1
 	game.money = game.money - costPerRepair
-	if game.hull >= game.maxHull  or game.money < costPerFuel then repairButton.stop
+	if playerShip.hp >= playerShip.maxHp or game.money < costPerFuel then repairButton.stop
 end function
 
 addBottomButton = function(caption, right, width=100)

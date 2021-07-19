@@ -32,7 +32,7 @@ encounter.present = function(data)
 	self.ship = shipModel.newShipOfDesign("freighter")
 	self.ship.name = "Pirates"
 	self.ship.addSystem systems.Weapons.make(2,0)
-
+	self.ship.hp = 9	// a bit easy, but let's not take forever on a random encounter!
 
 	// make a renderer for the ship
 	self.renderer = new shipDisplay.Renderer

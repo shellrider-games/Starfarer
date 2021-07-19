@@ -54,7 +54,8 @@ encounter.present = function(data)
 	if rnd < 0.50 then
 	    description = description + 
 	      " Unfortunately your ship got hit and your hull damaged in the process."
-	    game.hull = game.hull - 2
+	    playerShip.hp = playerShip.hp - 2
+	    if playerShip.hp <= 0 then game.destroyShip playerShip
 	end if
 	self.showDialog data, description
 end function

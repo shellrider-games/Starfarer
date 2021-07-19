@@ -38,8 +38,6 @@ Starfarer.stations = []  // all stations in the galaxy
 Starfarer.combatEncounter = null	// current Encounter we're fighting in
 
 Starfarer.money = 1000
-Starfarer.hull = 18
-Starfarer.maxHull = 20
 Starfarer.fuel = 10
 Starfarer.maxFuel = 12
 
@@ -136,6 +134,10 @@ Starfarer.exitState = function(toNextState)
 	
 	else if self.state == self.STATE_COMBAT then
 		playerUI.hideCombat
+		self.combatEncounter = null
+		for sys in playerShip.systems
+			if sys isa systems.Weapons then sys.curCharge = 0
+		end for
 		
 	else if self.state == self.STATE_TRAVEL then
 		playerUI.hideTravel
@@ -171,6 +173,7 @@ end function
 
 Starfarer.beginCombat = function(encounter)
 	self.combatEncounter = encounter
+	encounter.ship.distributePower
 	self.enterState Starfarer.STATE_COMBAT
 end function
 
@@ -178,6 +181,23 @@ Starfarer.fleeCombat = function()
 	if self.combatEncounter.handleFlee then
 		self.enterState Starfarer.STATE_TRAVEL
 	end if
+end function
+
+Starfarer.destroyShip = function(ship)
+	text.clear
+	if ship == playerShip then
+		shipDisplay.update
+		// ToDo: something better than this!
+		import "textUtil"
+		dlog = textUtil.Dialog.make("Game Over", "Your ship has been destroyed.")
+		dlog.show
+		text.row = 0
+		exit
+	else if ship == self.combatEncounter.ship then
+		// ToDo: nice exploding-ship effect on the enemy ship.
+		self.combatEncounter.destroyShip
+		self.enterState Starfarer.STATE_TRAVEL
+	end if		
 end function
 
 Starfarer.selectedMinion = []

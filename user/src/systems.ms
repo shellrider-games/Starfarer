@@ -219,6 +219,18 @@ end function
 // contains this weapon system; it will need to find
 // the target ship from the current encounter.
 Weapons.fire = function(owningShip)
-	print self.name + " (on " + owningShip.name + ") fires!"
+	targetShip = null
+	if owningShip != playerShip then
+		targetShip = playerShip
+	else if game.combatEncounter then
+		targetShip = game.combatEncounter.ship
+	end if
+	if not targetShip then
+		print self.name + " (on " + owningShip.name + ") fires into space."
+		return
+	end if
+	print self.name + " (on " + owningShip.name + ") fires on " + targetShip.name + "!"
+	targetShip.hp = targetShip.hp - 1
+	if targetShip.hp < 1 then game.destroyShip targetShip
 	self.curCharge = 0
 end function

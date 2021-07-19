@@ -27,7 +27,7 @@ show = function()
 	moneyLabel.draw
 
 	outer.hullBar = new uiWidgets.ValuedBar
-	hullBar.init 200, 600, 200, 40, game.maxHull, game.hull
+	hullBar.init 200, 600, 200, 40, playerShip.maxHp, playerShip.hp
 	hullBar.draw
 	outer.hullBarLabel = new uiWidgets.Label
 	hullBarLabel.init hullBar.left-8-100, 620, 100, 20, "Hull:"
@@ -123,10 +123,10 @@ update = function(dt = 0.1)
 		outer.lastMoney = game.money
 	    moneyLabel.setText "Credits: " + game.money
 	end if
-	if game.hull != lastHull[0] or game.maxHull != lastHull[1] then
-		lastHull[0] = game.hull
-		lastHull[1] = game.maxHull
-		hullBar.setValue game.hull, game.maxHull
+	if playerShip.hp != lastHull[0] or playerShip.maxHp != lastHull[1] then
+		lastHull[0] = playerShip.hp
+		lastHull[1] = playerShip.maxHp
+		hullBar.setValue playerShip.hp, playerShip.maxHp
 	end if
 	if game.fuel != lastFuel[0] or game.maxFuel != lastFuel[1] then
 		lastFuel[0] = game.fuel
@@ -146,7 +146,7 @@ demo = function()
     while not key.pressed("q")
         wait 1
         game.money = game.money - 10
-        if rnd < 0.3 then game.hull = game.hull - 1
+        if rnd < 0.3 then playerShip.hp = playerShip.hp - 1
         if rnd < 0.3 then game.fuel = game.fuel - 1
         showTravel {"name":"Demo"}, progress, false
         progress = progress + 0.2

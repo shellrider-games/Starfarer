@@ -63,7 +63,7 @@ ship.addSystem systems.Engines.make(4,0)
 ship.addSystem systems.O2.make(3,11)
 //ship.addSystem systems.Sensors.make(7,10)
 ship.addSystem systems.System.makeInvisible("shields", 4)
-ship.systems[-1].setPoint = 1
+ship.systems[-1].setPoint = 0
 ship.addSystem systems.System.makeInvisible("doors", 3)
 ship.systems[-1].setPoint = 0
 //ship.addSystem systems.MedBay.make(1, 12)
