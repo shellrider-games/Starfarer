@@ -1,11 +1,12 @@
 // Miscellaneous small helper functions that don't fit anywhere else.
 
-// ensureImport: check whether the given module has been imported already.
-// If not, then import it into the global namespace.
+// ensureImport: check whether the given module has been imported already
+// (or is in the process of being imported).  If so, return immediately.
+// If not, then import that module into the global namespace.
 globals.ensureImport = function(moduleName)
 	if globals.hasIndex(moduleName) then return
 	//print "ensureImport(" + moduleName + ") called from " + stackTrace[1]
-	globals[moduleName] = "PENDING"
+	globals[moduleName] = "PENDING"	// (module is being imported now)
 	import moduleName
 	globals[moduleName] = locals[moduleName]
 end function

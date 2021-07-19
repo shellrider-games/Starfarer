@@ -264,6 +264,9 @@ Starfarer.run = function()
 		self.renderer.update deltaTime
 		shipDisplay.update deltaTime
 		playerShip.update deltaTime
+		if self.combatEncounter and self.combatEncounter.ship then
+			self.combatEncounter.ship.update deltaTime
+		end if
 		uiWidgets.update deltaTime
 		playerUI.update deltaTime
 		minionUI.update deltaTime

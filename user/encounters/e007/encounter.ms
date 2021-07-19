@@ -28,11 +28,18 @@ encounter.present = function(data)
 	description = "You have encountered an enemy ship. " +
 	  "Battle stations!"
 
+	// Prepare the enemy ship (with weapons!)
 	self.ship = shipModel.newShipOfDesign("freighter")
+	self.ship.name = "Pirates"
+	self.ship.addSystem systems.Weapons.make(2,0)
+
+
+	// make a renderer for the ship
 	self.renderer = new shipDisplay.Renderer
 	self.renderer.x = 720
 	self.renderer.renderShip self.ship
 	
+	// show the dialog, then begin combat
 	self.showDialog data, description
 	game.beginCombat self
 end function

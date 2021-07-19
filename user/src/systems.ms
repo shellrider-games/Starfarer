@@ -26,6 +26,7 @@ System.setPoint = 3
 System.repairLevel = 3	// how many bars are fully repaired
 System.disabled = 0		// how many bars (top-down) are disabled
 System.powerControlClass = uiWidgets.PowerControl
+System.powerControl = null
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
