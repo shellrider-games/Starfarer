@@ -194,6 +194,7 @@ Weapons.image = file.loadImage("/usr/pics/systems/weapons.png")
 Weapons.icon = file.loadImage("/usr/pics/systemIcons/weapons.png")
 Weapons.curCharge = 0		// current amount of charge
 Weapons.maxCharge = 30		// charge level at which we fire
+Weapons.shots = []
 
 Weapons.make = function(col, row)
 	noob = new Weapons
@@ -202,6 +203,12 @@ Weapons.make = function(col, row)
 end function
 
 Weapons.update = function(ship, dt = 0.1)
+	for shot in self.shots
+		if shot.expired == true then
+			self.shots.removeVal shot
+		end if
+		shot.update dt
+	end for
 	if not ship.inCombat then
 		newCharge = 0
 	else
@@ -229,8 +236,29 @@ Weapons.fire = function(owningShip)
 		print self.name + " (on " + owningShip.name + ") fires into space."
 		return
 	end if
-	print self.name + " (on " + owningShip.name + ") fires on " + targetShip.name + "!"
-	targetShip.hp = targetShip.hp - 1
-	if targetShip.hp < 1 then game.destroyShip targetShip
+	self.shots.push(Shot.init(targetShip))
 	self.curCharge = 0
+end function
+
+Shot = {}
+Shot.target = null
+Shot.traveltime = 2
+Shot.timeTravelled = 0
+Shot.expired = false
+
+Shot.init = function(target, traveltime = 2)
+	noob = new Shot
+	noob.target = target
+	noob.traveltime = traveltime
+	return noob
+end function
+
+Shot.update = function(dt = 0.1)
+	self.timeTravelled = self.timeTravelled + dt
+	if self.timeTravelled >= self.traveltime and self.expired != true then
+		self.target.hp = self.target.hp -1
+		print "boom, swish, lazersound"
+		self.expired = true
+		if self.target.hp < 0 then game.destroyShip target
+	end if
 end function
