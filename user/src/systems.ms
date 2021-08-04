@@ -6,8 +6,10 @@
 // the ship map, but may still be part of the ship.  These invisible
 // systems are inherent to the ship itself.
 
+import "mathUtil"
 import "miscUtil"
 ensureImport "uiWidgets"
+ensureImport "sounds"
 
 //----------------------------------------------------------------------
 // System base class
@@ -206,8 +208,9 @@ Weapons.update = function(ship, dt = 0.1)
 	for shot in self.shots
 		if shot.expired == true then
 			self.shots.removeVal shot
+		else
+			shot.update dt
 		end if
-		shot.update dt
 	end for
 	if not ship.inCombat then
 		newCharge = 0
@@ -236,29 +239,62 @@ Weapons.fire = function(owningShip)
 		print self.name + " (on " + owningShip.name + ") fires into space."
 		return
 	end if
-	self.shots.push(Shot.init(targetShip))
+	self.shots.push Shot.init(targetShip)
 	self.curCharge = 0
 end function
 
-Shot = {}
+Shot = new Sprite
+Shot.image = file.loadImage("/usr/pics/blueShot.png")
 Shot.target = null
-Shot.traveltime = 2
+Shot.travelTime = 2
 Shot.timeTravelled = 0
 Shot.expired = false
+Shot.startPos = {"x": 240, "y":420}
+Shot.targetPos = {"x": 960-240, "y":320}
+Shot.fireSound = sounds.laserFire
+Shot.hitSound = sounds.laserHit
 
-Shot.init = function(target, traveltime = 2)
+Shot.init = function(target, travelTime = 2)
 	noob = new Shot
 	noob.target = target
-	noob.traveltime = traveltime
+	noob.travelTime = travelTime
+	if target == playerShip then
+		noob.startPos = {"x": 960-240, "y":420}
+		noob.targetPos = {"x": 240, "y":320}
+	else
+		noob.startPos = {"x": 240, "y":420}
+		noob.targetPos = {"x": 960-240, "y":320}
+	end if
+	noob.x = noob.startPos.x
+	noob.y = noob.startPos.y
+	disp.shipSprites.sprites.push noob
+	noob.fireSound.playAt noob.x
 	return noob
 end function
 
 Shot.update = function(dt = 0.1)
+	if self.expired then return
 	self.timeTravelled = self.timeTravelled + dt
-	if self.timeTravelled >= self.traveltime and self.expired != true then
+	halfTravelTime = self.travelTime / 2
+	if self.timeTravelled < halfTravelTime then
+		// move up, off the top of the screen
+		t = self.timeTravelled / halfTravelTime
+		self.x = self.startPos.x
+		self.y = mathUtil.lerp(self.startPos.y, self.startPos.y + 500, t)
+		self.rotation = 90
+	else
+		// move down from the top of the screen to the target
+		t = (self.timeTravelled - halfTravelTime) / halfTravelTime
+		self.x = self.targetPos.x
+		self.y = mathUtil.lerp(self.targetPos.y + 500, self.targetPos.y, t)
+		self.rotation = -90
+	end if
+		
+	if self.timeTravelled >= self.travelTime then
 		self.target.hp = self.target.hp -1
-		print "boom, swish, lazersound"
+		self.hitSound.playAt self.x
 		self.expired = true
-		if self.target.hp < 0 then game.destroyShip target
+		disp.shipSprites.sprites.removeVal self
+		if self.target.hp < 0 then game.destroyShip self.target
 	end if
 end function

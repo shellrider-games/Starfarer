@@ -10,6 +10,10 @@ PositionalSound.load = function(filename)
 	path = "/usr/sounds/" + filename + ".wav"
 	snd = file.loadSound(path)
 	if snd == null then
+		path = "/sys/sounds/" + filename + ".wav"
+		snd = file.loadSound(path)
+	end if
+	if snd == null then
 		print "Sound not found: " + path
 	end if
 	snd.__isa = PositionalSound
@@ -20,6 +24,8 @@ doorOpen = PositionalSound.load("door-open")
 doorClose = PositionalSound.load("door-close")
 warp = PositionalSound.load("warp-sound")
 
+laserFire = PositionalSound.load("pew")
+laserHit = PositionalSound.load("hit")
 
 demo = function()
 	clear
