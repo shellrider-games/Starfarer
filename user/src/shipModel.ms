@@ -77,6 +77,7 @@ Ship.outgoingTypes = []	// list of ItemTypes sold but not yet unloaded
 Ship.systems = []		// list of System instances installed in the ship
 Ship.reactor = null		// reactor system (always self.systems[0])
 Ship.inCombat = false	// true when engaged in combat
+Ship.targetSpots = []	// list of [x,y] map coordinates of enemy targets on this ship
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -92,6 +93,8 @@ Ship.init = function(columns, rows)
 	self.minions = []
 	self.incomingTypes = []
 	self.outgoingTypes = []
+	
+	self.targetSpots = [[round(columns/2), round(rows/2)]]
 	
 	// NOTE: we no longer set up some default systems.
 	// Ship files will need to set them up themselves.

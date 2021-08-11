@@ -202,8 +202,8 @@ end function
 
 Starfarer.selectedMinion = []
 
-// Handle a mouse click at the given position
-Starfarer.handlePrimaryClick = function(pos)
+// Handle a mouse click on the player's ship at the given screen position
+Starfarer.handlePlayerShipClick = function(pos)
 	mapPos = self.renderer.screenToMapPosition(pos)
 	
 	// If we click a minion, toggle its selection status.
@@ -243,7 +243,31 @@ Starfarer.handlePrimaryClick = function(pos)
 			minion.path = pathfinding.findPath(playerShip, minion, mapPos)
 		end for
 	end if
+end function
+
+// Handle a mouse click on the enemy ship at the given screen position
+Starfarer.handleEnemyShipClick = function(pos)
+	enemy = self.combatEncounter.ship
+	mapPos = enemy.renderer.screenToMapPosition(pos)
+	if mapPos == null then return
 	
+	// For now, the only thing a click on an enemy ship can do
+	// is change the target for weapon 0.
+	if not enemy.targetSpots then
+		enemy.targetSpots = [mapPos]
+	else
+		enemy.targetSpots[0] = mapPos
+	end if
+	enemy.renderer.renderTargets
+end function
+
+// Handle a mouse click at the given screen position
+Starfarer.handlePrimaryClick = function(pos)
+	if self.combatEncounter == null or self.combatEncounter.ship == null or pos.x < 480 then
+		self.handlePlayerShipClick pos
+	else
+		self.handleEnemyShipClick pos
+	end if	
 end function
 
 Starfarer.handleSecondaryClick = function(pos)

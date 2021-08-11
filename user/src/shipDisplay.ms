@@ -37,11 +37,11 @@ Renderer.renderShip = function(ship)
 	ship.renderer = self
 	
 	// load the ship map, and calculate our graphics offset
-	playerShipImage = file.loadImage(file.child(ship.directory, "map.png"))
-	self.addSprite playerShipImage, self.x, self.y
+	shipImage = file.loadImage(file.child(ship.directory, "map.png"))
+	self.addSprite shipImage, self.x, self.y
 	self.mapZeroZero = {
-		"x": self.x - playerShipImage.width/2 + ship.offset[0] * CELLSIZE,
-	    "y": self.y - playerShipImage.height/2 + ship.offset[1] * CELLSIZE }
+		"x": self.x - shipImage.width/2 + ship.offset[0] * CELLSIZE,
+	    "y": self.y - shipImage.height/2 + ship.offset[1] * CELLSIZE }
 
 	// load ship systems
 	self.renderShipSystems
@@ -58,6 +58,9 @@ Renderer.renderShip = function(ship)
 	for m in ship.minions
 		self.renderMinion m
 	end for
+	
+	// if this is NOT the player ship, then show any target locations
+	if ship != playerShip then self.renderTargets
 
 end function
 
@@ -75,7 +78,7 @@ Renderer.addSprite = function(image, x, y, baseClass)
 	if baseClass == Sprite then
 		// Make sure every sprite has an "update" function,
 		// even if it does nothing.
-		baseClass.update = function(dt); end function
+		sp.update = function(dt); end function
 	end if
 	disp.shipSprites.sprites.push sp
 	if self.sprites == null then self.sprites = []
@@ -133,6 +136,35 @@ Renderer.renderContents = function(cell)
 	item.x = pos.x; item.y = pos.y
 	disp.shipSprites.sprites.push item
 	self.sprites.push item
+end function
+
+TargetSprite = new Sprite
+TargetSprite.update = function(dt); end function
+TargetSprite.srcImage = file.loadImage("/usr/pics/reticles.png")
+TargetSprite.scale = 0.75
+TargetSprite.tint = color.red
+TargetSprite.images = []
+for i in range(0,3)
+	TargetSprite.images.push TargetSprite.srcImage.getImage(i*40,0,40,40)
+end for
+
+// renderTargets: add the little targeting reticle icons indicating where
+// on this ship is being targeted by the other ship's weapons.
+Renderer.renderTargets = function()
+	// start by removing any previous target sprites
+	count = 0
+	for i in range(self.sprites.len-1, 0)
+		if self.sprites[i] isa TargetSprite then
+			disp.shipSprites.sprites.removeVal self.sprites[i]
+			self.sprites.remove i
+			count = count + 1
+		end if
+	end for
+	// and then add target sprites for our targets
+	for i in self.ship.targetSpots.indexes
+		pos = self.mapToScreenPosition(self.ship.targetSpots[i])
+		self.addSprite TargetSprite.images[i], pos.x, pos.y, TargetSprite
+	end for
 end function
 
 Renderer.screenToMapPosition = function(point)

@@ -254,16 +254,19 @@ Shot.targetPos = {"x": 960-240, "y":320}
 Shot.fireSound = sounds.laserFire
 Shot.hitSound = sounds.laserHit
 
+// Initialize a new shot.
+//	target: the shipModel representing the ship we are firing at
+//	travelTime: how long (in seconds) the shot should take to get there
 Shot.init = function(target, travelTime = 2)
 	noob = new Shot
 	noob.target = target
 	noob.travelTime = travelTime
+	targetMapPos = target.targetSpots[0]
+	noob.targetPos = target.renderer.mapToScreenPosition(targetMapPos)
 	if target == playerShip then
 		noob.startPos = {"x": 960-240, "y":420}
-		noob.targetPos = {"x": 240, "y":320}
 	else
 		noob.startPos = {"x": 240, "y":420}
-		noob.targetPos = {"x": 960-240, "y":320}
 	end if
 	noob.x = noob.startPos.x
 	noob.y = noob.startPos.y
