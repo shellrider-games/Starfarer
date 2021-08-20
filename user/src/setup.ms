@@ -23,38 +23,42 @@ display(6).mode = displayMode.sprite
 disp.shipSprites = display(6)
 disp.shipSprites.clear
 
+display(5).mode = displayMode.pixel
+disp.shipOverlays = display(5)
+disp.shipOverlays.clear color.clear
+
 // disp.fog: a solid-color display that appears over the ship
 // and its sprites, which we can use to show hide the ship
 // (and background) intermittently due to dust clouds, sensor
 // malfunctions, etc.
-display(5).mode = displayMode.solidColor
-disp.fog = display(5)
+display(4).mode = displayMode.solidColor
+disp.fog = display(4)
 disp.fog.color = color.clear
 
 // disp.uiPixel: a PixelDisplay for UI elements, including ship
 // controls, status displays, event dialogs, etc.
 // This is also the default gfx display.
-display(4).mode = displayMode.pixel
-disp.uiPixel = display(4)
+display(3).mode = displayMode.pixel
+disp.uiPixel = display(3)
 disp.uiPixel.clear color.clear
 globals.gfx = disp.uiPixel
 
 // disp.uiSprites: a SpriteDisplay for UI elements, including
 // a custom mouse cursor, buttons, etc.
-display(3).mode = displayMode.sprite
-disp.uiSprites = display(3)
+display(2).mode = displayMode.sprite
+disp.uiSprites = display(2)
 disp.uiSprites.clear
 
 // disp.curtain: a solid-color overlay used for fading to black,
 // flashing red to show damage, etc.
-display(2).mode = displayMode.solidColor
-disp.curtain = display(2)
+display(1).mode = displayMode.solidColor
+disp.curtain = display(1)
 disp.curtain.color = color.clear
 
 // disp.text: the standard text display.  We probably won't ever
 // use this in the game, except for debugging.
-display(1).mode = displayMode.text
-globals.text = display(1) // map text globally
+display(0).mode = displayMode.text
+globals.text = display(0) // map text globally
 disp.text = text  // just an alias
 text.color = color.orange
 text.backColor = color.clear
