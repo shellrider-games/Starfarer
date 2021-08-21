@@ -488,7 +488,9 @@ PowerControl.draw = function()
 	// draw icon
 	sys = self.system
 	if sys.icon != null then
-		disp.uiPixel.drawImage sys.icon, self.left + self.leftMargin - 4, self.bottom
+		if sys.curPower < 1 then frameColor = self.disabledColor else frameColor = self.powerColor
+		disp.uiPixel.drawImage sys.icon, self.left + self.leftMargin - 4, self.bottom,
+		  -1, -1, 0, 0, -1, -1, frameColor
 	end if
 	
 	// draw bars
@@ -521,6 +523,9 @@ PowerControl.update = function(dt = 0.1)
 			end if
 			yield
 		end while
+	else if self.system.needsDisplay then
+		self.redraw
+		self.system.needsDisplay = false
 	end if
 end function
 

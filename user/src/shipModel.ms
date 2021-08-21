@@ -111,10 +111,40 @@ Ship.distributePower = function()
 		if system == self.reactor then continue
 		power = system.maxPossiblePower
 		if power > powerLeft then power = powerLeft
-		system.curPower = power
+		if system.curPower != power then
+			system.curPower = power
+			system.needsDisplay = true
+		end if
 		powerLeft = powerLeft - power
 	end for
-	self.reactor.curPower = powerLeft
+	if self.reactor.curPower != powerLeft then
+		self.reactor.curPower = powerLeft
+		self.needsDisplay = true
+	end if
+end function
+
+// Apply damage to this ship from the given Shot (see systems.ms)
+// at the given [col, row] map position.
+Ship.takeDamage = function(shot, mapPos)
+	col = mapPos[0]
+	row = mapPos[1]
+	
+	// hull damage
+	self.hp = self.hp - 1
+	
+	// damage to nearby minions
+	for crew in self.minions
+		dist = sqrt((crew.col - col)^2 + (crew.row - row)^2)
+		if dist > 1.9 then continue
+		damage = 3
+		if dist > 0 then damage = round(2 / dist)
+		crew.takeDamage damage
+	end for
+	
+	// damage to whatever system was hit
+	systemHit = self.systemAt(col, row)
+	if systemHit != null then systemHit.takeDamage 3
+	self.distributePower
 end function
 
 // Ship.walkable: return whether an agent can step in the given
@@ -277,11 +307,18 @@ Ship.systemAt = function(col, row)
 	return null
 end function
 
-
 // Find the minion (if any) at a given row and column (position map).
-Ship.minionAt = function(col,row)
+Ship.minionAt = function(col, row)
 	for minion in self.minions
 		if minion.col == col and minion.row == row then return minion
+	end for
+	return null
+end function
+
+// Find the system at the given column and row, if any.
+Ship.systemAt = function(col, row)
+	for system in self.systems
+		if system.containsColRow(col, row) then return system
 	end for
 	return null
 end function

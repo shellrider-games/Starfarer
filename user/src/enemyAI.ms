@@ -16,9 +16,15 @@ updateTargeting = function()
 	// for now, we'll just pick a new random target every now and then
 	if time < nextTargetTime then return
 	outer.nextTargetTime = time + 3 + rnd*3
-	col = playerShip.columnRange.any
-	row = playerShip.rowRange.any
-	playerShip.targetSpots = [ [col,row] ]
+	for i in range(3)
+		col = playerShip.columnRange.any
+		row = playerShip.rowRange.any
+		system = playerShip.systemAt(col, row)
+		if system != null then
+			playerShip.targetSpots = [ [col,row] ]
+			break
+		end if
+	end for
 end function
 
 // update: main function invoked from CombatEncounter on each frame.
