@@ -106,8 +106,9 @@ Ship.distributePower = function()
 	// Calculate power output from the reactor, and distribute it to
 	// all other systems, left to right, leaving any excess power
 	// in the reactor itself.
-	powerLeft = self.reactor.setPoint
+	powerLeft = self.reactor.maxPossiblePower
 	for system in self.systems
+		system.needsRedistribute = false
 		if system == self.reactor then continue
 		power = system.maxPossiblePower
 		if power > powerLeft then power = powerLeft
@@ -331,9 +332,12 @@ end function
 
 
 Ship.update = function(dt)
+	redistribute = false
 	for system in self.systems
 		system.update self, dt
+		if system.needsRedistribute then redistribute = true
 	end for
+	if redistribute then self.distributePower
 end function
 
 //----------------------------------------------------------------------

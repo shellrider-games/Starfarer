@@ -52,7 +52,6 @@ show = function()
 		control.initSystem system
 		control.onChange = function()
 			playerShip.distributePower
-			for c in playerUI.powerControls; c.draw; end for
 		end function
 		control.draw
 		control.start

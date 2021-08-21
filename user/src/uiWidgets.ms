@@ -488,7 +488,7 @@ PowerControl.draw = function()
 	// draw icon
 	sys = self.system
 	if sys.icon != null then
-		if sys.curPower < 1 then frameColor = self.disabledColor else frameColor = self.powerColor
+		if sys.curPower < 1 then frameColor = color.silver else frameColor = self.powerColor
 		disp.uiPixel.drawImage sys.icon, self.left + self.leftMargin - 4, self.bottom,
 		  -1, -1, 0, 0, -1, -1, frameColor
 	end if

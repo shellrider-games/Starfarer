@@ -30,6 +30,7 @@ System.disabled = 0		// how many bars (top-down) are disabled
 System.powerControlClass = uiWidgets.PowerControl
 System.powerControl = null
 System.needsDisplay = false	// set to true to trigger a redraw of the system display
+System.needsRedistribute = false	// set to true to trigger a redistribution of power
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
@@ -53,9 +54,15 @@ end function
 
 // A minion is using (working on/at) this system.
 System.use = function(character, dt = 0.1)
-	// Subclasses should override this.
-	// For debugging:
-	// print character.name + " is using " + self.name + " for " + dt + " seconds."
+	// Subclasses should usually override this.
+	// But at minimum, when a character uses a system, they repair it.
+	// (So subclasses that DO override this should call super.use.)
+	if self.repairLevel < self.maxPower then
+		prevLevel = self.repairLevel
+		self.repairLevel = min(self.repairLevel + dt/3, self.maxPower)
+		self.needsDisplay = true
+		self.needsRedistribute = floor(self.repairLevel) != floor(prevLevel)
+	end if
 end function
 
 System.maxPossiblePower = function()
@@ -104,6 +111,7 @@ end function
 MedBay.use = function(character, dt = 0.1)
 	// regenerates the health of the user at a rate that
 	// depends on our current power
+	super.use character, dt
 	regenPerSec = self.curPower
 	character.health = miscUtil.min(character.health + regenPerSec * dt,
 	   character.maxHealth)
