@@ -248,11 +248,13 @@ Shot.image = file.loadImage("/usr/pics/blueShot.png")
 Shot.target = null
 Shot.travelTime = 2
 Shot.timeTravelled = 0
+Shot.hit = false
 Shot.expired = false
 Shot.startPos = {"x": 240, "y":420}
 Shot.targetPos = {"x": 960-240, "y":320}
 Shot.fireSound = sounds.laserFire
 Shot.hitSound = sounds.laserHit
+Shot.burstImage = file.loadImage("/sys/pics/Burst.png")
 
 // Initialize a new shot.
 //	target: the shipModel representing the ship we are firing at
@@ -278,6 +280,16 @@ end function
 Shot.update = function(dt = 0.1)
 	if self.expired then return
 	self.timeTravelled = self.timeTravelled + dt
+	if self.hit then
+		t = self.timeTravelled - self.travelTime
+		if t > 0.5 then
+			self.expired = true
+			disp.shipSprites.sprites.removeVal self
+		else
+			self.scale = 0.1 + t/3
+		end if
+		return
+	end if
 	halfTravelTime = self.travelTime / 2
 	if self.timeTravelled < halfTravelTime then
 		// move up, off the top of the screen
@@ -296,8 +308,10 @@ Shot.update = function(dt = 0.1)
 	if self.timeTravelled >= self.travelTime then
 		self.target.hp = self.target.hp -1
 		self.hitSound.playAt self.x
-		self.expired = true
-		disp.shipSprites.sprites.removeVal self
+		self.hit = true
+		self.image = self.burstImage
+		self.tint = color.yellow
+		self.scale = 0.25
 		if self.target.hp < 0 then game.destroyShip self.target
 	end if
 end function

@@ -19,7 +19,6 @@ updateTargeting = function()
 	col = playerShip.columnRange.any
 	row = playerShip.rowRange.any
 	playerShip.targetSpots = [ [col,row] ]
-	print "Enemy ship is now targeting " + col + "," + row
 end function
 
 // update: main function invoked from CombatEncounter on each frame.
