@@ -286,6 +286,7 @@ Shot.init = function(target, travelTime = 2)
 	noob.target = target
 	noob.travelTime = travelTime
 	noob.targetMapPos = target.targetSpots[0]
+	qa.assert noob.targetMapPos != null
 	noob.targetPos = target.renderer.mapToScreenPosition(noob.targetMapPos)
 	if target == playerShip then
 		noob.startPos = {"x": 960-240, "y":420}

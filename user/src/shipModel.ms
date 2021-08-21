@@ -127,8 +127,11 @@ end function
 // Apply damage to this ship from the given Shot (see systems.ms)
 // at the given [col, row] map position.
 Ship.takeDamage = function(shot, mapPos)
-	col = mapPos[0]
-	row = mapPos[1]
+	if mapPos isa map then
+		col = mapPos.col; row = mapPos.row
+	else
+		col = mapPos[0]; row = mapPos[1]
+	end if
 	
 	// hull damage
 	self.hp = self.hp - 1
