@@ -245,6 +245,11 @@ Character.clearUseSystem = function()
 	self.usingSystem = null
 end function
 
+Character.takeDamage = function(healthLost)
+	self.health = self.health - healthLost
+	// ToDo: die when health < 1
+end function
+
 Character.autoUseSystem = function()
 	// if we are standing on a system square, start using that system
 	self.setUseSystem self.ship.systemAt(self.col, self.row)

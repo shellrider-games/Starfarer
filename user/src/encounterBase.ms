@@ -6,6 +6,7 @@
 import "miscUtil"
 ensureImport "uiWidgets"
 ensureImport "randomNames"
+ensureImport "enemyAI"
 
 Encounter = {}
 Encounter.ship = null  // ShipModel we have encountered, if any
@@ -159,7 +160,7 @@ CombatEncounter.ship = null
 CombatEncounter.renderer = null
 
 CombatEncounter.updateCombat = function(dt = 0.1)
-	//print "Combat for " + dt + " seconds" 
+	enemyAI.update self, dt
 end function
 
 CombatEncounter.destroyShip = function()
@@ -168,4 +169,5 @@ CombatEncounter.destroyShip = function()
 		self.renderer.stop
 		self.renderer = null
 	end if
+	playerShip.inCombat = false
 end function

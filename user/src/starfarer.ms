@@ -108,6 +108,7 @@ Starfarer.enterState = function(newState)
 		if self.combatEncounter and self.combatEncounter.ship then
 			self.combatEncounter.ship.inCombat = true
 		end if
+		minionUI.show playerShip.minions
 		playerUI.showCombat
 		
 	else if newState == self.STATE_TRAVEL then

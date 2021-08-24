@@ -29,6 +29,8 @@ System.repairLevel = 3	// how many bars are fully repaired
 System.disabled = 0		// how many bars (top-down) are disabled
 System.powerControlClass = uiWidgets.PowerControl
 System.powerControl = null
+System.needsDisplay = false	// set to true to trigger a redraw of the system display
+System.needsRedistribute = false	// set to true to trigger a redistribution of power
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
@@ -52,9 +54,15 @@ end function
 
 // A minion is using (working on/at) this system.
 System.use = function(character, dt = 0.1)
-	// Subclasses should override this.
-	// For debugging:
-	// print character.name + " is using " + self.name + " for " + dt + " seconds."
+	// Subclasses should usually override this.
+	// But at minimum, when a character uses a system, they repair it.
+	// (So subclasses that DO override this should call super.use.)
+	if self.repairLevel < self.maxPower then
+		prevLevel = self.repairLevel
+		self.repairLevel = min(self.repairLevel + dt/3, self.maxPower)
+		self.needsDisplay = true
+		self.needsRedistribute = floor(self.repairLevel) != floor(prevLevel)
+	end if
 end function
 
 System.maxPossiblePower = function()
@@ -69,6 +77,19 @@ end function
 // Subclasses may update this to charge up or otherwise
 // do whatever they need to do on each frame.
 System.update = function(ship, dt = 0.1)
+end function
+
+System.containsColRow = function(col, row)
+	return col >= self.col and col < self.col + self.width and
+		   row >= self.row and row < self.row + self.height
+end function
+
+System.takeDamage = function(damagePoints)
+	if self.repairLevel <= 0 then return
+	self.repairLevel = floor(self.repairLevel - damagePoints)
+	if self.repairLevel < 0 then self.repairLevel = 0
+	self.needsDisplay = true
+	//print self.name + " takes " + damagePoints + " damage; repair level now " + self.repairLevel
 end function
 
 //----------------------------------------------------------------------
@@ -90,6 +111,7 @@ end function
 MedBay.use = function(character, dt = 0.1)
 	// regenerates the health of the user at a rate that
 	// depends on our current power
+	super.use character, dt
 	regenPerSec = self.curPower
 	character.health = miscUtil.min(character.health + regenPerSec * dt,
 	   character.maxHealth)
@@ -248,11 +270,13 @@ Shot.image = file.loadImage("/usr/pics/blueShot.png")
 Shot.target = null
 Shot.travelTime = 2
 Shot.timeTravelled = 0
+Shot.hit = false
 Shot.expired = false
 Shot.startPos = {"x": 240, "y":420}
 Shot.targetPos = {"x": 960-240, "y":320}
 Shot.fireSound = sounds.laserFire
 Shot.hitSound = sounds.laserHit
+Shot.burstImage = file.loadImage("/sys/pics/Burst.png")
 
 // Initialize a new shot.
 //	target: the shipModel representing the ship we are firing at
@@ -261,8 +285,9 @@ Shot.init = function(target, travelTime = 2)
 	noob = new Shot
 	noob.target = target
 	noob.travelTime = travelTime
-	targetMapPos = target.targetSpots[0]
-	noob.targetPos = target.renderer.mapToScreenPosition(targetMapPos)
+	noob.targetMapPos = target.targetSpots[0]
+	qa.assert noob.targetMapPos != null
+	noob.targetPos = target.renderer.mapToScreenPosition(noob.targetMapPos)
 	if target == playerShip then
 		noob.startPos = {"x": 960-240, "y":420}
 	else
@@ -278,6 +303,16 @@ end function
 Shot.update = function(dt = 0.1)
 	if self.expired then return
 	self.timeTravelled = self.timeTravelled + dt
+	if self.hit then
+		t = self.timeTravelled - self.travelTime
+		if t > 0.5 then
+			self.expired = true
+			disp.shipSprites.sprites.removeVal self
+		else
+			self.scale = 0.1 + t/3
+		end if
+		return
+	end if
 	halfTravelTime = self.travelTime / 2
 	if self.timeTravelled < halfTravelTime then
 		// move up, off the top of the screen
@@ -294,10 +329,12 @@ Shot.update = function(dt = 0.1)
 	end if
 		
 	if self.timeTravelled >= self.travelTime then
-		self.target.hp = self.target.hp -1
+		self.target.takeDamage self, self.targetMapPos
 		self.hitSound.playAt self.x
-		self.expired = true
-		disp.shipSprites.sprites.removeVal self
+		self.hit = true
+		self.image = self.burstImage
+		self.tint = color.yellow
+		self.scale = 0.25
 		if self.target.hp < 0 then game.destroyShip self.target
 	end if
 end function
