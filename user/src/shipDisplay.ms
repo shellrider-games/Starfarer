@@ -223,6 +223,18 @@ Renderer.renderShipSystems = function()
 	end for
 end function
 
+Renderer.renderAirValues = function()
+	disp.shipOverlays.fillRect self.mapZeroZero.x, self.mapZeroZero.y, self.ship.columns*CELLSIZE, self.ship.rows*CELLSIZE, color.clear
+	for col in range(0, self.ship.columns-1)
+		for row in range(0, self.ship.rows-1)
+			cell = self.ship.getCell(col, row)
+			if cell != null then
+				disp.shipOverlays.fillRect self.mapZeroZero.x + col*CELLSIZE, self.mapZeroZero.y + row*CELLSIZE, CELLSIZE, CELLSIZE, color.rgba(255, 0, 0, (1-(cell.air/100)*64))
+			end if
+		end for
+	end for
+end function
+
 Renderer.stop = function()
 	// Tear down everything we set up for this renderer.
 	for sp in self.sprites
@@ -259,6 +271,8 @@ Renderer.update = function(dt = 0.1)
 			item.fadeOut 16, 0
 		end if
 	end for
+	// if this is the player ship, render Air Values
+	if self.ship == playerShip then self.renderAirValues
 end function
 
 // Update the whole ship display (and all sprites on it).
