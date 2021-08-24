@@ -245,19 +245,21 @@ Label.wrap = function(wrapWidth=null)
 	// Split our text into lines.
 	if wrapWidth == null then wrapWidth = self.bounds.width
 	self.lines = []
-	s = self.text
-	while s
-		cutPos = self.font.lenToFit(s, wrapWidth)
-		if cutPos >= s.len then
-			self.lines.push s
-			break
-		end if
-		while cutPos > 1 and not stringUtil.whitespace.contains(s[cutPos-1])
-			cutPos = cutPos - 1
+	for hardline in self.text.split(char(13))
+		s = hardline
+		while s
+			cutPos = self.font.lenToFit(s, wrapWidth)
+			if cutPos >= s.len then
+				self.lines.push s
+				break
+			end if
+			while cutPos > 1 and not stringUtil.whitespace.contains(s[cutPos-1])
+				cutPos = cutPos - 1
+			end while
+			self.lines.push s[:cutPos]
+			s = s[cutPos:].trim
 		end while
-		self.lines.push s[:cutPos]
-		s = s[cutPos:].trim
-	end while
+	end for
 	// Then increase height if needed
 	h = self.lines.len * (self.font.lineHeight + self.leading)
 	if h > self.bounds.height then self.bounds.height = h
@@ -426,6 +428,20 @@ PowerControl.powerColor = "#00FF00"
 PowerControl.disabledColor = color.aqua
 PowerControl.onChange = null	// function() called when set point changed
 
+// onIconTap: invoked when user taps the icon.
+// Default just toggles the set point between 0 and full.
+// May be overridden for other functions.
+PowerControl.onIconTap = function()
+	if self.system.setPoint > self.system.maxPower/2 then
+		self.system.setPoint = 0
+	else
+		self.system.setPoint = self.system.maxPower
+	end if
+	self.onChange
+	self.redraw	
+end function
+
+
 // Internal properties -- only subclasses should mess with these:
 PowerControl.leftMargin = 4		// gap on left before power bars
 
@@ -511,6 +527,11 @@ end function
 
 PowerControl.update = function(dt = 0.1)
 	if mouseDown and self.contains(mouse) then
+		if mouse.y < self.bottom + 36 then
+			self.onIconTap
+			while mouse.button; end while
+			return
+		end if
 		sys = self.system
 		while mouse.button
 			hitLevel = round((mouse.y - self.bottom - 40) / (self.barHeight + self.barGap))
@@ -631,7 +652,18 @@ Button.trackingPress = false	// true when tracking a mouse click
 
 Button.init = function(left, bottom, width, height, caption="")
 	super.init left, bottom, width, height, caption
-	self.caption = caption
+	if caption isa string and caption.contains(char(13)) then
+		// support multi-line button captions via a Label
+		label = new Label
+		label.init left, bottom, width, height, caption
+		label.wrap
+		label.alignment = ALIGNCENTER
+		label.font = fonts[self.font]
+		label.color = color.black
+		self.caption = label
+	else
+		self.caption = caption
+	end if
 end function
 
 // action function, invoked upon click (buttons should override this)

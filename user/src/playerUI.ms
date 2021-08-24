@@ -19,6 +19,8 @@ lastFuel = [null,null]	// current, max value
 
 powerControls = []
 
+selectedControl = null
+
 show = function()
 	uiWidgets.reset
 	
@@ -59,6 +61,18 @@ show = function()
 		if x == 0 then x = 20
 		x = x + control.width
 	end for
+end function
+
+// selectControl: called by a selectable power control when it is
+// tapped to select it.  Returns true if the control should go ahead
+// and do whatever it does (usually, add more UI widgets) when
+// selected; false if it should not.  Also, if a previous control
+// was selected, that one is told to close (tear down its UI).
+selectControl = function(powerControl)
+	if powerControl == selectedControl then return false
+	if selectedControl != null then selectedControl.close
+	outer.selectedControl = powerControl
+	return true
 end function
 
 // Show travel progress: we're the given distance (0-1)

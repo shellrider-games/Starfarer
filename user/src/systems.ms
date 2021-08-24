@@ -10,6 +10,7 @@ import "mathUtil"
 import "miscUtil"
 ensureImport "uiWidgets"
 ensureImport "sounds"
+ensureImport "playerUI"
 
 //----------------------------------------------------------------------
 // System base class
@@ -220,6 +221,47 @@ Doors.icon = file.loadImage("/usr/pics/systemIcons/doors.png")
 Doors.make = function()
 	return new Doors
 end function
+
+
+DoorPowerControl = new uiWidgets.PowerControl
+DoorPowerControl.widgets = []
+
+DoorPowerControl.onIconTap = function()
+	if playerUI.selectControl(self) then
+		// set up our selected UI
+		button = new uiWidgets.Button
+		button.init 700, 0, 64, 56, "OPEN" + char(13) +"ALL"
+		button.action = function()
+			for door in playerShip.allDoors
+				if not door.isOpen and door.power > 0 then door.open
+			end for
+		end function
+		button.start
+		self.widgets.push button
+		
+		button = new uiWidgets.Button
+		button.init 780, 0, 64, 56, "CLOSE" + char(13) + "ALL"
+		button.action = function()
+			for door in playerShip.allDoors
+				if door.isOpen and door.power > 0 then door.close
+			end for
+		end function
+		button.start
+		self.widgets.push button
+		
+	else
+		playerUI.selectControl null
+	end if
+end function
+
+DoorPowerControl.close = function()
+	for widget in self.widgets
+		widget.stop
+	end for
+	self.widgets = []
+end function
+
+Doors.powerControlClass = DoorPowerControl
 
 
 //----------------------------------------------------------------------
