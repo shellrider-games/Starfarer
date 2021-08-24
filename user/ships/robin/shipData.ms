@@ -47,6 +47,7 @@ ship.getCell(0,4).type = Celltype.CARGO_IN
 ship.getCell(5,4).type = Celltype.CARGO_OUT
 
 ship.addSystem systems.Reactor.make(2,2)
+ship.addSystem systems.Doors.make
 ship.addSystem systems.Engines.make(2,0)
 ship.addSystem systems.Controls.make(2,8)
 ship.addSystem systems.O2.make(0,7)

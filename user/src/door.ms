@@ -13,6 +13,7 @@ Door.isOpen = false		// closed by default...
 Door.canOpen = true		// but can be opened!
 Door.tint = color.aqua
 Door.curUsers = null	// list of Characters currently holding the door open
+Door.power = 1			// power level (0-3)
 
 Door.make = function()
 	noob = new Door
@@ -47,7 +48,10 @@ end function
 
 Door.userDone = function(user)
 	self.curUsers.remove user
-	if self.isOpen then self.close
+	// auto-close after use, if door system has power
+	if not self.curUsers and self.power > 0 then
+		if self.isOpen then self.close
+	end if
 end function
 
 init = function()

@@ -115,6 +115,10 @@ Ship.distributePower = function()
 		if system.curPower != power then
 			system.curPower = power
 			system.needsDisplay = true
+			if system isa systems.Doors then
+				// apply door power to all doors in the ship
+				for d in self.allDoors; d.power = power; end for
+			end if
 		end if
 		powerLeft = powerLeft - power
 	end for
@@ -378,6 +382,20 @@ Ship.place = function(col, row, direction, wallOrDoor)
 		nextDir = constants.inverseDir(direction)
 		self.map[nextCol][nextRow].walls[nextDir] = wallOrDoor
 	end if
+end function
+
+Ship.allDoors = function()
+	doorSet = {}
+	for row in range(0, self.rows-1)
+		for col in range(0, self.columns-1)
+			cell = self.map[col][row]
+			if cell == null then continue
+			for direction in DIRECTIONS
+				if cell.walls[direction] isa Door then doorSet.push cell.walls[direction]
+			end for
+		end for
+	end for
+	return doorSet.indexes			
 end function
 
 Ship.removeWall = function(col, row, direction)

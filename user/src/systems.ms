@@ -206,6 +206,23 @@ Reactor.make = function(col, row)
 end function
 
 //----------------------------------------------------------------------
+// Doors: make doors auto-close, and keep intruders from opening them.
+// (This system appears in the ship UI, but not in the ship layout.)
+//----------------------------------------------------------------------
+Doors = new System
+Doors.name = "Doors"
+Doors.width = 0
+Doors.height = 0
+Doors.maxPower = 1
+Doors.setPoint = 1
+Doors.icon = file.loadImage("/usr/pics/systemIcons/doors.png")
+
+Doors.make = function()
+	return new Doors
+end function
+
+
+//----------------------------------------------------------------------
 // Weapons: provides power and control for all installed weapons.
 //----------------------------------------------------------------------
 Weapons = new System
