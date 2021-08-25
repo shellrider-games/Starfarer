@@ -249,9 +249,46 @@ DoorPowerControl.onIconTap = function()
 		button.start
 		self.widgets.push button
 		
+		note = new uiWidgets.Label
+		note.init 550, 0, 120, 56, "Click doors to open/close"
+		note.font = fonts["ArialBlack14"]
+		note.wrap
+		note.alignment = uiWidgets.ALIGNCENTER
+		note.color = color.silver
+		note.start
+		self.widgets.push note
 	else
 		playerUI.selectControl null
 	end if
+end function
+
+// handleShipClick is called by Starfarer when the player clicks on
+// the ship map, while the door power control is selected.  Return
+// true if we have handled the click, false otherwise.
+DoorPowerControl.handleShipClick = function(ship, screenPos, mapPos)
+	// start by finding out which direction was clicked
+	cellCenter = ship.renderer.mapToScreenPosition(mapPos)
+	diffx = screenPos.x - cellCenter.x
+	diffy = screenPos.y - cellCenter.y
+	if abs(diffx) > abs(diffy) then
+		if diffx < 0 then direction = WEST else direction = EAST
+	else
+		if diffy < 0 then direction = SOUTH else direction = NORTH
+	end if
+	// then, toggle the door there (if there is one, and it has power
+	// or there is a minion right there)
+	cell = ship.getCell(mapPos.col, mapPos.row)
+	if cell == null then return false
+	wallOrDoor = cell.walls[direction]
+	if not (wallOrDoor isa Door) then return false
+	nextcol = mapPos.col + constants.dx(direction)
+	nextrow = mapPos.row + constants.dy(direction)
+	if wallOrDoor.power > 0 or 
+		  ship.minionAt(mapPos.col, mapPos.row) or
+		  ship.minionAt(nextcol, nextrow) then
+		wallOrDoor.toggle
+	end if
+	return true
 end function
 
 DoorPowerControl.close = function()

@@ -41,6 +41,10 @@ Door.close = function(withSound=true)
 	if withSound then sounds.doorClose.playAt self.x
 end function
 
+Door.toggle = function(withSound=true)
+	if self.isOpen then self.close else self.open
+end function
+
 Door.openForUser = function(user)
 	self.curUsers.push user
 	if not self.isOpen then self.open

@@ -207,6 +207,11 @@ Starfarer.selectedMinion = []
 Starfarer.handlePlayerShipClick = function(pos)
 	mapPos = self.renderer.screenToMapPosition(pos)
 	
+	if playerUI.selectedControl isa systems.DoorPowerControl then
+		// while door control is selected: toggle doors
+		if playerUI.selectedControl.handleShipClick(playerShip, pos, mapPos) then return
+	end if
+	
 	// If we click a minion, toggle its selection status.
 	minion = playerShip.minionAt(mapPos.col, mapPos.row)
 	if minion != null then
