@@ -78,6 +78,7 @@ Ship.systems = []		// list of System instances installed in the ship
 Ship.reactor = null		// reactor system (always self.systems[0])
 Ship.inCombat = false	// true when engaged in combat
 Ship.targetSpots = []	// list of [x,y] map coordinates of enemy targets on this ship
+Ship.airChanged = true
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
