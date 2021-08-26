@@ -30,6 +30,7 @@ Cell.row = 0				// row within its ship map
 Cell.air = 100				// air quality, from 0 (vacuum) - 100 (fine)
 Cell.fire = 0				// on fire? 0 (nope) to 100 (raging inferno)
 Cell.walls = null			// list of wall or door in each direction (NORTH, etc.)
+Cell.broken = false			// property to tell if Cell is or not
 Cell.type = Celltype.STANDARD
 
 Cell.make = function(col, row)

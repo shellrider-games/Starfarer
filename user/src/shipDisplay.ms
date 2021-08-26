@@ -13,6 +13,7 @@ ensureImport "door"
 ensureImport "item"
 ensureImport "constants"
 
+BROKEN_CELL_IMAGE = file.loadImage("/usr/pics/brokenCell.png")
 
 init = function()
 	// clear the sprite display, and load the ship background
@@ -207,6 +208,24 @@ Renderer.putItem = function(item, mapPos)
 	end for
 	targetCell.contents = item
 	self.renderContents targetCell
+end function
+
+Renderer.breakCell = function(mapPos)
+	targetCell = self.ship.getCell(mapPos.col, mapPos.row)
+	if targetCell == null then return	// out of bounds
+	if targetCell.broken == true then return;	// already broken
+	targetCell.broken = true
+	self.renderBroken mapPos
+end function
+
+Renderer.renderBroken = function(mapPos)
+	pos = self.mapToScreenPosition(mapPos)
+	brokenSprite = new Sprite
+	brokenSprite.image = BROKEN_CELL_IMAGE
+	brokenSprite.col = mapPos.col
+	brokenSprite.row = mapPos.row
+	disp.shipSprites.sprites = [brokenSprite] + disp.shipSprites.sprites
+	self.sprites = [brokenSprite] + self.sprites
 end function
 
 Renderer.renderShipSystems = function()
