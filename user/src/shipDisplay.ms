@@ -215,6 +215,7 @@ Renderer.breakCell = function(mapPos)
 	if targetCell == null then return	// out of bounds
 	if targetCell.broken == true then return;	// already broken
 	targetCell.broken = true
+	print targetCell
 	self.renderBroken mapPos
 end function
 
@@ -224,8 +225,15 @@ Renderer.renderBroken = function(mapPos)
 	brokenSprite.image = BROKEN_CELL_IMAGE
 	brokenSprite.col = mapPos.col
 	brokenSprite.row = mapPos.row
-	disp.shipSprites.sprites = [brokenSprite] + disp.shipSprites.sprites
-	self.sprites = [brokenSprite] + self.sprites
+	brokenSprite.x = pos.x
+	brokenSprite.y = pos.y
+	brokenSprite.update = function(dt = 0.1)
+
+	end function
+
+	disp.shipSprites.sprites = [disp.shipSprites.sprites[0]] + [brokenSprite] + disp.shipSprites.sprites[1:]
+	self.sprites = [self.sprites[0]] + [brokenSprite] + self.sprites[1:]
+
 end function
 
 Renderer.renderShipSystems = function()
@@ -313,7 +321,7 @@ demo = function()
 	ensureImport "shipModel"
 	globals.shipModel = shipModel
 	currentDirectory = pwd
-	cd "/usr/ships/freighter"
+	cd "/usr/ships/robin"
 	import "shipData"
 	cd currentDirectory
 	ship = shipData.ship
@@ -328,6 +336,12 @@ demo = function()
 	crewmember.setScreenPos rend.mapToScreenPosition([4,6])
 	crewmember.boardShip ship
 	disp.shipSprites.sprites.push crewmember
+
+	pt = {}
+	pt.col = 0
+	pt.row = 0
+	rend.breakCell(pt)
+
 	while not key.pressed("escape")
 		if mouse.button then
 			text.clear
