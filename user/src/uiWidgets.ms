@@ -125,6 +125,7 @@ end function
 // screen that knows how to draw itself and respond to events.
 //----------------------------------------------------------------------
 Widget = {}
+Widget._name = "Widget"
 Widget.bounds = null	// should be a Bounds instance with rotation == 0
 Widget.name = ""		// name for debugging/logging purposes
 Widget.visible = true
@@ -201,6 +202,7 @@ end function
 // Panel: a widget that draws an Image or Image9Slice.
 //----------------------------------------------------------------------
 Panel = new Widget
+Panel._name = "Panel"
 Panel.image = load9SliceImage("panel")		// may be an Image or an Image9Slice
 
 Panel.init = function(left, bottom, width, height, name, image)
@@ -229,6 +231,7 @@ end function
 // change the text displayed.)
 //----------------------------------------------------------------------
 Label = new Widget
+Label._name = "Label"
 Label.text = "Label"
 Label.color = color.gray
 Label.font = fonts.ArialBlack14
@@ -297,6 +300,7 @@ end function
 //----------------------------------------------------------------------
 
 Bar = new Widget
+Bar.name = "_Bar"
 Bar.color = color.gray
 Bar.value = 0.5
 
@@ -368,6 +372,7 @@ ThinBar.redraw = @ThinBar.draw
 // HorizontalSlider: A bar but drawn to take up less space
 //----------------------------------------------------------------------
 HorizontalSlider = new Widget
+HorizontalSlider._name = "HorizontalSlider"
 HorizontalSlider.bar = new ThinBar
 HorizontalSlider.trackingPress = false
 
@@ -420,6 +425,7 @@ HorizontalSlider.redraw = @HorizontalSlider.draw
 //----------------------------------------------------------------------
 
 PowerControl = new Widget
+PowerControl._name = "PowerControl"
 PowerControl.system = null		// systems.System that we represent
 PowerControl.width = 48			// width of this control in the layout
 PowerControl.barHeight = 10		// height of individual bar
@@ -581,6 +587,7 @@ end function
 //----------------------------------------------------------------------
 
 ValuedBar = new Widget
+ValuedBar._name = "ValuedBar"
 ValuedBar.bar = new Bar
 ValuedBar.label = new Label
 ValuedBar.maxValue = 10
@@ -641,6 +648,7 @@ end function
 // Button: represents a push button.
 //----------------------------------------------------------------------
 Button = new Widget
+Button._name = "Button"
 Button.upImg = load9SliceImage("uiButton")
 Button.downImg = load9SliceImage("uiButtonDown")
 Button.NORMAL = 0
@@ -744,6 +752,7 @@ end function
 //----------------------------------------------------------------------
 
 LineEdit = new Widget
+LineEdit._name = "LineEdit"
 LineEdit.font = fonts.ArialBlack14
 LineEdit.text = ""
 LineEdit.backColor = color.clear

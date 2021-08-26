@@ -26,7 +26,7 @@ end function
 update = function(dt = 0.1)
     for i in minions.indexes
         nametags[i].setText minions[i].name
-        healthbars[i].setValue minions[i].health, minions[i].maxHealth
+        healthbars[i].setValue max(0, minions[i].health), minions[i].maxHealth
     end for
 end function
 

@@ -29,10 +29,21 @@ encounter.present = function(data)
 	  "Battle stations!"
 
 	// Prepare the enemy ship (with weapons!)
-	self.ship = shipModel.newShipOfDesign("freighter")
+	self.ship = shipModel.newShipOfDesign("robin")
 	self.ship.name = "Pirates"
 	self.ship.addSystem systems.Weapons.make(2,0)
 	self.ship.hp = 9	// a bit easy, but let's not take forever on a random encounter!
+
+	// add some crew
+	minion = new character.Character
+	minion.name = "Pirate1"
+	minion.setMapPos [0, 6]
+	minion.boardShip self.ship
+	
+	minion = new character.Character
+	minion.name = "Pirate2"
+	minion.setMapPos [3, 3]
+	minion.boardShip self.ship
 
 	// make a renderer for the ship
 	self.renderer = new shipDisplay.Renderer

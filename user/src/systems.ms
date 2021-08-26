@@ -17,6 +17,7 @@ ensureImport "playerUI"
 //----------------------------------------------------------------------
 
 System = {}
+System._name = "System"
 System.name = "GENERIC"
 System.col = 0
 System.row = 0
@@ -97,6 +98,7 @@ end function
 // Med Bay: heals crew standing over the system (while powered).
 //----------------------------------------------------------------------
 MedBay = new System
+MedBay._name = "MedBay"
 MedBay.name = "medbay"
 MedBay.width = 2
 MedBay.height = 2
@@ -122,6 +124,7 @@ end function
 // O2: generates oxygen (life support) while powered.
 //----------------------------------------------------------------------
 O2 = new System
+O2._name = "O2"
 O2.name = "O2"
 O2.width = 2
 O2.height = 1
@@ -141,7 +144,8 @@ end function
 //		3 bars: also see opponent's weapon charge status
 //----------------------------------------------------------------------
 Sensors = new System
-Sensors.name = "O2"
+Sensors._name = "Sensors"
+Sensors.name = "Sensors"
 Sensors.width = 2
 Sensors.height = 1
 Sensors.image = file.loadImage("/usr/pics/systems/sensors.png")
@@ -160,6 +164,7 @@ end function
 //		3 bars: also see opponent's weapon charge status
 //----------------------------------------------------------------------
 Controls = new System
+Controls._name = "Controls"
 Controls.name = "Controls"
 Controls.width = 2
 Controls.height = 1
@@ -177,6 +182,7 @@ end function
 // Engines: make the ship go.
 //----------------------------------------------------------------------
 Engines = new System
+Engines._name = "Engines"
 Engines.name = "Engines"
 Engines.width = 2
 Engines.height = 2
@@ -193,6 +199,7 @@ end function
 // Reactor: provides power for the ship.
 //----------------------------------------------------------------------
 Reactor = new System
+Reactor._name = "Reactor"
 Reactor.name = "Reactor"
 Reactor.maxPower = 12
 Reactor.width = 2
@@ -211,6 +218,7 @@ end function
 // (This system appears in the ship UI, but not in the ship layout.)
 //----------------------------------------------------------------------
 Doors = new System
+Doors._name = "Doors"
 Doors.name = "Doors"
 Doors.width = 0
 Doors.height = 0
@@ -305,6 +313,7 @@ Doors.powerControlClass = DoorPowerControl
 // Weapons: provides power and control for all installed weapons.
 //----------------------------------------------------------------------
 Weapons = new System
+Weapons._name = "Weapons"
 Weapons.name = "Weapons"
 Weapons.powerControlClass = uiWidgets.ChargedPowerControl
 Weapons.maxPower = 6
