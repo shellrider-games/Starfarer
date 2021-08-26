@@ -215,7 +215,6 @@ Renderer.breakCell = function(mapPos)
 	if targetCell == null then return	// out of bounds
 	if targetCell.broken == true then return;	// already broken
 	targetCell.broken = true
-	print targetCell
 	self.renderBroken mapPos
 end function
 
