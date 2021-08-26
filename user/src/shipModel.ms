@@ -79,6 +79,7 @@ Ship.systems = []		// list of System instances installed in the ship
 Ship.reactor = null		// reactor system (always self.systems[0])
 Ship.inCombat = false	// true when engaged in combat
 Ship.targetSpots = []	// list of [x,y] map coordinates of enemy targets on this ship
+Ship.airTick = 0
 Ship.airChanged = true
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
@@ -155,6 +156,12 @@ Ship.takeDamage = function(shot, mapPos)
 	systemHit = self.systemAt(col, row)
 	if systemHit != null then systemHit.takeDamage 3
 	self.distributePower
+
+	// cell break check
+	pos = {}
+	pos.row = row
+	pos.col = col
+	if miscUtil.rollDie >= 5 then self.renderer.breakCell pos
 end function
 
 // Ship.walkable: return whether an agent can step in the given
@@ -339,6 +346,46 @@ Ship.noteItemPickedUp = function(item)
 	item.col = null; item.row = null
 end function
 
+Ship.airSimulation = function(dt)
+	self.airTick = self.airTick + dt
+	if self.airTick >= 1 then
+		self.airTick = self.airTick-1
+		for col in self.columnRange
+			for row in self.rowRange
+				cell = self.getCell(col, row)
+				if cell != null then
+					cellcount = 1
+					totalAir = cell.air
+
+					nCell = null
+					eCell = null
+					sCell = null
+					wCell = null
+
+					
+					if cell.walls[NORTH] == null or cell.walls[NORTH].isOpen then nCell = self.getCell(col, row+1)
+					if cell.walls[EAST] == null or cell.walls[EAST].isOpen then eCell = self.getCell(col+1, row)
+					if cell.walls[SOUTH] == null or cell.walls[SOUTH].isOpen then sCell = self.getCell(col, row-1)
+					if cell.walls[WEST] == null or cell.walls[WEST].isOpen then wCell = self.getCell(col-1, row)
+
+					adjCells = [nCell, eCell, sCell, wCell]
+					for ce in adjCells
+						if ce != null then
+							cellcount = cellcount + 1
+							totalAir = totalAir + ce.air
+						end if
+					end for
+					
+					if cell.broken == true then
+						cellcount = cellcount + 1
+					end if
+					cell.air = totalAir/cellcount
+				end if
+			end for
+		end for
+		self.airChanged = true
+	end if
+end function
 
 Ship.update = function(dt)
 	redistribute = false
@@ -347,6 +394,7 @@ Ship.update = function(dt)
 		if system.needsRedistribute then redistribute = true
 	end for
 	if redistribute then self.distributePower
+	self.airSimulation(dt)
 end function
 
 //----------------------------------------------------------------------
