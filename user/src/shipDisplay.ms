@@ -309,22 +309,24 @@ end function
 
 // demo: test/demonstrate this module on its own.
 demo = function()	
-	import "shipModel"
+	ensureImport "systems"
+	ensureImport "shipModel"
 	globals.shipModel = shipModel
 	currentDirectory = pwd
 	cd "/usr/ships/freighter"
 	import "shipData"
 	cd currentDirectory
 	ship = shipData.ship
+	globals.playerShip = ship
 	rend = new Renderer
 	rend.renderShip ship
 
-	globals.playerShip = ship
 
 	import "character"
 	globals.character = character
 	crewmember = new character.Character
 	crewmember.setScreenPos rend.mapToScreenPosition([4,6])
+	crewmember.boardShip ship
 	disp.shipSprites.sprites.push crewmember
 	while not key.pressed("escape")
 		if mouse.button then
