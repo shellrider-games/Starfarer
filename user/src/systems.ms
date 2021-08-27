@@ -137,6 +137,12 @@ O2.make = function(col, row)
 	return noob
 end function
 
+// Return how much air (per second per cell) this system is currently generating.
+O2.airPerSec = function()
+	return self.curPower * 2
+end function
+	
+
 //----------------------------------------------------------------------
 // Sensors: allows the player to see what's happening, by power level:
 //		1 bar: see in your own ship, even where there is no crew.
