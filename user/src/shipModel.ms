@@ -25,12 +25,13 @@ Wall.canOpen = false	// and cannot be opened, even by the crew
 //----------------------------------------------------------------------
 Cell = {}
 Cell.contents = null		// an Item instance, or null
-Cell.col = 0				// column within its ship map
+Cell.col = 0				// column within its ship mapCell.
 Cell.row = 0				// row within its ship map
 Cell.air = 100				// air quality, from 0 (vacuum) - 100 (fine)
 Cell.fire = 0				// on fire? 0 (nope) to 100 (raging inferno)
 Cell.walls = null			// list of wall or door in each direction (NORTH, etc.)
 Cell.broken = false			// property to tell if Cell is or not
+Cell.repairLevel = 1		// Value to indicate how much a cell is repaired
 Cell.type = Celltype.STANDARD
 
 Cell.make = function(col, row)
@@ -60,6 +61,17 @@ Cell.canExitInDir = function(direction, assumeDoorsOpen=true)
 	return wallInDirection.isOpen or (assumeDoorsOpen and wallInDirection.canOpen)
 end function
 
+Cell.damage = function()
+	self.broken = true
+	self.repairLevel = 0
+end function
+
+Cell.repair = function(dt)
+	self.repairLevel = self.repairLevel + dt
+	if self.repairLevel >= 1 then 
+		self.broken = false
+	end if
+end function
 
 //----------------------------------------------------------------------
 // Ship: everything there is to know about a ship.

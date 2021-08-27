@@ -214,8 +214,17 @@ Renderer.breakCell = function(mapPos)
 	targetCell = self.ship.getCell(mapPos.col, mapPos.row)
 	if targetCell == null then return	// out of bounds
 	if targetCell.broken == true then return;	// already broken
-	targetCell.broken = true
+	targetCell.damage
 	self.renderBroken mapPos
+end function
+
+Renderer.removeBroken = function(mapPos)
+	for sprite in self.sprites
+		if sprite.image == BROKEN_CELL_IMAGE and sprite.col == mapPos.col and sprite.row == mapPos.row then
+			disp.shipSprites.sprites.remove(disp.shipSprites.sprites.indexOf(sprite))
+			self.sprites.remove(self.sprites.indexOf(sprite))
+		end if
+	end for
 end function
 
 Renderer.renderBroken = function(mapPos)
@@ -340,6 +349,7 @@ demo = function()
 	pt.col = 0
 	pt.row = 0
 	rend.breakCell(pt)
+
 
 	while not key.pressed("escape")
 		if mouse.button then

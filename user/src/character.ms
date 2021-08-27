@@ -137,7 +137,7 @@ Character.update = function(dt=0.1)
 					self.moveTowards renderer.mapToScreenPosition(nextPos), self.speed * dt
 				end if
 			end if
-			if not self.path then self.autoUseSystem
+			if not self.path then self.autoUse
 		end if
 		newPos = renderer.screenToMapPosition(self)
 		self.col = newPos.col; self.row = newPos.row
@@ -147,7 +147,16 @@ Character.update = function(dt=0.1)
 
 	self.updateAnimation dt
 	self.updateCarriedItem
-	if self.usingSystem then self.useSystem dt
+	ce = self.ship.getCell(self.col, self.row)
+	if ce.broken then
+		ce.repair dt
+		mapPos = {}
+		mapPos.col = self.col
+		mapPos.row = self.row
+		if ce.broken != true then self.ship.renderer.removeBroken(mapPos)
+	else if self.usingSystem then
+		self.useSystem dt
+	end if
 end function
 
 Character.updateCarriedItem = function()
@@ -250,7 +259,7 @@ Character.takeDamage = function(healthLost)
 	// ToDo: die when health < 1
 end function
 
-Character.autoUseSystem = function()
+Character.autoUse = function()
 	// if we are standing on a system square, start using that system
 	self.setUseSystem self.ship.systemAt(self.col, self.row)
 end function
