@@ -356,13 +356,12 @@ Ship.airSimulation = function(dt)
 				if cell != null then
 					cellcount = 1
 					totalAir = cell.air
-
 					adjCells = [null,null,null,null]
 
 					for dir in DIRECTIONS
 						if cell.walls[dir] == null or cell.walls[dir].isOpen then adjCells[dir] = self.getCell(col + constants.dx(dir), row + constants.dy(dir))
 					end for
-					
+
 					for ce in adjCells
 						if ce != null then
 							cellcount = cellcount + 1
@@ -370,9 +369,8 @@ Ship.airSimulation = function(dt)
 						end if
 					end for
 					
-					if cell.broken == true then
-						cellcount = cellcount + 1
-					end if
+					if cell.broken == true then cellcount = cellcount + 1
+					
 					cell.air = totalAir/cellcount
 				end if
 			end for
