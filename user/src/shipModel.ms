@@ -357,18 +357,12 @@ Ship.airSimulation = function(dt)
 					cellcount = 1
 					totalAir = cell.air
 
-					nCell = null
-					eCell = null
-					sCell = null
-					wCell = null
+					adjCells = [null,null,null,null]
 
+					for dir in DIRECTIONS
+						if cell.walls[dir] == null or cell.walls[dir].isOpen then adjCells[dir] = self.getCell(col + constants.dx(dir), row + constants.dy(dir))
+					end for
 					
-					if cell.walls[NORTH] == null or cell.walls[NORTH].isOpen then nCell = self.getCell(col, row+1)
-					if cell.walls[EAST] == null or cell.walls[EAST].isOpen then eCell = self.getCell(col+1, row)
-					if cell.walls[SOUTH] == null or cell.walls[SOUTH].isOpen then sCell = self.getCell(col, row-1)
-					if cell.walls[WEST] == null or cell.walls[WEST].isOpen then wCell = self.getCell(col-1, row)
-
-					adjCells = [nCell, eCell, sCell, wCell]
 					for ce in adjCells
 						if ce != null then
 							cellcount = cellcount + 1
