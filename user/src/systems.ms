@@ -464,6 +464,6 @@ Shot.update = function(dt = 0.1)
 		self.image = self.burstImage
 		self.tint = color.yellow
 		self.scale = 0.25
-		if self.target.hp < 0 then game.destroyShip self.target
+		if self.target.hp <= 0 then game.destroyShip self.target
 	end if
 end function

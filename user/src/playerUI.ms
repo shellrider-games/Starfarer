@@ -9,8 +9,6 @@ travelModeLabel = null
 travelStationLabel = null
 travelProgressBar = null
 
-fleeButton = null
-
 hullBar = null
 lastHull = [null,null]  // current, max value
 
@@ -18,6 +16,10 @@ fuelBar = null
 lastFuel = [null,null]	// current, max value
 
 powerControls = []
+
+fleeButton = null
+enemyHullBar = null
+enemyShipUI = []
 
 selectedControl = null
 
@@ -117,18 +119,42 @@ end function
 
 // Show any extra UI needed during combat.
 showCombat = function()
-	if fleeButton == null then
-		outer.fleeButton = new uiWidgets.Button
-		fleeButton.init 900, 610, 60, 30, "FLEE"
-		fleeButton.action = function()
-			game.fleeCombat
-		end function
-		fleeButton.start
-	end if
+	if enemyShipUI then return	// (already showing)
+	outer.fleeButton = new uiWidgets.Button
+	fleeButton.init 900, 610, 60, 30, "FLEE"
+	fleeButton.action = function()
+		game.fleeCombat
+	end function
+	enemyShipUI.push fleeButton
+	
+	panel = new uiWidgets.Panel
+	panel.init 600, 550, 240, 52
+	enemyShipUI.push panel
+	
+	enemy = game.combatEncounter.ship
+	label = new uiWidgets.Label
+	label.init panel.left+10, panel.top-24, 200, 20, enemy.name
+	enemyShipUI.push label
+
+	outer.enemyHullBar = new uiWidgets.Bar
+	enemyHullBar.init panel.left+50, panel.bottom+8, 180, 20
+	enemyHullBar.value = enemy.hp / enemy.maxHp
+	enemyHullBar.backColor = panel.mainColor
+	enemyShipUI.push enemyHullBar
+	
+	label = new uiWidgets.Label
+	label.init enemyHullBar.left-8-50, enemyHullBar.bottom, 50, 20, "Hull:"
+	label.alignment = uiWidgets.ALIGNRIGHT
+	enemyShipUI.push label
+
+	for widget in enemyShipUI; widget.start; end for
 end function
 
 hideCombat = function()
-	fleeButton.stop;		outer.fleeButton = null
+	for widget in enemyShipUI; widget.stop; end for
+	outer.enemyShipUI = []
+	outer.fleeButton = null
+	outer.enemyHullBar = null
 end function
 
 update = function(dt = 0.1)
@@ -145,6 +171,10 @@ update = function(dt = 0.1)
 		lastFuel[0] = game.fuel
 		lastFuel[1] = game.maxFuel
 		fuelBar.setValue game.fuel, game.maxFuel
+	end if
+	if enemyHullBar != null then
+		enemy = game.combatEncounter.ship
+		enemyHullBar.setValue enemy.hp / enemy.maxHp
 	end if
 end function
 

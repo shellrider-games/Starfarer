@@ -302,6 +302,7 @@ end function
 Bar = new Widget
 Bar.name = "_Bar"
 Bar.color = color.gray
+Bar.backColor = color.clear
 Bar.value = 0.5
 
 Bar.draw = function()
@@ -315,16 +316,16 @@ Bar.draw = function()
 	disp.uiPixel.drawRect left, bottom, width, height, self.color, 2
 
 	// inset border
-	disp.uiPixel.drawRect left+2, bottom+2, width-4, height-4, color.clear, 2
+	disp.uiPixel.drawRect left+2, bottom+2, width-4, height-4, self.backColor, 2
 	
 	// fill
 	if self.value >= 0 then
 		divx = left+3 + round((width-6) * self.value)
 		disp.uiPixel.fillRect left+3, bottom+3, divx - (left+3), height-6, self.color
-		disp.uiPixel.fillRect divx, bottom+3, right-3 - divx, height-6, color.clear
+		disp.uiPixel.fillRect divx, bottom+3, right-3 - divx, height-6, self.backColor
 	else
 		divx = right-3 + round((width-6) * self.value)
-		disp.uiPixel.fillRect left+3, bottom+3, divx - (left+3), height-6, color.clear
+		disp.uiPixel.fillRect left+3, bottom+3, divx - (left+3), height-6, self.backColor
 		disp.uiPixel.fillRect divx, bottom+3, right-2 - divx, height-6, self.color
 	end if
 end function
