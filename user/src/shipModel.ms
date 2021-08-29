@@ -144,13 +144,15 @@ Ship.distributePower = function()
 end function
 
 // Apply damage to this ship from the given Shot (see systems.ms)
-// at the given [col, row] map position.
+// at the given [col, row] map position.  Return true if any damage
+// was taken; false if the shot missed entirely.
 Ship.takeDamage = function(shot, mapPos)
 	if mapPos isa map then
 		col = mapPos.col; row = mapPos.row
 	else
 		col = mapPos[0]; row = mapPos[1]
 	end if
+	if self.getCell(col, row) == null then return false	// (missed)
 	
 	// hull damage
 	self.hp = self.hp - 1
@@ -170,10 +172,8 @@ Ship.takeDamage = function(shot, mapPos)
 	self.distributePower
 
 	// cell break check
-	pos = {}
-	pos.row = row
-	pos.col = col
-	if miscUtil.rollDie >= 5 then self.renderer.breakCell pos
+	if rnd < 0.10 then self.renderer.breakCell {"row":row, "col":col}
+	return true
 end function
 
 // Ship.walkable: return whether an agent can step in the given
@@ -348,6 +348,13 @@ end function
 Ship.systemAt = function(col, row)
 	for system in self.systems
 		if system.containsColRow(col, row) then return system
+	end for
+	return null
+end function
+
+Ship.findSystemOfType = function(systemClass)
+	for system in self.systems
+		if system isa systemClass then return system
 	end for
 	return null
 end function

@@ -373,6 +373,7 @@ Weapons.fire = function(owningShip)
 		return
 	end if
 	self.shots.push Shot.init(targetShip)
+	qa.assert self.shots[-1] != null
 	self.curCharge = 0
 end function
 
@@ -396,8 +397,21 @@ Shot.init = function(target, travelTime = 2)
 	noob = new Shot
 	noob.target = target
 	noob.travelTime = travelTime
-	noob.targetMapPos = target.targetSpots[0]
-	qa.assert noob.targetMapPos != null
+	targetPos = target.targetSpots[0]
+	qa.assert targetPos != null
+	// dodge: apply a chance for the target to miss, a little or a lot,
+	// based on the control system power
+	controlSys = target.findSystemOfType(Controls)
+	if controlSys != null and controlSys.curPower > 0 then
+		targetPos[0] = targetPos[0] + round(mathUtil.randRange(-1, 1))
+		targetPos[1] = targetPos[1] + round(mathUtil.randRange(-1, 1))
+		if controlSys.curPower > 1 and rnd < 0.05 then
+			targetPos[0] = targetPos[0] + 10 * round(mathUtil.randRange(-1, 1))
+			targetPos[1] = targetPos[1] + 10 * round(mathUtil.randRange(-1, 1))
+		end if
+	end if
+	noob.targetMapPos = targetPos
+
 	noob.targetPos = target.renderer.mapToScreenPosition(noob.targetMapPos)
 	if target == playerShip then
 		noob.startPos = {"x": 960-240, "y":420}
@@ -440,7 +454,11 @@ Shot.update = function(dt = 0.1)
 	end if
 		
 	if self.timeTravelled >= self.travelTime then
-		self.target.takeDamage self, self.targetMapPos
+		if not self.target.takeDamage(self, self.targetMapPos) then
+			self.expired = true
+			disp.shipSprites.sprites.removeVal self
+			return
+		end if
 		self.hitSound.playAt self.x
 		self.hit = true
 		self.image = self.burstImage
