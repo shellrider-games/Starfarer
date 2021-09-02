@@ -34,7 +34,6 @@ System.powerControl = null
 System.needsDisplay = false	// set to true to trigger a redraw of the system display
 System.needsRedistribute = false	// set to true to trigger a redistribution of power
 System.canUpgrade = false	// return true if this system can be upgraded
-System.upgradeCost = 500	// how much it costs to upgrade by 1
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
@@ -96,10 +95,17 @@ System.takeDamage = function(damagePoints)
 	//print self.name + " takes " + damagePoints + " damage; repair level now " + self.repairLevel
 end function
 
+System.upgradeCost = function()
+	// Subclasses can override, but otherwise, we'll just base
+	// the cost to upgrade on how high the power level already is.
+	return 250 + 100 * self.maxPower
+end function
+
 System.upgrade = function()
 	// For most systems, an upgrade just increases maxPower.
 	// Subclasses may override this as needed.
 	self.maxPower = self.maxPower + 1
+	self.repairLevel = self.repairLevel + 1
 	self.needsDisplay = true
 end function
 
@@ -109,6 +115,7 @@ end function
 MedBay = new System
 MedBay._name = "MedBay"
 MedBay.name = "Med Bay"
+MedBay.maxPower = 1
 MedBay.width = 2
 MedBay.height = 2
 MedBay.image = file.loadImage("/usr/pics/systems/medbay.png")
@@ -136,6 +143,7 @@ end function
 O2 = new System
 O2._name = "O2"
 O2.name = "O2"
+O2.maxPower = 1
 O2.width = 2
 O2.height = 1
 O2.image = file.loadImage("/usr/pics/systems/O2.png")
@@ -220,12 +228,12 @@ end function
 Reactor = new System
 Reactor._name = "Reactor"
 Reactor.name = "Reactor"
-Reactor.maxPower = 12
+Reactor.maxPower = 8
 Reactor.width = 2
 Reactor.height = 2
 Reactor.image = file.loadImage("/usr/pics/systems/reactor.png")
 Reactor.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
-MedBay.canUpgrade = true
+Reactor.canUpgrade = true
 
 Reactor.make = function(col, row)
 	noob = new Reactor
@@ -337,7 +345,7 @@ Weapons = new System
 Weapons._name = "Weapons"
 Weapons.name = "Weapons"
 Weapons.powerControlClass = uiWidgets.ChargedPowerControl
-Weapons.maxPower = 6
+Weapons.maxPower = 4
 Weapons.width = 2
 Weapons.height = 2
 Weapons.image = file.loadImage("/usr/pics/systems/weapons.png")

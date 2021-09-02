@@ -172,20 +172,40 @@ showShipyard = function(station,left=550, bottom=150, width=350, height=400)
 	
 	font.print "System Upgrades:", left+20, y;	y = y - 50
 	col = 0
+	outer.upgradeButtons = []
 	for sys in playerShip.systems
 		if not sys.canUpgrade then continue
 		if sys.upgradeCost > game.money then continue
 		button = new Button
 		if col==0 then x = midx - 160 else x = midx + 10
 		button.init x, y, 150, 30, sys.name + " ($" + sys.upgradeCost + ")"
+		button.backColor = background.mainColor
 		button.system = sys
-		button.action = function()
-			game.money = game.money - self.system.upgradeCost
-			self.system.upgrade
-		end function
+		button.action = @upgradeButtonAction
+		//function()
+//			game.money = game.money - self.system.upgradeCost
+//			self.system.upgrade
+//			updateUpgradeButtons
+//		end function
 		button.start
+		upgradeButtons.push button
 		col = 1 - col
 		if col == 0 then y = y - 32
+	end for
+end function
+
+upgradeButtonAction = function()
+	game.money = game.money - self.system.upgradeCost
+	self.system.upgrade
+	for i in range(upgradeButtons.len - 1)
+		btn = upgradeButtons[i]
+		if not btn.system.canUpgrade or btn.system.upgradeCost > game.money then
+			btn.stop
+			upgradeButtons.remove i
+		else
+			btn.caption = btn.system.name + " ($" + btn.system.upgradeCost + ")"
+			btn.redraw
+		end if
 	end for
 end function
 
