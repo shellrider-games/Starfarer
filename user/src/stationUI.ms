@@ -14,6 +14,7 @@ costPerRepair = 15
 
 SHOW_MARKET = 0
 SHOW_CANTINA = 1
+SHOW_SHIPYARD = 2
 
 NPC_PORTRAIT = file.loadImage("/usr/pics/portraits/person_male01.png") 
 
@@ -48,6 +49,7 @@ show = function(station,left=550, bottom=150, width=350, height=400)
 
 	if currentTab == SHOW_MARKET then showMarket station, left, bottom, width, height
 	if currentTab == SHOW_CANTINA then showCantina station, left, bottom, width, height
+	if currentTab == SHOW_SHIPYARD then showShipyard station, left, bottom, width, height
 	
 end function
 
@@ -69,34 +71,39 @@ showTabs = function(station, left = 550, bottom = 550, width = 350, height = 24)
 	marketTabButton = new TabButton
 	marketTabButton.init left, bottom, 98, height, "Market"
 	if currentTab == SHOW_MARKET then marketTabButton.state = Button.PRESSED
-	marketTabButton.draw
-	
-	cantinaTabButton = new TabButton
-	cantinaTabButton.init left+100, bottom, 98, height, "Cantina"
-	if currentTab == SHOW_CANTINA then cantinaTabButton.state = Button.PRESSED
-	cantinaTabButton.draw
-
-	printCurrentTab = function()
-		print outer.currentTab
-	end function
-
 	marketTabButton.action = function()
 		stationUI.resetTab self
 		stationUI.setCurrentTab stationUI.SHOW_MARKET
 		stationUI.show station
 	end function
-
+	
+	cantinaTabButton = new TabButton
+	cantinaTabButton.init left+100, bottom, 98, height, "Cantina"
+	if currentTab == SHOW_CANTINA then cantinaTabButton.state = Button.PRESSED
 	cantinaTabButton.action = function()
 		stationUI.resetTab self
 		stationUI.setCurrentTab stationUI.SHOW_CANTINA
 		stationUI.show station
 	end function
 
-	outer.tabs.push marketTabButton
-	outer.tabs.push cantinaTabButton
-	
-	marketTabButton.start
-	cantinaTabButton.start
+	shipyardTabButton = new TabButton
+	shipyardTabButton.init left+200, bottom, 98, height, "Shipyard"
+	if currentTab == SHOW_SHIPYARD then shipyardTabButton.state = Button.PRESSED
+	shipyardTabButton.action = function()
+		stationUI.resetTab self
+		stationUI.setCurrentTab stationUI.SHOW_SHIPYARD
+		stationUI.show station
+	end function
+
+	printCurrentTab = function()
+		print outer.currentTab
+	end function
+
+	for tab in [marketTabButton, cantinaTabButton, shipyardTabButton]
+		outer.tabs.push tab
+		tab.start
+	end for
+
 end function
 
 showMarket = function(station,left=550, bottom=150, width=350, height=400)
@@ -150,6 +157,35 @@ showCantina = function(station,left=550, bottom=150, width=350, height=400)
 	for npc in station.cantina
 		addCantinaNPC left + 44, y, width - 88, 72, npc
 		y = y - 74
+	end for
+end function
+
+showShipyard = function(station,left=550, bottom=150, width=350, height=400)
+	right = left + width
+	midx = left + width/2
+	top = bottom + height
+
+	printPanelTitle "SHIPYARD", station, left, bottom, height
+
+	font = fonts.ArialBlack14
+	y = top - 40
+	
+	font.print "System Upgrades:", left+20, y;	y = y - 50
+	col = 0
+	for sys in playerShip.systems
+		if not sys.canUpgrade then continue
+		if sys.upgradeCost > game.money then continue
+		button = new Button
+		if col==0 then x = midx - 160 else x = midx + 10
+		button.init x, y, 150, 30, sys.name + " ($" + sys.upgradeCost + ")"
+		button.system = sys
+		button.action = function()
+			game.money = game.money - self.system.upgradeCost
+			self.system.upgrade
+		end function
+		button.start
+		col = 1 - col
+		if col == 0 then y = y - 32
 	end for
 end function
 

@@ -33,6 +33,8 @@ System.powerControlClass = uiWidgets.PowerControl
 System.powerControl = null
 System.needsDisplay = false	// set to true to trigger a redraw of the system display
 System.needsRedistribute = false	// set to true to trigger a redistribution of power
+System.canUpgrade = false	// return true if this system can be upgraded
+System.upgradeCost = 500	// how much it costs to upgrade by 1
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
@@ -94,16 +96,24 @@ System.takeDamage = function(damagePoints)
 	//print self.name + " takes " + damagePoints + " damage; repair level now " + self.repairLevel
 end function
 
+System.upgrade = function()
+	// For most systems, an upgrade just increases maxPower.
+	// Subclasses may override this as needed.
+	self.maxPower = self.maxPower + 1
+	self.needsDisplay = true
+end function
+
 //----------------------------------------------------------------------
 // Med Bay: heals crew standing over the system (while powered).
 //----------------------------------------------------------------------
 MedBay = new System
 MedBay._name = "MedBay"
-MedBay.name = "medbay"
+MedBay.name = "Med Bay"
 MedBay.width = 2
 MedBay.height = 2
 MedBay.image = file.loadImage("/usr/pics/systems/medbay.png")
 MedBay.icon = file.loadImage("/usr/pics/systemIcons/medbay.png")
+MedBay.canUpgrade = function(); return self.maxPower < 3; end function
 
 MedBay.make = function(col, row)
 	noob = new MedBay
@@ -130,6 +140,7 @@ O2.width = 2
 O2.height = 1
 O2.image = file.loadImage("/usr/pics/systems/O2.png")
 O2.icon = file.loadImage("/usr/pics/systemIcons/O2.png")
+O2.canUpgrade = function(); return self.maxPower < 3; end function
 
 O2.make = function(col, row)
 	noob = new O2
@@ -156,6 +167,7 @@ Sensors.width = 2
 Sensors.height = 1
 Sensors.image = file.loadImage("/usr/pics/systems/sensors.png")
 Sensors.icon = file.loadImage("/usr/pics/systemIcons/sensors.png")
+Sensors.canUpgrade = function(); return self.maxPower < 3; end function
 
 Sensors.make = function(col, row)
 	noob = new Sensors
@@ -194,6 +206,7 @@ Engines.width = 2
 Engines.height = 2
 Engines.image = file.loadImage("/usr/pics/systems/engines.png")
 Engines.icon = file.loadImage("/usr/pics/systemIcons/engines.png")
+Engines.canUpgrade = function(); return self.maxPower < 3; end function
 
 Engines.make = function(col, row)
 	noob = new Engines
@@ -212,6 +225,7 @@ Reactor.width = 2
 Reactor.height = 2
 Reactor.image = file.loadImage("/usr/pics/systems/reactor.png")
 Reactor.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
+MedBay.canUpgrade = true
 
 Reactor.make = function(col, row)
 	noob = new Reactor
@@ -231,6 +245,7 @@ Doors.height = 0
 Doors.maxPower = 1
 Doors.setPoint = 1
 Doors.icon = file.loadImage("/usr/pics/systemIcons/doors.png")
+Doors.canUpgrade = function(); return self.maxPower < 3; end function
 
 Doors.make = function()
 	return new Doors
@@ -330,6 +345,7 @@ Weapons.icon = file.loadImage("/usr/pics/systemIcons/weapons.png")
 Weapons.curCharge = 0		// current amount of charge
 Weapons.maxCharge = 30		// charge level at which we fire
 Weapons.shots = []
+Weapons.canUpgrade = function(); return self.maxPower < 8; end function
 
 Weapons.make = function(col, row)
 	noob = new Weapons
