@@ -139,7 +139,7 @@ Ship.distributePower = function()
 	end for
 	if self.reactor.curPower != powerLeft then
 		self.reactor.curPower = powerLeft
-		self.needsDisplay = true
+		self.reactor.needsDisplay = true
 	end if
 end function
 

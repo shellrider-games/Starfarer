@@ -140,7 +140,7 @@ showCombat = function()
 	enemyHullBar.init panel.left+50, panel.bottom+8, 180, 20
 	enemyHullBar.value = enemy.hp / enemy.maxHp
 	enemyHullBar.backColor = panel.mainColor
-	enemyShipUI.push enemyHullBar
+	enemyShipUI.insert 0, enemyHullBar	// (so it gets removed first when we stop)
 	
 	label = new uiWidgets.Label
 	label.init enemyHullBar.left-8-50, enemyHullBar.bottom, 50, 20, "Hull:"
@@ -148,6 +148,16 @@ showCombat = function()
 	enemyShipUI.push label
 
 	for widget in enemyShipUI; widget.start; end for
+end function
+
+showContinueJump = function()
+	button = new uiWidgets.Button
+	button.init 960-100, 610, 100, 30, "CONTINUE"
+	button.action = function()
+		game.continueJump
+	end function
+	button.start
+	enemyShipUI.push button
 end function
 
 hideCombat = function()
