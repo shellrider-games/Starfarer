@@ -45,6 +45,8 @@ Starfarer.maxFuel = 12
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
 	globals.playerShip = shipModel.newShipOfDesign("robin")
+	playerShip.isPlayer = true
+	playerShip.addSystem systems.Shields.make(2, 6)
 	playerShip.name = "Player One"	// just a name, do NOT depend on this!
 	playerShip.distributePower
 
@@ -59,8 +61,8 @@ Starfarer.init = function()
 	self.station = self.stations.any
 
 	// And render that thing!
-	self.renderer = new shipDisplay.Renderer
-	self.renderer.renderShip playerShip
+	renderer = new shipDisplay.Renderer
+	renderer.renderShip playerShip
 	
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
@@ -197,7 +199,7 @@ end function
 
 Starfarer.destroyShip = function(ship)
 	text.clear
-	if ship == playerShip then
+	if ship.isPlayer then
 		shipDisplay.update
 		// ToDo: something better than this!
 		import "textUtil"
@@ -216,7 +218,7 @@ Starfarer.selectedMinion = []
 
 // Handle a mouse click on the player's ship at the given screen position
 Starfarer.handlePlayerShipClick = function(pos)
-	mapPos = self.renderer.screenToMapPosition(pos)
+	mapPos = playerShip.renderer.screenToMapPosition(pos)
 	
 	if playerUI.selectedControl isa systems.DoorPowerControl then
 		// while door control is selected: toggle doors
@@ -322,7 +324,6 @@ Starfarer.run = function()
 		self.timeInState = self.timeInState + deltaTime
 		
 		self.processInput
-		self.renderer.update deltaTime
 		shipDisplay.update deltaTime
 		playerShip.update deltaTime
 		if self.combatEncounter and self.combatEncounter.ship then

@@ -46,9 +46,9 @@ encounter.present = function(data)
 	minion.boardShip self.ship
 
 	// make a renderer for the ship
-	self.renderer = new shipDisplay.Renderer
-	self.renderer.x = 720
-	self.renderer.renderShip self.ship
+	renderer = new shipDisplay.Renderer
+	renderer.x = 720
+	renderer.renderShip self.ship
 	
 	// show the dialog, then begin combat
 	self.showDialog data, description

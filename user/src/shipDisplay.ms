@@ -20,11 +20,15 @@ list.insertAfter = function(afterWhat, itemToAdd)
 end function
 
 BROKEN_CELL_IMAGE = file.loadImage("/usr/pics/brokenCell.png")
+SHIELD_GLOW_IMAGE = file.loadImage("/usr/pics/shieldGlow.png")
 
 init = function()
 	// clear the sprite display, and load the ship background
 	disp.shipSprites.clear
 end function
+
+// global set of current renderers (usually no more than 2)
+renderers = {}
 
 // Renderer: a class that exists to render a ship onto the display.  We may
 // have multiple ships on screen at some point; each will get its own Renderer.
@@ -33,15 +37,16 @@ Renderer.ship = null		// the shipModel we are rendering
 Renderer.x = 240			// horizontal center of the ship on screen
 Renderer.y = 320			// vertical center of the ship on screen
 Renderer.sprites = null		// sprites owned by this particular renderer
+Renderer.shields = null		// sprite representing the energy shield barrier (if any)
+Renderer.shieldSystem = null	// systems.System producing the shields
 
 // renderShip: load the given ship model onto the display.
 Renderer.renderShip = function(ship)
-	// Store our ship model; and also a reference the other way, so
-	// that entities (like characters) that need to get from the model
-	// to the renderer can do so.  Note that this creates a circular
-	// reference, so be sure to clean it up when closing.
+	// Keep track of this renderer for future reference.
+	renderers.push self
+
+	// Store our ship model.
 	self.ship = ship
-	ship.renderer = self
 	
 	// load the ship map, and calculate our graphics offset
 	shipImage = file.loadImage(file.child(ship.directory, "map.png"))
@@ -259,8 +264,31 @@ Renderer.renderShipSystems = function()
 			sp = self.addSprite(system.image, xy.x + width/2 - CELLSIZE/2, 
 				xy.y + height/2 - CELLSIZE/2)
 			sp.scale = width / system.image.width
+			
+			if system isa systems.Shields then
+				// create the sprite that represents the shield barrier itself
+				self.shields = self.addSprite(SHIELD_GLOW_IMAGE, self.x, self.y)
+				self.shields.scale = [self.ship.columns/6, self.ship.rows/6]
+				// and remember the system so we can efficiently update later
+				self.shieldSystem = system
+				self.updateShields
+			end if
 		end if
 	end for
+end function
+
+Renderer.updateShields = function()
+	if self.shieldSystem == null then return
+	layers = floor(self.shieldSystem.curLayers)
+	if layers == 0 then
+		self.shields.tint = color.clear
+	else if layers == 1 then
+		self.shields.tint = "#FFCCCC"
+	else if layers == 2 then
+		self.shields.tint = "#FFFFCC"
+	else
+		self.shields.tint = "#CCFFFF"
+	end if
 end function
 
 Renderer.renderAirValues = function()
@@ -284,8 +312,10 @@ Renderer.stop = function()
 		disp.shipSprites.sprites.removeVal sp
 	end for
 	self.sprites = null
-	if self.ship != null then self.ship.renderer = null
+	self.shields = null
+	self.shieldSystem = null
 	self.ship = null
+	renderers.remove self
 end function
 
 // Update just this one ship renderer.  Here we check for cargo bought/sold, etc.
@@ -315,12 +345,17 @@ Renderer.update = function(dt = 0.1)
 		end if
 	end for
 	
+	self.updateShields
 	self.renderAirValues
-	
 end function
 
 // Update the whole ship display (and all sprites on it).
 update = function(dt = 0.1)
+	// update all renderers
+	for rend in renderers.indexes
+		rend.update dt
+	end for
+	
 	// update all sprites in the shipSprites layer on the screen
 	for s in disp.shipSprites.sprites
 		s.update dt

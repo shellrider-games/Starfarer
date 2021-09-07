@@ -78,7 +78,8 @@ end function
 //----------------------------------------------------------------------
 
 Ship = {}
-Ship.name = "Ship"
+Ship._name = "Ship"		// (used in pprint output to represent this class)
+Ship.name = "Ship"		// actual name of the ship, as seen by players
 Ship.maxHp = 20			// hull points (basically ship health)
 Ship.hp = Ship.maxHp
 Ship.jumpFuel = 5		// how many jumps we can make before refueling
@@ -93,6 +94,7 @@ Ship.inCombat = false	// true when engaged in combat
 Ship.targetSpots = []	// list of [x,y] map coordinates of enemy targets on this ship
 Ship.airTick = 0
 Ship.airChanged = true
+Ship.isPlayer = false
 
 // Ship.init: initialize this ship with a blank map.  The map is initialized
 // to all nulls, meaning not usable by any means (i.e. not part of the ship
@@ -153,6 +155,13 @@ Ship.takeDamage = function(shot, mapPos)
 		col = mapPos[0]; row = mapPos[1]
 	end if
 	if self.getCell(col, row) == null then return false	// (missed)
+	
+	// check for hitting shields
+	shieldSystem = self.findSystemOfType(systems.Shields)
+	if shieldSystem != null and shieldSystem.curLayers > 0 then
+		shieldSystem.curLayers = max(0, floor(shieldSystem.curLayers - 1))
+		return
+	end if
 	
 	// hull damage
 	self.hp = self.hp - 1
@@ -534,6 +543,14 @@ Ship.addSystem = function(system)
 	system.setPoint = system.maxPower
 	self.systems.push system
 	if system isa systems.Reactor then self.reactor = system
+end function
+
+Ship.renderer = function()
+	// find the renderer that is rendering this ship
+	for rend in shipDisplay.renderers.indexes
+		if rend.ship == self then return rend
+	end for
+	return null
 end function
 
 //----------------------------------------------------------------------

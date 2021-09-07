@@ -337,6 +337,33 @@ end function
 
 Doors.powerControlClass = DoorPowerControl
 
+//----------------------------------------------------------------------
+// Shields: provides energy shields that block normal weapons fire.
+// NOTE: costs 2 power per layer of shields (max 6 power for 3 layers).
+//----------------------------------------------------------------------
+Shields = new System
+Shields._name = "Shields"
+Shields.name = "Shields"
+Shields.maxPower = 2
+Shields.width = 2
+Shields.height = 2
+Shields.image = file.loadImage("/usr/pics/systems/shields.png")
+Shields.icon = file.loadImage("/usr/pics/systemIcons/shields.png")
+Shields.curLayers = 0	// current number of active shield layers (plus fractional charge)
+Shields.canUpgrade = function(); return self.maxPower < 6; end function
+
+Shields.make = function(col, row)
+	noob = new Shields
+	noob.col = col; noob.row = row
+	return noob
+end function
+
+Shields.update = function(ship, dt = 0.1)
+	maxLayers = floor(self.curPower / 2)
+	self.curLayers = self.curLayers + dt / 3
+	if self.curLayers > maxLayers then self.curLayers = maxLayers
+end function
+
 
 //----------------------------------------------------------------------
 // Weapons: provides power and control for all installed weapons.
