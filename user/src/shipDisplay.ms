@@ -309,10 +309,9 @@ Renderer.update = function(dt = 0.1)
 			item.fadeOut 16, 0
 		end if
 	end for
-	// if this is the player ship, render Air Values
-	if self.ship == playerShip then
-		self.renderAirValues
-	end if
+	
+	self.renderAirValues
+	
 end function
 
 // Update the whole ship display (and all sprites on it).
