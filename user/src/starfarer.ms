@@ -32,6 +32,7 @@ Starfarer.STATE_AT_STATION = "AtStation"
 Starfarer.STATE_NAVMAP = "NavMap"
 Starfarer.STATE_TRAVEL = "Travel"
 Starfarer.STATE_COMBAT = "Combat"
+Starfarer.STATE_COMBAT_OVER = "CombatOver"
 Starfarer.state = Starfarer.STATE_NONE
 Starfarer.timeInState = 0
 Starfarer.stations = []  // all stations in the galaxy
@@ -111,12 +112,15 @@ Starfarer.enterState = function(newState)
 		minionUI.show playerShip.minions
 		playerUI.showCombat
 		
+	else if newState == self.STATE_COMBAT_OVER then
+		playerUI.showContinueJump
+		
 	else if newState == self.STATE_TRAVEL then
 		playerUI.show
 		minionUI.show
 		// Note that if we're entering travel from combat, then this
 		// is *resuming* a trip, not starting a new one.
-		if self.state != self.STATE_COMBAT then
+		if self.state != self.STATE_COMBAT and self.state != self.STATE_COMBAT_OVER then
 			self.travelProgress = 0
 			encounters.planEncounters self.station, self.nextStation
 		end if
@@ -139,6 +143,9 @@ Starfarer.exitState = function(toNextState)
 		for sys in playerShip.systems
 			if sys isa systems.Weapons then sys.curCharge = 0
 		end for
+		
+	else if self.state == self.STATE_COMBAT_OVER then
+		playerUI.hideCombat
 		
 	else if self.state == self.STATE_TRAVEL then
 		playerUI.hideTravel
@@ -184,6 +191,10 @@ Starfarer.fleeCombat = function()
 	end if
 end function
 
+Starfarer.continueJump = function()
+	self.enterState Starfarer.STATE_TRAVEL
+end function
+
 Starfarer.destroyShip = function(ship)
 	text.clear
 	if ship == playerShip then
@@ -197,7 +208,7 @@ Starfarer.destroyShip = function(ship)
 	else if ship == self.combatEncounter.ship then
 		// ToDo: nice exploding-ship effect on the enemy ship.
 		self.combatEncounter.destroyShip
-		self.enterState Starfarer.STATE_TRAVEL
+		self.enterState self.STATE_COMBAT_OVER
 	end if		
 end function
 

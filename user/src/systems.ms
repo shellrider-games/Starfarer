@@ -33,6 +33,7 @@ System.powerControlClass = uiWidgets.PowerControl
 System.powerControl = null
 System.needsDisplay = false	// set to true to trigger a redraw of the system display
 System.needsRedistribute = false	// set to true to trigger a redistribution of power
+System.canUpgrade = false	// return true if this system can be upgraded
 
 System.make = function(col, row, width=1, height=1, name="GENERIC")
 	noob = new System
@@ -94,16 +95,32 @@ System.takeDamage = function(damagePoints)
 	//print self.name + " takes " + damagePoints + " damage; repair level now " + self.repairLevel
 end function
 
+System.upgradeCost = function()
+	// Subclasses can override, but otherwise, we'll just base
+	// the cost to upgrade on how high the power level already is.
+	return 250 + 100 * self.maxPower
+end function
+
+System.upgrade = function()
+	// For most systems, an upgrade just increases maxPower.
+	// Subclasses may override this as needed.
+	self.maxPower = self.maxPower + 1
+	self.repairLevel = self.repairLevel + 1
+	self.needsDisplay = true
+end function
+
 //----------------------------------------------------------------------
 // Med Bay: heals crew standing over the system (while powered).
 //----------------------------------------------------------------------
 MedBay = new System
 MedBay._name = "MedBay"
-MedBay.name = "medbay"
+MedBay.name = "Med Bay"
+MedBay.maxPower = 1
 MedBay.width = 2
 MedBay.height = 2
 MedBay.image = file.loadImage("/usr/pics/systems/medbay.png")
 MedBay.icon = file.loadImage("/usr/pics/systemIcons/medbay.png")
+MedBay.canUpgrade = function(); return self.maxPower < 3; end function
 
 MedBay.make = function(col, row)
 	noob = new MedBay
@@ -126,16 +143,24 @@ end function
 O2 = new System
 O2._name = "O2"
 O2.name = "O2"
+O2.maxPower = 1
 O2.width = 2
 O2.height = 1
 O2.image = file.loadImage("/usr/pics/systems/O2.png")
 O2.icon = file.loadImage("/usr/pics/systemIcons/O2.png")
+O2.canUpgrade = function(); return self.maxPower < 3; end function
 
 O2.make = function(col, row)
 	noob = new O2
 	noob.col = col; noob.row = row
 	return noob
 end function
+
+// Return how much air (per second per cell) this system is currently generating.
+O2.airPerSec = function()
+	return self.curPower * 2
+end function
+	
 
 //----------------------------------------------------------------------
 // Sensors: allows the player to see what's happening, by power level:
@@ -150,6 +175,7 @@ Sensors.width = 2
 Sensors.height = 1
 Sensors.image = file.loadImage("/usr/pics/systems/sensors.png")
 Sensors.icon = file.loadImage("/usr/pics/systemIcons/sensors.png")
+Sensors.canUpgrade = function(); return self.maxPower < 3; end function
 
 Sensors.make = function(col, row)
 	noob = new Sensors
@@ -188,6 +214,7 @@ Engines.width = 2
 Engines.height = 2
 Engines.image = file.loadImage("/usr/pics/systems/engines.png")
 Engines.icon = file.loadImage("/usr/pics/systemIcons/engines.png")
+Engines.canUpgrade = function(); return self.maxPower < 3; end function
 
 Engines.make = function(col, row)
 	noob = new Engines
@@ -201,11 +228,12 @@ end function
 Reactor = new System
 Reactor._name = "Reactor"
 Reactor.name = "Reactor"
-Reactor.maxPower = 12
+Reactor.maxPower = 8
 Reactor.width = 2
 Reactor.height = 2
 Reactor.image = file.loadImage("/usr/pics/systems/reactor.png")
 Reactor.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
+Reactor.canUpgrade = true
 
 Reactor.make = function(col, row)
 	noob = new Reactor
@@ -225,6 +253,7 @@ Doors.height = 0
 Doors.maxPower = 1
 Doors.setPoint = 1
 Doors.icon = file.loadImage("/usr/pics/systemIcons/doors.png")
+Doors.canUpgrade = function(); return self.maxPower < 3; end function
 
 Doors.make = function()
 	return new Doors
@@ -316,7 +345,7 @@ Weapons = new System
 Weapons._name = "Weapons"
 Weapons.name = "Weapons"
 Weapons.powerControlClass = uiWidgets.ChargedPowerControl
-Weapons.maxPower = 6
+Weapons.maxPower = 4
 Weapons.width = 2
 Weapons.height = 2
 Weapons.image = file.loadImage("/usr/pics/systems/weapons.png")
@@ -324,6 +353,7 @@ Weapons.icon = file.loadImage("/usr/pics/systemIcons/weapons.png")
 Weapons.curCharge = 0		// current amount of charge
 Weapons.maxCharge = 30		// charge level at which we fire
 Weapons.shots = []
+Weapons.canUpgrade = function(); return self.maxPower < 8; end function
 
 Weapons.make = function(col, row)
 	noob = new Weapons
@@ -367,6 +397,7 @@ Weapons.fire = function(owningShip)
 		return
 	end if
 	self.shots.push Shot.init(targetShip)
+	qa.assert self.shots[-1] != null
 	self.curCharge = 0
 end function
 
@@ -390,8 +421,21 @@ Shot.init = function(target, travelTime = 2)
 	noob = new Shot
 	noob.target = target
 	noob.travelTime = travelTime
-	noob.targetMapPos = target.targetSpots[0]
-	qa.assert noob.targetMapPos != null
+	targetPos = target.targetSpots[0]
+	qa.assert targetPos != null
+	// dodge: apply a chance for the target to miss, a little or a lot,
+	// based on the control system power
+	controlSys = target.findSystemOfType(Controls)
+	if controlSys != null and controlSys.curPower > 0 then
+		targetPos[0] = targetPos[0] + round(mathUtil.randRange(-1, 1))
+		targetPos[1] = targetPos[1] + round(mathUtil.randRange(-1, 1))
+		if controlSys.curPower > 1 and rnd < 0.05 then
+			targetPos[0] = targetPos[0] + 10 * round(mathUtil.randRange(-1, 1))
+			targetPos[1] = targetPos[1] + 10 * round(mathUtil.randRange(-1, 1))
+		end if
+	end if
+	noob.targetMapPos = targetPos
+
 	noob.targetPos = target.renderer.mapToScreenPosition(noob.targetMapPos)
 	if target == playerShip then
 		noob.startPos = {"x": 960-240, "y":420}
@@ -434,12 +478,16 @@ Shot.update = function(dt = 0.1)
 	end if
 		
 	if self.timeTravelled >= self.travelTime then
-		self.target.takeDamage self, self.targetMapPos
+		if not self.target.takeDamage(self, self.targetMapPos) then
+			self.expired = true
+			disp.shipSprites.sprites.removeVal self
+			return
+		end if
 		self.hitSound.playAt self.x
 		self.hit = true
 		self.image = self.burstImage
 		self.tint = color.yellow
 		self.scale = 0.25
-		if self.target.hp < 0 then game.destroyShip self.target
+		if self.target.hp <= 0 then game.destroyShip self.target
 	end if
 end function

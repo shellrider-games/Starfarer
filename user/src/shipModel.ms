@@ -139,18 +139,20 @@ Ship.distributePower = function()
 	end for
 	if self.reactor.curPower != powerLeft then
 		self.reactor.curPower = powerLeft
-		self.needsDisplay = true
+		self.reactor.needsDisplay = true
 	end if
 end function
 
 // Apply damage to this ship from the given Shot (see systems.ms)
-// at the given [col, row] map position.
+// at the given [col, row] map position.  Return true if any damage
+// was taken; false if the shot missed entirely.
 Ship.takeDamage = function(shot, mapPos)
 	if mapPos isa map then
 		col = mapPos.col; row = mapPos.row
 	else
 		col = mapPos[0]; row = mapPos[1]
 	end if
+	if self.getCell(col, row) == null then return false	// (missed)
 	
 	// hull damage
 	self.hp = self.hp - 1
@@ -170,10 +172,8 @@ Ship.takeDamage = function(shot, mapPos)
 	self.distributePower
 
 	// cell break check
-	pos = {}
-	pos.row = row
-	pos.col = col
-	if miscUtil.rollDie >= 5 then self.renderer.breakCell pos
+	if rnd < 0.10 then self.renderer.breakCell {"row":row, "col":col}
+	return true
 end function
 
 // Ship.walkable: return whether an agent can step in the given
@@ -352,6 +352,13 @@ Ship.systemAt = function(col, row)
 	return null
 end function
 
+Ship.findSystemOfType = function(systemClass)
+	for system in self.systems
+		if system isa systemClass then return system
+	end for
+	return null
+end function
+
 Ship.noteItemPickedUp = function(item)
 	cell = self.getCell(item.col, item.row)
 	if cell != null and cell.contents == item then cell.contents = null
@@ -360,35 +367,50 @@ end function
 
 Ship.airSimulation = function(dt)
 	self.airTick = self.airTick + dt
-	if self.airTick >= 1 then
-		self.airTick = self.airTick-1
-		for col in self.columnRange
-			for row in self.rowRange
-				cell = self.getCell(col, row)
-				if cell != null then
-					cellcount = 1
-					totalAir = cell.air
-					adjCells = [null,null,null,null]
+	if self.airTick < 1 then return
+	
+	newAir = 0
+	for sys in self.systems
+		if sys isa systems.O2 then newAir = newAir + sys.airPerSec
+	end for
+	
+	self.airTick = self.airTick-1
+	for col in self.columnRange
+		for row in self.rowRange
+			cell = self.getCell(col, row)
+			if cell == null then continue
+			cellcount = 1
+			// add air from the O2 system
+			totalAir = cell.air + newAir
+			// subtract air from any crew breathing here
+			for m in self.minions
+				if m.row == row and m.col == col then totalAir = totalAir - 1
+			end for
+			
+			// distribute air with neighboring cells
+			adjCells = []
 
-					for dir in DIRECTIONS
-						if cell.walls[dir] == null or cell.walls[dir].isOpen then adjCells[dir] = self.getCell(col + constants.dx(dir), row + constants.dy(dir))
-					end for
-
-					for ce in adjCells
-						if ce != null then
-							cellcount = cellcount + 1
-							totalAir = totalAir + ce.air
-						end if
-					end for
-					
-					if cell.broken == true then cellcount = cellcount + 1
-					
-					cell.air = totalAir/cellcount
+			for dir in DIRECTIONS
+				if cell.walls[dir] == null or cell.walls[dir].isOpen then
+					// push any neighbor we can reach, even if it is null (outside the ship)
+					adjCells.push self.getCell(col + constants.dx(dir), row + constants.dy(dir))
 				end if
 			end for
+
+			for ce in adjCells
+				// Note that a null ce here means that it's outside the ship.
+				// That still counts as an air sink.
+				cellcount = cellcount + 1
+				if ce then totalAir = totalAir + ce.air else totalAir = totalAir - 10
+			end for
+			
+			if cell.broken then cellcount = cellcount + 1	// (leaking into space)
+			
+			cell.air = floor(totalAir/cellcount)
+			if cell.air > 100 then cell.air = 100
 		end for
-		self.airChanged = true
-	end if
+	end for
+	self.airChanged = true
 end function
 
 Ship.update = function(dt)
@@ -398,7 +420,7 @@ Ship.update = function(dt)
 		if system.needsRedistribute then redistribute = true
 	end for
 	if redistribute then self.distributePower
-	self.airSimulation(dt)
+	self.airSimulation dt
 end function
 
 //----------------------------------------------------------------------

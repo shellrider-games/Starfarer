@@ -4,6 +4,7 @@
 // invaders, fires, etc.).
 
 import "miscUtil"
+import "mathUtil"
 ensureImport "setup"
 ensureImport "listUtil"
 ensureImport "qa"
@@ -12,6 +13,11 @@ ensureImport "spriteControllers"
 ensureImport "door"
 ensureImport "item"
 ensureImport "constants"
+
+list.insertAfter = function(afterWhat, itemToAdd)
+	idx = self.indexOf(afterWhat)
+	self.insert idx+1, itemToAdd
+end function
 
 BROKEN_CELL_IMAGE = file.loadImage("/usr/pics/brokenCell.png")
 
@@ -39,7 +45,7 @@ Renderer.renderShip = function(ship)
 	
 	// load the ship map, and calculate our graphics offset
 	shipImage = file.loadImage(file.child(ship.directory, "map.png"))
-	self.addSprite shipImage, self.x, self.y
+	self.shipSprite = self.addSprite(shipImage, self.x, self.y)
 	self.mapZeroZero = {
 		"x": self.x - shipImage.width/2 + ship.offset[0] * CELLSIZE,
 	    "y": self.y - shipImage.height/2 + ship.offset[1] * CELLSIZE }
@@ -213,7 +219,7 @@ end function
 Renderer.breakCell = function(mapPos)
 	targetCell = self.ship.getCell(mapPos.col, mapPos.row)
 	if targetCell == null then return	// out of bounds
-	if targetCell.broken == true then return;	// already broken
+	if targetCell.broken then return	// already broken
 	targetCell.damage
 	self.renderBroken mapPos
 end function
@@ -235,13 +241,12 @@ Renderer.renderBroken = function(mapPos)
 	brokenSprite.row = mapPos.row
 	brokenSprite.x = pos.x
 	brokenSprite.y = pos.y
-	brokenSprite.update = function(dt = 0.1)
+	brokenSprite.rotation = mathUtil.randRange(0, 360)
+	brokenSprite.update = function(dt = 0.1); end function
 
-	end function
-
-	disp.shipSprites.sprites = [disp.shipSprites.sprites[0]] + [brokenSprite] + disp.shipSprites.sprites[1:]
-	self.sprites = [self.sprites[0]] + [brokenSprite] + self.sprites[1:]
-
+	// insert the break into the sprite lists right after the ship itself
+	disp.shipSprites.sprites.insertAfter self.shipSprite, brokenSprite
+	self.sprites.insertAfter self.shipSprite, brokenSprite
 end function
 
 Renderer.renderShipSystems = function()

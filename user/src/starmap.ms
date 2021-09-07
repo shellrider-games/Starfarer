@@ -143,7 +143,7 @@ update = function(dt = 0.1)
 			if selectionSprite.tint != normalColor then
 				// Jump!
 				if @jumpCallback != null then 
-					jumpCallback(closest)
+					jumpCallback closest
 				end if
 			end if
 		end if
