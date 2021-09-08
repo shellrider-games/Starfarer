@@ -158,8 +158,9 @@ Ship.takeDamage = function(shot, mapPos)
 	
 	// check for hitting shields
 	shieldSystem = self.findSystemOfType(systems.Shields)
-	if shieldSystem != null and shieldSystem.curLayers > 0 then
+	if shieldSystem != null and floor(shieldSystem.curLayers) > 0 then
 		shieldSystem.curLayers = max(0, floor(shieldSystem.curLayers - 1))
+		sounds.shieldHit.playAt self.renderer.x
 		return
 	end if
 	

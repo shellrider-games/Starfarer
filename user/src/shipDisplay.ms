@@ -281,13 +281,17 @@ Renderer.updateShields = function()
 	if self.shieldSystem == null then return
 	layers = floor(self.shieldSystem.curLayers)
 	if layers == 0 then
-		self.shields.tint = color.clear
+		newTint = color.clear
 	else if layers == 1 then
-		self.shields.tint = "#FFCCCC"
+		newTint = "#FFCCCC"
 	else if layers == 2 then
-		self.shields.tint = "#FFFFCC"
+		newTint = "#FFFFCC"
 	else
-		self.shields.tint = "#CCFFFF"
+		newTint = "#CCFFFF"
+	end if
+	if newTint != self.shields.tint then
+		self.shields.tint = newTint
+		if layers > 0 then sounds.shieldUp.playAt self.x
 	end if
 end function
 

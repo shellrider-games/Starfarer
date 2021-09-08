@@ -46,6 +46,7 @@ end function
 Character = new spriteControllers.Animated
 Character.name = "Arthur"
 Character.ship = null		// CAREFUL: circular reference; be sure to break when done
+Character.renderer = null
 Character.anims = AnimSet.make(defaultSheet)
 Character.facing = SOUTH
 Character.walking = false
@@ -67,6 +68,7 @@ end function
 Character.leaveShip = function()
 	if self.ship then self.ship.minions.removeVal self
 	self.ship = null
+	self.renderer = null
 end function
 
 // Move the character towards the given screen position, moving no more than the 
@@ -102,7 +104,7 @@ Character.updateAnimation = function(dt=0.1)
 end function
 
 Character.update = function(dt=0.1)
-	renderer = self.ship.renderer
+	if self.renderer == null then self.renderer = self.ship.renderer
 	// follow our path
 	if self.path then
 		if not self.walking then
@@ -110,7 +112,7 @@ Character.update = function(dt=0.1)
 			self.openDoorIfNeeded
 			if self.usingSystem then self.clearUseSystem
 		end if
-		moved = self.moveTowards(renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
+		moved = self.moveTowards(self.renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		if not moved then
 			// We've reached the cell we were immediately walking towards.
 			// If we passed through a door, we're done with it now.
@@ -134,12 +136,12 @@ Character.update = function(dt=0.1)
 					self.path = null
 				else
 					// just keep walking, just keep walking!
-					self.moveTowards renderer.mapToScreenPosition(nextPos), self.speed * dt
+					self.moveTowards self.renderer.mapToScreenPosition(nextPos), self.speed * dt
 				end if
 			end if
 			if not self.path then self.autoUse
 		end if
-		newPos = renderer.screenToMapPosition(self)
+		newPos = self.renderer.screenToMapPosition(self)
 		self.col = newPos.col; self.row = newPos.row
 	else
 		self.walking = false
@@ -153,7 +155,7 @@ Character.update = function(dt=0.1)
 		mapPos = {}
 		mapPos.col = self.col
 		mapPos.row = self.row
-		if ce.broken != true then self.ship.renderer.removeBroken(mapPos)
+		if ce.broken != true then self.renderer.removeBroken(mapPos)
 	else if self.usingSystem then
 		self.useSystem dt
 	end if
@@ -227,8 +229,8 @@ Character.dropItem = function(onPos)
 	end if
 	
 	// Close enough; let's put it down now.
-	dropScreenPos = self.ship.renderer.mapToScreenPosition(onPos)
-	self.turnToFaceScreenPos self.ship.renderer.mapToScreenPosition(onPos)
+	dropScreenPos = self.renderer.mapToScreenPosition(onPos)
+	self.turnToFaceScreenPos self.renderer.mapToScreenPosition(onPos)
 	self.updateCarriedItem
 	item.lerpTo dropScreenPos, 1, 0.25
 	self.ship.map[col][row].placeItem item

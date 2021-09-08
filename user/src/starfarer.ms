@@ -61,8 +61,8 @@ Starfarer.init = function()
 	self.station = self.stations.any
 
 	// And render that thing!
-	renderer = new shipDisplay.Renderer
-	renderer.renderShip playerShip
+	self.renderer = new shipDisplay.Renderer
+	self.renderer.renderShip playerShip
 	
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
@@ -218,7 +218,7 @@ Starfarer.selectedMinion = []
 
 // Handle a mouse click on the player's ship at the given screen position
 Starfarer.handlePlayerShipClick = function(pos)
-	mapPos = playerShip.renderer.screenToMapPosition(pos)
+	mapPos = self.renderer.screenToMapPosition(pos)
 	
 	if playerUI.selectedControl isa systems.DoorPowerControl then
 		// while door control is selected: toggle doors

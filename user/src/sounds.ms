@@ -27,6 +27,9 @@ warp = PositionalSound.load("warp-sound")
 laserFire = PositionalSound.load("pew")
 laserHit = PositionalSound.load("hit")
 
+shieldUp = PositionalSound.load("shieldUp")
+shieldHit = PositionalSound.load("shieldHit")
+
 demo = function()
 	clear
 	print "Click anywhere to hear a sound."

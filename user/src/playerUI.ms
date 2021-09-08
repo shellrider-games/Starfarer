@@ -138,8 +138,8 @@ showCombat = function()
 
 	outer.enemyHullBar = new uiWidgets.Bar
 	enemyHullBar.init panel.left+50, panel.bottom+8, 180, 20
-	enemyHullBar.value = enemy.hp / enemy.maxHp
 	enemyHullBar.backColor = panel.mainColor
+	enemyHullBar.value = enemy.hp / enemy.maxHp
 	enemyShipUI.insert 0, enemyHullBar	// (so it gets removed first when we stop)
 	
 	label = new uiWidgets.Label
@@ -148,6 +148,7 @@ showCombat = function()
 	enemyShipUI.push label
 
 	for widget in enemyShipUI; widget.start; end for
+	enemyHullBar.redraw // (since it got overdrawn by the panel)
 end function
 
 showContinueJump = function()
