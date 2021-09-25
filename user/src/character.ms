@@ -204,10 +204,8 @@ Character.pickUp = function(item)
 	dcol = item.col - self.col; drow = item.row - self.row
 	if abs(dcol) > 1 or abs(drow) > 1 then
 		// Too far away!  Walk over there, and THEN pick it up.
-		cell = self.ship.getCell(item.col,item.row)
-		cell.contents = null	// (temporarily remove item so we can path there)
-		self.path = pathfinding.findPath(self.ship, self, item)
-		cell.contents = item
+		cell = self.ship.getCell(item.col, item.row)
+		self.path = pathfinding.findPathUpTo(self.ship, self, item)
 		return
 	end if
 	// Close enough; let's pick it up now.

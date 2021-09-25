@@ -3,7 +3,6 @@
 // Paths can include diagonal steps, and may cross doors, but may not cross
 // walls or cells blocked by items.
 
-
 // findPath: our main entry point, this function finds and returns a path
 // between two points on a ship.  Return the path as a list of [col,row]
 // positions to visit in order, including endPos but not including startPos.
@@ -62,6 +61,29 @@ findPath = function(ship, startPos, endPos)
 		if result then result.reverse
 	end if
 	return result
+end function
+
+
+
+// findPathUpTo: similar to above, but does not include the end point;
+// considers it successful if we can path to a location NEXT TO the
+// given target position.  Return the path as a list of [col,row]
+// positions to visit in order, not including endPos or startPos.
+// parameters:
+//	ship: a shipModel object
+//	startPos: a [col,row] starting position within the ship
+//	endPos: a [col,row] target position to end next to
+findPathUpTo = function(ship, startPos, endPos)
+	// Easiest way to do this is to clear the given cell so it is
+	// considered walkable, find the full path, and then restore the
+	// content of the target cell.
+	if endPos isa map then endPos = [endPos.col,endPos.row]
+	cell = ship.getCell(endPos[0], endPos[1])
+	item = cell.contents; cell.contents = null
+	path = findPath(ship, startPos, endPos)
+	cell.contents = item
+	if path and path[-1] == endPos then path.remove -1
+	return path
 end function
 
 demo = function()

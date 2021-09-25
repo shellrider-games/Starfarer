@@ -5,9 +5,10 @@
 // act to reduce its needs as much as possible.
 
 if not globals.hasIndex("miscUtil") then import "miscUtil"
+ensureImport "qa"
+ensureImport "listUtil"
 ensureImport "character"
 ensureImport "shipModel"
-ensureImport "qa"
 ensureImport "systems"
 
 // Need: base class for any need an agent may have.
@@ -69,6 +70,14 @@ heal = function(pathToMedBay, benefit)
 	return result
 end function
 
+// stow: pick up some cargo in a cargo "in" cell, and stow it in the ship
+stow = function(pathToCargo)
+	result = Activity.make(pathToCargo.len, "work", 10)
+	result.path = pathToCargo
+	result.name = "stow"
+	return result
+end function
+
 // Brain: all the AI data for one particular agent.
 Brain = {}
 Brain.make = function()
@@ -95,24 +104,33 @@ Brain.printNeeds = function()
 	for need in self.needs
 		result.push need.name + ":" + need.value
 	end for
-	print result.join(", ")
+	print result.join(", ") + "   "
 end function
 
 Brain.findActivities = function(character)
 	ship = character.ship
+	
+	self.work.value = 0
+	
+	// always consider doing nothing!
 	self.activities = [idle]
+
+	// consider healing, if needed
 	if character.health < character.maxHealth then
 		self.heal.value = round(120 * (1 - character.health / character.maxHealth))
 		medbay = ship.findSystemOfType(systems.MedBay)
 		if medbay != null and medbay.curPower > 0 then
 			path = pathfinding.findPath(ship, character, medbay)
-			if path != null then self.activities.push heal(path, self.heal.value)
+			if path then self.activities.push heal(path, self.heal.value)
 		end if
 	end if
-	cargoToStow = ship.getFullCargoInCells
-	if cargoToStow then
-		// ToDo: find closest of these and add a "stow" activity
-	end if
+
+	// consider stowing cargo, if we have any waiting for that
+	for pickUpCell in ship.getFullCargoInCells
+		self.work.add 10
+		path = pathfinding.findPathUpTo(ship, character, pickUpCell)
+		if path then self.activities.push stow(path)
+	end for
 end function
 
 Brain.update = function(character, dt=0.1)
@@ -133,7 +151,7 @@ Brain.update = function(character, dt=0.1)
 		self.doing = self.choose
 		if self.doing != null then self.doFor = self.doing.cost
 		character.path = self.doing.path
-		print "Choosing to do " + self.doing.name + " for " + self.doFor
+		text.row = 18; print "Choosing to do " + self.doing.name + " for " + self.doFor
 	end if
 end function
 
