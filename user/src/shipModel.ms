@@ -201,6 +201,7 @@ end function
 // That means neighbors that are walkable, without a wall or
 // closed door in between.
 Ship.walkableNeighbors = function(colRow)
+	qa.assert colRow isa list and colRow.len == 2
 	result = []
 	col = colRow[0]; row = colRow[1]
 	c = self.map[col][row]
@@ -320,6 +321,13 @@ Ship.removeCargo = function()
 		fullCargoCells[0].contents = null
 	end if
 	return removedItem
+end function
+
+// addPurchasedItemType: this method is called when the player buys an item
+// a station market, and possibly other times (e.g. picked up an item in space).
+// We need to add this type to the "incoming" cargo queue.
+Ship.addPurchasedItemType = function(itemType)
+	self.incomingTypes.push itemType
 end function
 
 Ship.findItemOfType = function(type)

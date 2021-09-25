@@ -182,11 +182,6 @@ showShipyard = function(station,left=550, bottom=150, width=350, height=400)
 		button.backColor = background.mainColor
 		button.system = sys
 		button.action = @upgradeButtonAction
-		//function()
-//			game.money = game.money - self.system.upgradeCost
-//			self.system.upgrade
-//			updateUpgradeButtons
-//		end function
 		button.start
 		upgradeButtons.push button
 		col = 1 - col
@@ -294,7 +289,7 @@ addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPri
 	btn.backColor = background.mainColor
 	btn.start
 	btn.action = function()
-		playerShip.incomingTypes.push itemType
+		playerShip.addPurchasedItemType itemType
 	end function
 	activeButtons.push btn
 	

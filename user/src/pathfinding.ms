@@ -15,14 +15,14 @@ findPath = function(ship, startPos, endPos)
 	// A* + Heuristics pathfinding implementation
 	if startPos isa map then startPos = [startPos.col,startPos.row]
 	if endPos isa map then endPos = [endPos.col,endPos.row]
-
-	//True distance function for diagnanols
+	if startPos == endPos then return [endPos]
+	
+	// True distance function for diagnonals
 	heuristic = function(endPos, nextPos)
 	    a = endPos[0] - nextPos[0]
 		b = endPos[1] - nextPos[1]
 		return sqrt(a^2 + b^2)
 	end function
-
 
 	check = []
 	check.push [startPos,0]
@@ -59,7 +59,7 @@ findPath = function(ship, startPos, endPos)
 			result.push current
 			current = camefrom[current]
 		end while
-		result.reverse
+		if result then result.reverse
 	end if
 	return result
 end function

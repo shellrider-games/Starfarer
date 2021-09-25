@@ -9,6 +9,7 @@ import "qa"
 import "spriteUtil"
 import "spriteControllers"
 import "mathUtil"
+ensureImport "charAI"
 
 // Other constants
 frameSize = 16		// width and height of each frame in the sprite sheet
@@ -59,10 +60,12 @@ Character.row = 0			// vertical position within the ship
 Character.usingSystem = null
 Character.maxHealth = 10
 Character.health = 10
+Character.brain = null		// added in boardShip, so we can select the right type of Brain
 
 Character.boardShip = function(ship)
 	self.ship = ship
 	ship.minions.push self
+	if self.brain == null then self.brain = charAI.Brain.make
 end function
 
 Character.leaveShip = function()
@@ -147,8 +150,14 @@ Character.update = function(dt=0.1)
 		self.walking = false
 	end if
 
+	// update animation and any item we're carrying
 	self.updateAnimation dt
 	self.updateCarriedItem
+	
+	// update our brain
+	if self.brain != null then self.brain.update self, dt
+	
+	// use or repair the cell we're in (toDo: based on current brain activity)
 	ce = self.ship.getCell(self.col, self.row)
 	if ce.broken then
 		ce.repair dt
@@ -238,10 +247,6 @@ Character.dropItem = function(onPos)
 	self.turnToFaceScreenPos item
 	self.carrying = null
 	self.walking = false
-end function
-
-Character.goTo = function(mapPos)
-
 end function
 
 Character.useSystem = function(dt)

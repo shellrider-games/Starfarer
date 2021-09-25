@@ -187,6 +187,7 @@ update = function(dt = 0.1)
 		enemy = game.combatEncounter.ship
 		enemyHullBar.setValue enemy.hp / enemy.maxHp
 	end if
+	text.row = 19; text.column = 0; playerShip.minions[0].brain.printNeeds
 end function
 
 demo = function()
