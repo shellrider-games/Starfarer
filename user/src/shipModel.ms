@@ -112,6 +112,7 @@ Ship.init = function(columns, rows)
 	self.outgoingTypes = []
 	
 	self.targetSpots = [[round(columns/2), round(rows/2)]]
+	self.cargoSpots = []
 	
 	// NOTE: we no longer set up some default systems.
 	// Ship files will need to set them up themselves.
@@ -344,6 +345,36 @@ Ship.findItemOfType = function(type)
 		end for
 	end for
 	return null
+end function
+
+Ship.findItemsOfType = function(type)
+	result = []
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.map[col][row] == null then continue
+			c = self.map[col][row].contents
+			if c != null and c.name == type.name then result.push c
+		end for
+	end for
+	return result
+end function
+
+// Find all items of a type that matches something in our
+// outgoingTypes list (i.e., types that have been sold but not yet
+// delivered).
+Ship.findOutgoingItems = function()
+	if not self.outgoingTypes then return null
+	typeNames = []
+	for t in self.outgoingTypes; typeNames.push t.name; end for
+	result = []
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.map[col][row] == null then continue
+			c = self.map[col][row].contents
+			if c and typeNames.contains(c.name) then result.push c
+		end for
+	end for
+	return result
 end function
 
 Ship.systemAt = function(col, row)

@@ -115,6 +115,45 @@ Brain.findActivities = function(character)
 	// always consider doing nothing!
 	self.activities = [idle]
 
+	// if we are holding cargo, either take it to the output queue
+	// or stow it
+	if character.carrying == null then
+		// consider picking up cargo that's been sold
+		self.work.add 10 * ship.outgoingTypes.len
+		for cell in ship.findOutgoingItems
+			path = pathfinding.findPathUpTo(ship, character, cell)
+			if path then self.activities.push stow(path)
+		end for
+		// consider picking up fresh cargo, if we have any waiting for that
+		for pickUpCell in ship.getFullCargoInCells
+			self.work.add 10
+			path = pathfinding.findPathUpTo(ship, character, pickUpCell)
+			if path then self.activities.push stow(path)
+		end for
+	else
+		// if we're already carrying something, go put it down
+		self.work.add 10
+		if ship.outgoingTypes.contains(character.carrying.__isa) then
+			// player has sold an item of this type; carry it to output
+			for cell in ship.getCargoOutCells
+				path = pathfinding.findPath(ship, character, cell)
+				if path then self.activities.push stow(path)
+			end for
+		else
+			// look for an empty cargo spot we can reach;
+			// only consider the first one, as that is most preferred
+			// (according to the ship designer)
+			for spot in ship.cargoSpots
+				c = ship.getCell(spot[0], spot[1])
+				if c.contents then continue
+				path = pathfinding.findPath(ship, character, c)
+				if path == null then continue
+				self.activities.push stow(path)
+				break
+			end for
+		end if
+	end if
+
 	// consider healing, if needed
 	if character.health < character.maxHealth then
 		self.heal.value = round(120 * (1 - character.health / character.maxHealth))
@@ -125,12 +164,6 @@ Brain.findActivities = function(character)
 		end if
 	end if
 
-	// consider stowing cargo, if we have any waiting for that
-	for pickUpCell in ship.getFullCargoInCells
-		self.work.add 10
-		path = pathfinding.findPathUpTo(ship, character, pickUpCell)
-		if path then self.activities.push stow(path)
-	end for
 end function
 
 Brain.update = function(character, dt=0.1)
@@ -151,7 +184,7 @@ Brain.update = function(character, dt=0.1)
 		self.doing = self.choose
 		if self.doing != null then self.doFor = self.doing.cost
 		character.path = self.doing.path
-		text.row = 18; print "Choosing to do " + self.doing.name + " for " + self.doFor
+//		text.row = 18; print "Choosing to do " + self.doing.name + " for " + self.doFor
 	end if
 end function
 

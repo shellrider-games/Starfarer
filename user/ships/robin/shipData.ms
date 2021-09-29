@@ -54,4 +54,11 @@ ship.addSystem systems.O2.make(0,7)
 ship.addSystem systems.MedBay.make(4,5)
 ship.addSystem systems.Weapons.make(0,5)
 
+for row in range(0,3)
+	for col in [0, 1, 4, 5]
+		ship.cargoSpots.push [col, row]
+	end for
+end for
+
+
 // ship.draw

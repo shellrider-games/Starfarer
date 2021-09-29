@@ -68,7 +68,7 @@ end function
 // findPathUpTo: similar to above, but does not include the end point;
 // considers it successful if we can path to a location NEXT TO the
 // given target position.  Return the path as a list of [col,row]
-// positions to visit in order, not including endPos or startPos.
+// positions to visit in order, including endPos but not including startPos.
 // parameters:
 //	ship: a shipModel object
 //	startPos: a [col,row] starting position within the ship
@@ -82,7 +82,6 @@ findPathUpTo = function(ship, startPos, endPos)
 	item = cell.contents; cell.contents = null
 	path = findPath(ship, startPos, endPos)
 	cell.contents = item
-	if path and path[-1] == endPos then path.remove -1
 	return path
 end function
 
