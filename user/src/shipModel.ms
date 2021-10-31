@@ -480,6 +480,7 @@ end function
 Ship.digRoom = function(left, bottom, width, height)
 	for col in range(left, left+width-1)
 		for row in range(bottom, bottom+height-1)
+			qa.assert col<self.map.len and row<self.map[col].len
 			self.map[col][row] = Cell.make(col, row)
 		end for
 	end for
@@ -487,11 +488,7 @@ end function
 
 Ship.place = function(col, row, direction, wallOrDoor)
 	cell = self.getCell(col, row)
-	if not cell isa Cell then
-		print "Couldn't place " + wallOrDoor + " at " + col + "," + row
-		return
-	end if
-	qa.assert cell isa Cell
+	qa.assert cell isa Cell, "No cell found at " + col + "," + row
 
 	cell.walls[direction] = wallOrDoor
 	nextCol = col + constants.dx(direction)
