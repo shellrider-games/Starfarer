@@ -54,6 +54,12 @@ Activity.make = function(cost, need1, reduction1, need2, reduction2, need3, redu
 	if need3 != null then result.benefit[need3] = reduction3
 	return result
 end function
+Activity.begin = function(character)
+	character.path = self.path
+end function
+Activity.isDone = function(character)
+	return false
+end function
 
 // idle: standard do-nothing activity
 idle = Activity.make(5, "relax", 5); idle.name = "idle"
@@ -78,6 +84,27 @@ stow = function(pathToCargo)
 	return result
 end function
 
+DirectOrderActivity = new Activity
+DirectOrderActivity.targetPos = {"col":0, "row":0}
+DirectOrderActivity.begin = function(character)
+	character.path = pathfinding.findPath(character.ship, character, self.targetPos)
+	if character.brain.orders == self then character.brain.orders = null
+//	print "Starting DAO with path " + character.path
+end function
+DirectOrderActivity.isDone = function(character)
+	done = (not character.path) and (character.col == self.targetPos.col and character.row == self.targetPos.row)
+//	if done then print "DAO is done"
+	return done
+end function
+DirectOrderActivity.cost = 0
+DirectOrderActivity.cost = 60  // (stick with this activity for up to 60 seconds)
+DirectOrderActivity.name = "obey"
+DirectOrderActivity.make = function(targetPos)
+	result = new DirectOrderActivity
+	result.targetPos = targetPos
+	return result
+end function
+	
 // Brain: all the AI data for one particular agent.
 Brain = {}
 Brain.make = function()
@@ -97,6 +124,7 @@ Brain.init = function()
 	self.needs = [self.relax, self.work, self.heal]
 	self.activities = [idle]
 	self.doing = null	// which activity we are currently doing
+	self.orders = null	// activity we've been directly ordered to do by player
 end function
 
 Brain.printNeeds = function()
@@ -111,6 +139,11 @@ Brain.findActivities = function(character)
 	ship = character.ship
 	
 	self.work.value = 0
+	
+	if self.orders != null then
+		self.activities = [self.orders]
+		return
+	end if
 	
 	// always consider doing nothing!
 	self.activities = [idle]
@@ -171,7 +204,7 @@ Brain.update = function(character, dt=0.1)
 	if self.doing != null then
 		// check whether we are done with this activity
 		self.doFor = self.doFor - dt
-		if self.doFor <= 0 then
+		if self.doFor <= 0 or self.doing.isDone(character) then
 			self.applyBenefits self.doing
 			self.doing = null
 		end if
@@ -182,15 +215,18 @@ Brain.update = function(character, dt=0.1)
 		
 		// Then, choose one.
 		self.doing = self.choose
-		if self.doing != null then self.doFor = self.doing.cost
-		character.path = self.doing.path
-//		text.row = 18; print "Choosing to do " + self.doing.name + " for " + self.doFor
+		if self.doing != null then
+			self.doFor = self.doing.cost
+			self.doing.begin character
+		end if
+//		text.row = 18; print "Choosing to do " + self.doing.name + " for " + self.doFor + " at " + round(time,1)
 	end if
 end function
 
 Brain.choose = function(activities=null)
 	if activities == null then activities = self.activities
 	if not activities then return null
+	if activities.len == 1 then return activities[0]
 	choice = null
 	bestValue = 0
 	for activity in activities

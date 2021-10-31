@@ -40,7 +40,7 @@ ship.addSystem systems.Engines.make(0,0)
 ship.addSystem systems.Controls.make(2,6)
 ship.addSystem systems.O2.make(0,5)
 
-for row in range(0,3)
+for row in [4, 3]
 	for col in [0, 1, 3]
 		ship.cargoSpots.push [col, row]
 	end for

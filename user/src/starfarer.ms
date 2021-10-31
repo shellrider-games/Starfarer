@@ -259,7 +259,7 @@ Starfarer.handlePlayerShipClick = function(pos)
 		minion.dropItem mapPos
 	else
 		for minion in self.selectedMinion
-			minion.path = pathfinding.findPath(playerShip, minion, mapPos)
+			minion.goTo mapPos
 		end for
 	end if
 end function

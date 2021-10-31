@@ -247,6 +247,11 @@ Character.dropItem = function(onPos)
 	self.walking = false
 end function
 
+Character.goTo = function(mapPos)
+	self.brain.orders = charAI.DirectOrderActivity.make(mapPos)
+	self.brain.doFor = 0
+end function
+
 Character.useSystem = function(dt)
 	self.usingSystem.use self, dt
 end function
