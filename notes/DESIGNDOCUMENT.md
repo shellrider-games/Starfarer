@@ -86,15 +86,15 @@ The ship is composed of a hull, which defines the empty layout and amount of dam
 Any equipment can break down, either through normal wear & tear or as a result of combat.  Fires may break out, and need to be extinguished.  If a hull breach (or open outer door) occurs, air is lost very rapidly in that area and any areas of the ship connected to it by open doors; to fix the problem the breach must be sealed, and then the life support system given time to refill the air.  If life support breaks down, air will go bad more slowly wherever crewmembers are breathing.
 
 ## Reputation ##
-The player's ship will have a reputation with each known faction(as well as each faction with each other faction that they are aware of) that will influence the types of events that can occur when interacting with a faction. reputation can range from Ally to Hostile
+The player's ship will have a reputation with each known faction (as well as each faction with each other faction that they are aware of) that will influence the types of events that can occur when interacting with a faction. Reputation can range from Ally to Hostile.
 
 ### Gain Reputation ###
 - trading
 - assisting in battles
 - destroying other ships that are hostile to the controlling faction
-- doing missions/jobs for the faction(not shady deals)
+- doing missions/jobs for the faction (not shady deals)
 - rescuing ships/responding to distress calls
-- rescuing crew from destroyed ships(that you may have destroyed) - detroying the ship will damage your reputation but you may be able to get some back if you return the crew to a station. 
+- rescuing crew from destroyed ships (that you may have destroyed) - detroying the ship will damage your reputation but you may be able to get some back if you return the crew to a station. 
 
 ### Lose reputation ###
 - getting caught smuggling contraband - lose 1 point to a min of Untrusted
@@ -102,29 +102,29 @@ The player's ship will have a reputation with each known faction(as well as each
 - attacking faction authority - Lose 3 points to a min of Hostile.
 
 * Ally
-	- help players in battle if there is an ally ship nearby.
+	- Help players in battle if there is an ally ship nearby
 	- Best trade prices
 	- Ability to purchase special ships/items
-	- High priority to respond to calls for distress if outside the factions controlled space. will travel outside factions controlled space to reach you(if they hear the distress call in the first place)
-	- fees and punishment for crimes are less severe(but still lower reputation)
+	- High priority to respond to calls for distress if outside the faction's controlled space. Will travel outside faction's controlled space to reach you (if they hear the distress call in the first place)
+	- Fees and punishment for crimes are less severe (but still lower reputation)
 	- Rare to be scanned/bothered by faction authority unless in high security sectors.
 * Friendly
 	- Better trade prices
-	- less likely to be scanned by faction authority
-	- will respond to distress calls. won't leave safe space to reach you.
+	- Less likely to be scanned by faction authority
+	- Will respond to distress calls; but won't leave safe space to reach you.
 * Neutral
-	- normal trade prices
-	- will be scanned when near faction authority
+	- Normal trade prices
+	- Will be scanned when near faction authority.
 * Untrusted
-	- worse trading prices
-	- faction authority will send a ship to scan you if you are in their space.
-	- shady dealers inside the faction may be weary of doing business as you getting caught may lead the authorities back to the shady dealer.
-	- certian shady dealers may offer more lucritive jobs with higher risk of lowering your reputation further with the controlling faction.
+	- Worse trading prices
+	- Faction authority will send a ship to scan you if you are in their space
+	- Shady dealers inside the faction may be wary of doing business as you getting caught may lead the authorities back to the shady dealer
+	- Certain shady dealers may offer more lucritive jobs with higher risk of lowering your reputation further with the controlling faction.
 * Hostile
-	- no trading at normal traders. they won't trade with an enemy.(if you can even get close to a trading post in the first place)
-	- faction authority will scan their sectors looking for your ship and if your ship is detected will treat you as an enemy. sending ships to hunt you down. until you leave the factions controlled space or raise your reputation.
-	- shady dealers in other factions may offer high paying high risk jobs that have you go into hostile faction territory
-	- gain reputation for factions that are also hostile to the same faction. enemy of my enemy is my friend.
+	- No trading at normal traders; they won't trade with an enemy (if you can even get close to a trading post in the first place)
+	- Faction authority will scan their sectors looking for your ship, and if detected, will treat you as an enemy, sending ships to hunt you down (until you leave the faction's controlled space or raise your reputation)
+	- Shady dealers in other factions may offer high paying high risk jobs that have you go into hostile faction territory
+	- Gain reputation for factions that are also hostile to the same faction (enemy of my enemy is my friend).
 
 
 ## Trade & Economy
