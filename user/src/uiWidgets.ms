@@ -238,7 +238,7 @@ Label.font = fonts.ArialBlack14
 Label.alignment = ALIGNLEFT
 Label.leading = 2  // (extra space between lines, in multiline label)
 
-Label.init = function(left, bottom, width, height, text="", align=ALIGNLEFT)
+Label.init = function(left, bottom, width, height, text="", align=0)
 	super.init left, bottom, width, height, text
 	self.text = text
 	self.alignment = align
@@ -765,7 +765,7 @@ LineEdit.maxTextLength = 0
 LineEdit.label = new Label
 
 
-LineEdit.init = function(left, bottom, width, align=ALIGNLEFT)
+LineEdit.init = function(left, bottom, width, align=0)
 	super.init left, bottom, width, 22
 	self.label.init(left+2, bottom+2, width-2, 20, self.text, align)
 	self.label.font = self.font

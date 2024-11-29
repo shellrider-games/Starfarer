@@ -44,8 +44,8 @@ Starfarer.maxFuel = 12
 
 Starfarer.init = function()
 	// We'll directly load the freighter ship type for now:
-//	globals.playerShip = shipModel.newShipOfDesign("robin")
-	globals.playerShip = shipModel.newShipOfDesign("wren")
+	globals.playerShip = shipModel.newShipOfDesign("robin")
+//	globals.playerShip = shipModel.newShipOfDesign("wren")
 	playerShip.isPlayer = true
 	playerShip.name = "Player One"	// just a name, do NOT depend on this!
 	playerShip.distributePower
@@ -98,7 +98,7 @@ Starfarer.enterState = function(newState)
 			game.enterState Starfarer.STATE_AT_STATION
 		end function
 		starmap.jumpCallback = function(newStation)
-			if newStation == self.station then
+			if newStation == game.station then
 				game.enterState Starfarer.STATE_AT_STATION
 			else
 				game.nextStation = newStation

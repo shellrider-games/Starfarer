@@ -13,7 +13,9 @@ Station.cantina = null		// a list of NPCs currently in cantina
 Station.x = null
 Station.y = null
 
-Station.init = function(name, x = floor(rnd * 100), y = floor(rnd * 100))
+Station.init = function(name, x, y)
+	if x == null then x = floor(rnd * 100)
+	if y == null then y = floor(rnd * 100)
 	self.name = name
 	self.market = []
 	self.cantina = []

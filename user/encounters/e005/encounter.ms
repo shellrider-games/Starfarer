@@ -1,6 +1,10 @@
 // A shady NPC appears to be following you everywhere you go, showing
 // up in every cantina.  How does he DO that?
 
+// (NOTE: This is a good test of the systems, but not a very interesting
+// game element.  We'll need to make this guy do something more engaging,
+// or else remove this encounter.)
+
 if not globals.hasIndex("encounterBase") then
 	if env.importPaths.indexOf("/usr/src") == null then
 		env.importPaths.push "/usr/src"

@@ -64,7 +64,8 @@ end function
 //	text: main descriptive text to show
 //	options: optional set of options the player can choose
 // Returns: index of the option chosen, or null if none
-Encounter.showDialog = function(dataOrStation, text, options=[])
+Encounter.showDialog = function(dataOrStation, text, options=null)
+	if options == null then options = []
 	
 	textBox = new uiWidgets.Label
 	textBox.init 480-150, 0, 300, 20, "textBox"

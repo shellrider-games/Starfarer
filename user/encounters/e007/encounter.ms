@@ -58,7 +58,7 @@ end function
 // The player is trying to flee.  Return true if successful,
 // or false to cancel and keep them in combat.
 encounter.handleFlee = function()
-	self.renderer.stop
+	if self.renderer then self.renderer.stop
 	self.renderer = null
 	return true
 end function
