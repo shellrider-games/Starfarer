@@ -42,10 +42,11 @@ Characters (both your own, and NPCs) in the ship view could communicate via emoj
 * 🥱  bored
 * 😑  not having fun
 * 👉  giving orders
-* (saluting)  aye-aye
+* 🫡  aye-aye
 * 🤔  thinking
 * 💡  idea
 * 🔎  search/searching
+* 💥  blow it up
 
 
 # Encounters/Mini-Stories
