@@ -2,11 +2,13 @@
 // the right half of the screen when the ship is docked at a station or base.
 // It presents the various station services, including the market.
 
-import "stringUtil"
-import "qa"
-if not globals.hasIndex("uiWidgets") then import "uiWidgets"
-if not globals.hasIndex("item") then import "item"
-if not globals.hasIndex("stationModel") then import "stationModel"
+import "importUtil"
+ensureImport "stringUtil"
+ensureImport "listUtil"
+ensureImport "qa"
+ensureImport "uiWidgets"
+ensureImport "item"
+ensureImport "stationModel"
 
 
 costPerFuel = 10
@@ -116,7 +118,13 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 
 	for commodity in station.market
 		y = y - 40
-		addCommodity left, y, width, 40, commodity.itemType, commodity.buyPrice, commodity.sellPrice 
+		allPrices = []
+		for st in game.stations
+			price = st.getCommoditySellPrice(commodity.itemType)
+			if price != null then allPrices.push price
+		end for
+		avgPrice = round(allPrices.mean)
+		addCommodity left, y, width, 40, commodity.itemType, commodity.itemPrice, avgPrice
 	end for
 	
 	// Buy (1) Fuel button
@@ -138,8 +146,7 @@ end function
 printPanelTitle = function(text, station, left=550, bottom=150, height=400)
 	top = bottom + height
 	font = fonts.ArialBlack14
-	font.setColor color.black
-	font.print station.name + " Station : " + text, left+4, top-14
+	font.print station.name + " Station : " + text, left+4, top-14, 1, color.black
 end function
 
 showCantina = function(station,left=550, bottom=150, width=350, height=400)
@@ -270,40 +277,51 @@ addCantinaNPC = function(left, bottom, width, height, npc)
 end function
 
 // Add a row of widgets for one market commodity.
-addCommodity = function(left, bottom, width, height, itemType, buyPrice, sellPrice)
+addCommodity = function(left, bottom, width, height, itemType, price, avgPrice)
 	qa.assert itemType isa item.Item
 	
-	col0_1 = left + width * 0.4		// X position between column 0 and column 1
-	col1_2 = left + width * 0.7		// X position between columns 1 and 2
-	midY = bottom + height/2
+	// column positions:
+	btnWidth = 48
 	right = left + width
+	x = [left + 8, left + width * 0.4, right - btnWidth*2 - 16, right - btnWidth - 8]
+	midY = bottom + height/2
 	
 	// column 0: name and icon
-	disp.uiPixel.drawImage itemType.image, left + 8, midY-16, 32, 32
-	fonts.ArialBlack14.print itemType.name, left + 48, midY - 6
+	disp.uiPixel.drawImage itemType.image, x[0], midY-16, 32, 32
+	fonts.ArialBlack14.print itemType.name, x[0] + 40, midY - 6, 1, color.black
 	
-	// column 1: buy button
-	btn = new Button
-	btn.init col0_1 + 8, bottom + 4, col1_2 - col0_1 - 16, height - 8, 
-	    "Buy ($" + buyPrice + ")"
-	btn.backColor = background.mainColor
-	btn.start
-	btn.action = function()
+	// column 1: price (and difference from average price)
+	gfx.color = color.black
+	fonts.Arial14.print "$" + price, x[1], midY - 6, 1, color.black
+	diff = price - avgPrice
+	if diff >= 0 then sign = "+" else sign = "-"
+	fonts.Arial14.print "(" + sign + abs(diff) + ")", x[1] + 40, midY - 6, 1, color.gray
+		
+	// column 3: sell button
+	sellBtn = new Button
+	sellBtn.init x[3], bottom + 4, btnWidth, height - 8, "Sell"
+	sellBtn.backColor = background.mainColor
+	sellBtn.enabled = playerShip.qtyOwnedOfType(itemType) > 0
+	sellBtn.start
+	sellBtn.action = function()
+		playerShip.noteItemSold itemType
+		sellBtn.enabled = playerShip.qtyOwnedOfType(itemType) > 0
+		sellBtn.draw
+	end function
+	activeButtons.push sellBtn
+	
+	// column 2: buy button
+	buyBtn = new Button
+	buyBtn.init x[2], bottom + 4, btnWidth, height - 8, "Buy"
+	buyBtn.backColor = background.mainColor
+	buyBtn.start
+	buyBtn.action = function
 		playerShip.addPurchasedItemType itemType
+		sellBtn.enabled = playerShip.qtyOwnedOfType(itemType) > 0
+		sellBtn.draw
 	end function
-	activeButtons.push btn
-	
-	// column 2: sell button
-	btn = new Button
-	btn.init col1_2 + 8, bottom + 4, right - col1_2 - 16, height - 8, 
-	    "Sell ($" + sellPrice + ")"
-	btn.backColor = background.mainColor
-	btn.start
-	btn.action = function()
-		playerShip.outgoingTypes.push itemType
-	end function
-	activeButtons.push btn
-	
+	activeButtons.push buyBtn
+
 end function
 
 
@@ -315,12 +333,34 @@ demo = function()
 	disp.uiSprites.clear
 	text.clear
 
+	globals.game = {}
+	game.fuel = 10
+	game.maxFuel = 12
+	game.money = 1000
+	globals.playerShip = {}
+	playerShip.hp = 15
+	playerShip.maxHp = 20
+	playerShip.qty = {}
+	playerShip.qty[item.FoodItem.name] = 3
+	playerShip.qty[item.WaterItem.name] = 10
+	playerShip.qty[item.MedsItem.name] = 1
+	playerShip.qty[item.GunsItem.name] = 0
+	playerShip.qtyOwnedOfType = function(type)
+		return self.qty[type.name]
+	end function
+	playerShip.addPurchasedItemType = function(type)
+		self.qty[type.name] += 1
+	end function
+	playerShip.noteItemSold = function(type)
+		self.qty[type.name] -= 1
+	end function
+
 	station = new stationModel.Station
 	station.init "SUPER COOL SPACE STATION - 7"
 	station.addCommodityToMarket item.FoodItem, 80, 50
-	station.addCommodityToMarket item.WaterItem, 120, 100
+	station.addCommodityToMarket item.WaterItem, 120, 125
 	station.addCommodityToMarket item.MedsItem, 200, 150
-	station.addCommodityToMarket item.GunsItem, 300, 200
+	station.addCommodityToMarket item.GunsItem, 183, 200
 
 	show station
 

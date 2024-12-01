@@ -25,8 +25,7 @@ end function
 
 Commodity = {}
 Commodity.itemType = null // an Item subclass defining the commodity type
-Commodity.buyPrice = 0
-Commodity.sellPrice = 0
+Commodity.itemPrice = 0
 Commodity.name = function()
 	return self.itemType.name
 end function
@@ -40,25 +39,26 @@ Station.fillCantina = function()
 	encounters.addNPCsToCantina self
 end function
 
-Station.addCommodityToMarket = function(itemType, buyPrice, sellPrice)
+Station.addCommodityToMarket = function(itemType, itemPrice)
 	newCommodity = new Commodity
 	newCommodity.itemType = itemType
-	newCommodity.buyPrice = buyPrice
-	newCommodity.sellPrice = sellPrice
+	newCommodity.itemPrice = itemPrice
 	qa.assert self.market isa list
 	self.market.push newCommodity
 end function
 
 Station.getCommodityBuyPrice = function(itemType)
+	qa.assert itemType isa item.Item
 	for commodity in self.market
-		if commodity.itemType.name == itemType then return commodity.buyPrice
+		if commodity.itemType.name == itemType.name then return commodity.itemPrice
 	end for
 	return null
 end function
 
 Station.getCommoditySellPrice = function(itemType)
+	qa.assert itemType isa item.Item
 	for commodity in self.market
-		if commodity.itemType.name == itemType then return commodity.sellPrice
+		if commodity.itemType.name == itemType.name then return commodity.itemPrice
 	end for
 	return null
 end function
@@ -98,8 +98,7 @@ randomStation = function()
 	for type in [item.FoodItem, item.WaterItem, item.MedsItem, item.GunsItem]
 		if rnd < 0.1 then continue	// commodity not traded here
 		value = floor(type.typicalValue * (1 + mathUtil.randNormal/4))
-		markup = floor(rnd * value)	
-		result.addCommodityToMarket type, value, markup
+		result.addCommodityToMarket type, value
 	end for
 	return result
 end function
@@ -128,15 +127,14 @@ runUnitTests = function()
 	testCommodity = new Commodity
 	testItem = new item.Item
 	qa.assert testCommodity isa Commodity
-	testStation.addCommodityToMarket item.WaterItem, 120, 100
+	testStation.addCommodityToMarket item.WaterItem, 120
 	qa.assertEqual testStation.market.len, 1
 	qa.assertEqual testStation.market[0].itemType, item.WaterItem
 	qa.assertEqual testStation.market[0].name, "water"
-	qa.assertEqual testStation.market[0].buyPrice, 120
-	qa.assertEqual testStation.market[0].sellPrice, 100
+	qa.assertEqual testStation.market[0].itemPrice, 120
 	
-	qa.assertEqual testStation.getCommodityBuyPrice(item.WaterItem.name), 120
-	qa.assertEqual testStation.getCommoditySellPrice(item.WaterItem.name), 100
+	qa.assertEqual testStation.getCommodityBuyPrice(item.WaterItem), 120
+	qa.assertEqual testStation.getCommoditySellPrice(item.WaterItem), 120
 
 	otherTestStation = new Station
 	otherTestStation.init "Station 2", 10, 10

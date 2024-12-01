@@ -359,10 +359,30 @@ Ship.findItemsOfType = function(type)
 	return result
 end function
 
+Ship.qtyOwnedOfType = function(type)
+	// Owned includes all types in the ship, plus any incoming items of that type,
+	// minus any outgoing (sold) items of that type.
+	count = 0
+	for col in self.columnRange
+		for row in self.rowRange
+			if self.map[col][row] == null then continue
+			c = self.map[col][row].contents
+			if c != null and c.name == type.name then count += 1
+		end for
+	end for
+	for c in self.incomingTypes
+		if c.name == type.name then count += 1
+	end for
+	for c in self.outgoingTypes
+		if c.name == type.name then count -= 1
+	end for
+	return count
+end function
+
 // Find all items of a type that matches something in our
 // outgoingTypes list (i.e., types that have been sold but not yet
 // delivered).
-Ship.findOutgoingItems = function()
+Ship.findOutgoingItems = function
 	if not self.outgoingTypes then return null
 	typeNames = []
 	for t in self.outgoingTypes; typeNames.push t.name; end for
@@ -375,6 +395,13 @@ Ship.findOutgoingItems = function()
 		end for
 	end for
 	return result
+end function
+
+Ship.noteItemSold = function(itemType)
+	qa.assert itemType isa item.Item
+	self.outgoingTypes.push itemType
+	// ToDo: find the closest item of this type to the out door,
+	// and mark it as sold (updating the display).
 end function
 
 Ship.systemAt = function(col, row)

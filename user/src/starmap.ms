@@ -73,7 +73,6 @@ draw = function(stationList, curStation=null, jumpLimit=200)
 	
 	// draw stars (stations)
 	f = fonts.Arial14
-	f.setColor color.white
 	for station in stationList
 		r = 16 * station.starSize
 		gfx.drawImage starImages[station.starTypeCol][station.starTypeRow],

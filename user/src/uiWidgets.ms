@@ -76,7 +76,7 @@ Image9Slice.make = function(image, left=12, bottom=12, right=12, top=12)
 	return noob
 end function
 
-Image9Slice.draw = function(left, bottom, width, height)
+Image9Slice.draw = function(left, bottom, width, height, tint="#FFFFFF")
 	midH = height - self.bottomMargin - self.topMargin
 	srcH = self.image.height - self.bottomMargin - self.topMargin
 	nearTop = bottom + height - self.topMargin
@@ -89,35 +89,35 @@ Image9Slice.draw = function(left, bottom, width, height)
 	// left side (bottom, middle, top)
 	disp.uiPixel.drawImage self.image, 
 		left, bottom, self.leftMargin, self.bottomMargin,
-		0, 0, self.leftMargin, self.bottomMargin
+		0, 0, self.leftMargin, self.bottomMargin, tint
 	disp.uiPixel.drawImage self.image, 
 		left, bottom + self.bottomMargin, self.leftMargin, midH,
-		0, self.bottomMargin, self.leftMargin, srcH
+		0, self.bottomMargin, self.leftMargin, srcH, tint
 	disp.uiPixel.drawImage self.image, 
 		left, nearTop, self.leftMargin, self.topMargin,
-		0, srcNearTop, self.leftMargin, self.topMargin
+		0, srcNearTop, self.leftMargin, self.topMargin, tint
 	
 	// center section (bottom, middle, top)
 	disp.uiPixel.drawImage self.image, 
 		left + self.leftMargin, bottom, midW, self.bottomMargin,
-		self.leftMargin, 0, srcW, self.bottomMargin
+		self.leftMargin, 0, srcW, self.bottomMargin, tint
 	disp.uiPixel.drawImage self.image, 
 		left + self.leftMargin, bottom + self.bottomMargin, midW, midH,
-		self.leftMargin, self.bottomMargin, srcW, srcH
+		self.leftMargin, self.bottomMargin, srcW, srcH, tint
 	disp.uiPixel.drawImage self.image, 
 		left + self.leftMargin, nearTop, midW, self.topMargin,
-		self.leftMargin, srcNearTop, srcW, self.topMargin
+		self.leftMargin, srcNearTop, srcW, self.topMargin, tint
 	
 	// right section (bottom, middle, top)
 	disp.uiPixel.drawImage self.image, 
 		nearRight, bottom, self.rightMargin, self.bottomMargin,
-		srcNearRight, 0, self.rightMargin, self.bottomMargin
+		srcNearRight, 0, self.rightMargin, self.bottomMargin, tint
 	disp.uiPixel.drawImage self.image, 
 		nearRight, bottom + self.bottomMargin, self.rightMargin, midH,
-		srcNearRight, self.bottomMargin, self.rightMargin, srcH
+		srcNearRight, self.bottomMargin, self.rightMargin, srcH, tint
 	disp.uiPixel.drawImage self.image, 
 		nearRight, nearTop, self.rightMargin, self.topMargin,
-		srcNearRight, srcNearTop, self.rightMargin, self.topMargin	
+		srcNearRight, srcNearTop, self.rightMargin, self.topMargin, tint
 end function
 
 //----------------------------------------------------------------------
@@ -269,18 +269,17 @@ Label.wrap = function(wrapWidth=null)
 end function
 
 Label.draw = function()
-	self.font.setColor self.color
 	if self.hasIndex("lines") then data = self.lines else data = [self.text]
 	y = self.bounds.y + 1 - self.font.sizeInner/2 + (data.len/2 - 1) * (self.font.lineHeight + self.leading)
 	for line in data
 		if self.alignment == ALIGNRIGHT then
 			w = self.font.width(line)
-			self.font.print line, self.right - w, y
+			self.font.print line, self.right - w, y, 1, self.color
 		else if self.alignment == ALIGNCENTER then
 			w = self.font.width(line)
-			self.font.print line, self.bounds.x - w/2, y
+			self.font.print line, self.bounds.x - w/2, y, 1, self.color
 		else
-			self.font.print line, self.left, y
+			self.font.print line, self.left, y, 1, self.color
 		end if
 		y = y - self.font.lineHeight - self.leading
 	end for
@@ -655,6 +654,7 @@ Button.downImg = load9SliceImage("uiButtonDown")
 Button.NORMAL = 0
 Button.PRESSED = 1
 Button.state = Button.NORMAL
+Button.enabled = true
 Button.caption = "Button"		// may be a string, or a Label
 Button.font = "Arial14"
 Button.trackingPress = false	// true when tracking a mouse click
@@ -686,12 +686,13 @@ Button.draw = function()
 		self.downImg.draw self.left, self.bottom, self.width, self.height
 		y = y - 2
 	else
-		self.upImg.draw self.left, self.bottom, self.width, self.height
+		if self.enabled then tint = color.white else tint = color.silver
+		self.upImg.draw self.left, self.bottom, self.width, self.height, tint
 	end if
 	if self.caption isa string then
 		f = fonts[self.font]
-		f.setColor color.black
-		f.printCentered self.caption, self.bounds.x, y - f.lineHeight * 0.2
+		f.printCentered self.caption, self.bounds.x, y - f.lineHeight * 0.2, 1, 
+			color.black * self.enabled + color.gray * (not self.enabled)
 	else if self.caption isa Widget then
 		self.caption.bounds.x = self.bounds.x
 		self.caption.bounds.y = y
@@ -703,7 +704,7 @@ Button.update = function(dt = 0.1)
 	if not self.trackingPress then
 		// When not tracking a press, the only thing we need to worry
 		// about is a mouse-down on this button.
-		if mouseDown and self.contains(mouse) then
+		if mouseDown and self.contains(mouse) and self.enabled then
 			// Start tracking!
 			self.state = Button.PRESSED
 			self.trackingPress = true
