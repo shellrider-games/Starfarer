@@ -27,8 +27,8 @@ init = function()
 	disp.shipSprites.clear
 end function
 
-// global set of current renderers (usually no more than 2)
-renderers = {}
+// global list of current renderers (usually no more than 2)
+renderers = []
 
 // Renderer: a class that exists to render a ship onto the display.  We may
 // have multiple ships on screen at some point; each will get its own Renderer.
@@ -319,7 +319,7 @@ Renderer.stop = function()
 	self.shields = null
 	self.shieldSystem = null
 	self.ship = null
-	renderers.remove self
+	renderers.removeVal self
 end function
 
 // Update just this one ship renderer.  Here we check for cargo bought/sold, etc.
@@ -359,7 +359,7 @@ end function
 // Update the whole ship display (and all sprites on it).
 update = function(dt = 0.1)
 	// update all renderers
-	for rend in renderers.indexes
+	for rend in renderers
 		rend.update dt
 	end for
 	

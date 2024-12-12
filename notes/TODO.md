@@ -18,7 +18,6 @@ With the above features, you'll be able to start in a small (Wren) ship, trade a
 ## Bugs
 
 - Sometimes when I tell my crewman to place a crate down on the right side of the ship, he starts to do it, then changes his mind and plops it down in the left cargo hold instead.  Haven't quite pinned down the circumstances but it seems easy to reproduce.
-- If the crewman is standing right next to a crate that is sold, instead of picking it up, he goes and hides behind it.  You have to click on the crate where he's hiding, then click somewhere else on the ship to get him to come out; _then_ he'll go grab the crate.
 - When I have two crewmembers and sell something, both crewmen try to go get it and put it out the airlock.  They should coordinate better (one crewman "claim" the task, and nobody else tries to do it).
-- The last enemy ship encountered is always shown while traveling in/out system; it should be cleared until the next encounter.
 - If you click a doors "Open All" or "Close All" control button, it _also_ moves the targeting reticle (into empty space!).
+- Encounters happen too quickly back to back.  There should always be at least a little bit of flight (a second or so of real time) between encounters.

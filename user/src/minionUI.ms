@@ -30,11 +30,22 @@ update = function(dt = 0.1)
     end for
 end function
 
+updateSelection = function
+	for i in minions.indexes
+		if game.selectedMinion.contains(minions[i]) then
+			nametags[i].setColor color.lime
+		else
+			nametags[i].setColor color.silver
+		end if
+	end for
+end function
+
 addMinion = function(minion)
 	row = minions.len
 	minions.push minion
 	nametag = new uiWidgets.Label
 	nametag.init 20, 530-60*row, 70, 20, minion.name
+	nametag.color = color.silver
 	nametag.draw
 	nametags.push nametag
 

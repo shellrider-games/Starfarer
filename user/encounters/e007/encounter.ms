@@ -46,21 +46,13 @@ encounter.present = function(data)
 	minion.boardShip self.ship
 
 	// make a renderer for the ship
-	renderer = new shipDisplay.Renderer
-	renderer.x = 720
-	renderer.renderShip self.ship
+	self.renderer = new shipDisplay.Renderer
+	self.renderer.x = 720
+	self.renderer.renderShip self.ship
 	
 	// show the dialog, then begin combat
 	self.showDialog data, description
 	game.beginCombat self
-end function
-
-// The player is trying to flee.  Return true if successful,
-// or false to cancel and keep them in combat.
-encounter.handleFlee = function()
-	if self.renderer then self.renderer.stop
-	self.renderer = null
-	return true
 end function
 
 if locals == globals then

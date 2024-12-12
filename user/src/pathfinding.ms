@@ -65,8 +65,8 @@ end function
 
 
 
-// findPathUpTo: similar to above, but does not include the end point;
-// considers it successful if we can path to a location NEXT TO the
+// findPathUpTo: similar to above, but does not require end point to be
+// clear; considers it successful if we can path to a location NEXT TO the
 // given target position.  Return the path as a list of [col,row]
 // positions to visit in order, including endPos but not including startPos.
 // parameters:

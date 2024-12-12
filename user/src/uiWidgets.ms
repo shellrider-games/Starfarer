@@ -292,6 +292,11 @@ Label.setText = function(s)
 	self.redraw
 end function
 
+Label.setColor = function(c)
+	if c == self.color then return
+	self.color = c
+	self.redraw
+end function
 
 //----------------------------------------------------------------------
 // Bar: a simple bar that has a value between 0 and 1 and is filled that much.

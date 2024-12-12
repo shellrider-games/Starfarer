@@ -62,7 +62,7 @@ Activity.isDone = function(character)
 end function
 
 // idle: standard do-nothing activity
-idle = Activity.make(5, "relax", 5); idle.name = "idle"
+idle = Activity.make(1 + rnd*2, "relax", 5); idle.name = "idle"
 
 // work: operate the ship system of whatever room we're in,
 // or if it needs repair, repair it.
@@ -207,6 +207,8 @@ Brain.update = function(character, dt=0.1)
 		if self.doFor <= 0 or self.doing.isDone(character) then
 			self.applyBenefits self.doing
 			self.doing = null
+		else
+			//text.row = 17; print "Still doing " + self.doing.name + " for " + self.doFor + " sec"
 		end if
 	end if
 	if self.doing == null then
@@ -219,7 +221,7 @@ Brain.update = function(character, dt=0.1)
 			self.doFor = self.doing.cost
 			self.doing.begin character
 		end if
-//		text.row = 18; print "Choosing to do " + self.doing.name + " for " + self.doFor + " at " + round(time,1)
+		//text.row = 18; print "Choosing to do " + self.doing.name + " for " + self.doFor + " at " + round(time,1)
 	end if
 end function
 

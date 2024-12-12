@@ -164,11 +164,19 @@ CombatEncounter.updateCombat = function(dt = 0.1)
 	enemyAI.update self, dt
 end function
 
-CombatEncounter.destroyShip = function()
+CombatEncounter.destroyShip = function
 	self.showDialog null, "The enemy ship has been destroyed."
 	if self.renderer != null then
 		self.renderer.stop
 		self.renderer = null
 	end if
 	playerShip.inCombat = false
+end function
+
+// The player is trying to flee.  Return true if successful,
+// or false to cancel and keep them in combat.
+CombatEncounter.handleFlee = function
+	if self.renderer then self.renderer.stop
+	self.renderer = null
+	return true
 end function

@@ -611,7 +611,7 @@ end function
 
 Ship.renderer = function()
 	// find the renderer that is rendering this ship
-	for rend in shipDisplay.renderers.indexes
+	for rend in shipDisplay.renderers
 		if rend.ship == self then return rend
 	end for
 	return null

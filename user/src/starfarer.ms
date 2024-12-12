@@ -52,9 +52,10 @@ Starfarer.init = function()
 
 	// give us a character
 	minion = new character.Character
-	minion.health = 5
+	minion.health = 9
 	minion.setMapPos [2, 2]
 	minion.boardShip playerShip
+	globals.arthur = minion // for debugging!
 
 	// generate a random galaxy full of stations
 	self.stations = stationModel.manyRandomStations(30)
@@ -187,7 +188,7 @@ Starfarer.beginCombat = function(encounter)
 	self.enterState Starfarer.STATE_COMBAT
 end function
 
-Starfarer.fleeCombat = function()
+Starfarer.fleeCombat = function
 	if self.combatEncounter.handleFlee then
 		self.enterState Starfarer.STATE_TRAVEL
 	end if
@@ -222,7 +223,9 @@ Starfarer.handlePlayerShipClick = function(pos)
 	
 	if playerUI.selectedControl isa systems.DoorPowerControl then
 		// while door control is selected: toggle doors
-		if playerUI.selectedControl.handleShipClick(playerShip, pos, mapPos) then return
+		if playerUI.selectedControl.handleShipClick(playerShip, pos, mapPos) then
+			return
+		end if
 	end if
 	
 	// If we click a minion, toggle its selection status.
@@ -237,11 +240,15 @@ Starfarer.handlePlayerShipClick = function(pos)
 				self.selectedMinion = [minion]
 			end if
 		end if
+		minionUI.updateSelection
 		return
 	end if
 	
 	// If we click anywhere else, and don't have a selected minion, ignore it.
-	if not self.selectedMinion then return
+	if not self.selectedMinion then
+		// ToDo: should we auto-select the closest idle minion?
+		return
+	end if
 	minion = self.selectedMinion[0]
 	
 	// If we click an Item, have the selected minion pick it up.

@@ -110,12 +110,10 @@ Character.update = function(dt=0.1)
 	if self.renderer == null then self.renderer = self.ship.renderer
 	// follow our path
 	if self.path then
-		if not self.walking then
-			self.walking = true
-			self.openDoorIfNeeded
-			if self.usingSystem then self.clearUseSystem
+		moved = false
+		if self.walking then
+			moved = self.moveTowards(self.renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		end if
-		moved = self.moveTowards(self.renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		if not moved then
 			// We've reached the cell we were immediately walking towards.
 			// If we passed through a door, we're done with it now.
@@ -123,26 +121,32 @@ Character.update = function(dt=0.1)
 				self.usingDoor.userDone self
 				self.usingDoor = null
 			end if
-			// Move to the next step of the path.
-			self.path = self.path[1:]
-			if self.path then
-				self.openDoorIfNeeded
-				nextPos = self.path[0]
-				nextCell = self.ship.getCell(nextPos[0],nextPos[1])
-				if self.path.len == 1 and self.carrying then
+			// Pick up or put down items, if near the end of the path.
+			if 0 < self.path.len <= 2 then
+				nextPos = self.path[-1]
+				nextCell = self.ship.getCell(nextPos[0], nextPos[1])
+				if self.carrying and not nextCell.contents then
 					// drop our item on the last step of the path, and call it a day
-					self.dropItem self.path[0]
+					self.dropItem nextPos
 					self.path = null
-				else if self.path.len == 1 and nextCell.contents then
+				else if not self.carrying and nextCell.contents then
 					// pick up the item at the end of the path
 					self.pickUp nextCell.contents
 					self.path = null
-				else
-					// just keep walking, just keep walking!
-					self.moveTowards self.renderer.mapToScreenPosition(nextPos), self.speed * dt
 				end if
 			end if
-			if not self.path then self.autoUse
+			if self.path then self.path.pull  // (remove path element 0, which we already reached)
+			if self.path then
+				// Move to the next step of the path.
+				self.openDoorIfNeeded
+				self.walking = true
+				if self.usingSystem then self.clearUseSystem
+				nextPos = self.path[0]
+				self.moveTowards self.renderer.mapToScreenPosition(nextPos), self.speed * dt
+			else if not self.carrying then
+				// Reached the end of our path, empty-handed; use whatever's nearby.
+				self.autoUse
+			end if
 		end if
 		newPos = self.renderer.screenToMapPosition(self)
 		self.col = newPos.col; self.row = newPos.row
@@ -250,6 +254,7 @@ end function
 Character.goTo = function(mapPos)
 	self.brain.orders = charAI.DirectOrderActivity.make(mapPos)
 	self.brain.doFor = 0
+	if key.pressed("left shift") then exit
 end function
 
 Character.useSystem = function(dt)
@@ -264,14 +269,14 @@ Character.clearUseSystem = function()
 	self.usingSystem = null
 end function
 
-Character.takeDamage = function(healthLost)
-	self.health = self.health - healthLost
-	// ToDo: die when health < 1
-end function
-
 Character.autoUse = function()
 	// if we are standing on a system square, start using that system
 	self.setUseSystem self.ship.systemAt(self.col, self.row)
+end function
+
+Character.takeDamage = function(healthLost)
+	self.health = self.health - healthLost
+	// ToDo: die when health < 1
 end function
 
 Character.setScreenPos = function(point)
