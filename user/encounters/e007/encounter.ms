@@ -17,7 +17,7 @@ end if
 encounter = new encounterBase.CombatEncounter
 
 encounter.consider = function(station, arriving)
-	probability = 0.80		// 80% chance of this encounter
+	probability = 0.10		// 80% chance of this encounter
 	if rnd > probability then return null
 	return self.consideration(station, arriving)
 end function

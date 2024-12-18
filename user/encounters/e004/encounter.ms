@@ -43,10 +43,7 @@ encounter.present = function(data)
 	if success then
 		description = "You search the ship and find some weapons."
 		if globals.hasIndex("playerShip") then
-			cell = playerShip.getAnyFreeCellPreferCargoInCell
-            newItem = new item.GunsItem
-			cell.placeItem newItem
-			game.renderer.renderContents cell
+			playerShip.addCargo new item.GunsItem
 		end if
 	else
 		description = "Your search yields no results."

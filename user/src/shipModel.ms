@@ -234,14 +234,14 @@ Ship.getCell = function(col, row)
 	return cell
 end function
 
-// Boolean value that is true if cell at [col][row] is a cargo exchange cell and is empty
+// Boolean value that is true if cell at [col][row] is an incoming-cargo cell and is empty
 Ship.isFreeCargoCell = function(col, row)
 	c = self.getCell(col, row)
 	if c == null then return false
 	return c.type == Celltype.CARGO_IN and c.contents == null
 end function
 
-// Boolean value that is true if cell at [col][row] is a cargo exchange cell and is not empty
+// Boolean value that is true if cell at [col][row] is an incoming-cargo cell and is not empty
 Ship.isFullCargoCell = function(col, row)
 	c = self.getCell(col, row)
 	if c == null then return false
@@ -254,8 +254,8 @@ Ship.isCargoOutCell = function(col, row)
 	return c.type == Celltype.CARGO_OUT
 end function
 
-// Returns a list of all currently free cargo cells on the ship
-Ship.getFreeCargoInCells = function()
+// Returns a list of all currently free cargo-in cells on the ship
+Ship.getFreeCargoInCells = function
 	result = []
 	for col in self.columnRange
 		for row in self.rowRange
@@ -265,26 +265,14 @@ Ship.getFreeCargoInCells = function()
 	return result
 end function
 
-// Returns a single currently free cargo cell on the ship, if any
-Ship.getAnyFreeCargoInCell = function()
+// Returns a single currently free cargo-in cell on the ship, if any
+Ship.getAnyFreeCargoInCell = function
 	for col in self.columnRange
 		for row in self.rowRange
 			if self.isFreeCargoCell(col, row) then return self.getCell(col,row)
 		end for
 	end for
 	return null
-end function
-
-Ship.getAnyFreeCellPreferCargoInCell = function()
-	result = self.getAnyFreeCargoInCell()
-	if result == null then
-		for col in self.columnRange
-			for row in self.rowRange
-				if self.getCell(col, row).contents == null then result = self.getCell(col,row)
-			end for
-		end for
-	end if
-	return result
 end function
 
 Ship.getFullCargoInCells = function()
@@ -307,14 +295,32 @@ Ship.getCargoOutCells = function()
 	return result
 end function
 
-Ship.addCargo = function(item)
-	if item isa Item then
-		freeCargoCells = self.getFreeCargoInCells
-		if freeCargoCells.len > 0 then freeCargoCells[0].placeItem item
-	end if
+// Return the first available (empty) cargo storage cell in the ship.
+// This is where new cargo should be stowed once on board.
+Ship.firstEmptyStorageCell = function
+	for spot in self.cargoSpots
+		c = self.getCell(spot[0], spot[1])
+		if not c.contents then return c
+	end for
 end function
 
-Ship.removeCargo = function()
+// Add cargo to the ship.  This is called by encounters when the encounter
+// results in the player gaining something.  It will try to place the new
+// item in a cargo-in spot, but if it can't do that, it will add it to the
+// first empty cargo storage spot.  Returns true on success, false on failure.
+Ship.addCargo = function(item)
+	qa.assert item isa Item
+	cell = self.getAnyFreeCargoInCell
+	if not cell then
+		cell = self.firstEmptyStorageCell
+		if not cell then return false  // (no available space; give up)
+	end if
+	cell.placeItem item
+	game.renderer.renderContents cell
+	return true
+end function
+
+Ship.removeCargo = function
 	removedItem = null
 	fullCargoCells = self.getFullCargoInCells
 	if fullCargoCells.len > 0 then

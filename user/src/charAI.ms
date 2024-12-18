@@ -176,14 +176,11 @@ Brain.findActivities = function(character)
 			// look for an empty cargo spot we can reach;
 			// only consider the first one, as that is most preferred
 			// (according to the ship designer)
-			for spot in ship.cargoSpots
-				c = ship.getCell(spot[0], spot[1])
-				if c.contents then continue
-				path = pathfinding.findPath(ship, character, c)
-				if path == null then continue
-				self.activities.push stow(path)
-				break
-			end for
+			storageCell = ship.firstEmptyStorageCell
+			if storageCell then
+				path = pathfinding.findPath(ship, character, storageCell)
+				if path then self.activities.push stow(path)
+			end if
 		end if
 	end if
 

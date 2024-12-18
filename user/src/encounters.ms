@@ -45,12 +45,14 @@ planEncounters = function(sourceStation, destStation)
 			cons.time = cons.distance * 2
 			cons.encounter = enc
 			possibilities.push cons
+			//print enc.sourcePath + " at " + cons.time + " while departing " + sourceStation.name
 		end if
 		cons = enc.consider(destStation, true)
 		if cons != null then
 			cons.time = 4 - cons.distance * 2
 			cons.encounter = enc
 			possibilities.push cons
+			//print enc.sourcePath + " at " + cons.time + " while approaching " + destStation.name
 		end if
 	end for
 		
