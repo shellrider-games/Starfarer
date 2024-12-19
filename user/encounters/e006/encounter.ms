@@ -36,7 +36,7 @@ encounter.addNPCsToCantina = function(station)
 		"She seems nervous when you approach her but after exchanging the " +
 		"datastick she relaxes a bit. She thanks you and wires you 500 credits."
 		self.showDialog game.station, dialogue
-		game.money = game.money + 500
+		game.money += 500
 		self.done = true
 	end if
 end function
@@ -54,7 +54,7 @@ encounter.presentNPC = function(npc)
 	description = npc.name + ": " + dialogue
 	choice  = self.showDialog(npc.station, description, ["Accept", "Decline"])
 	game.station.cantina.removeVal npc
-	if choice == 1 then return		//declined
+	if choice == 1 then return		// declined
 	self.started = true
 end function
 

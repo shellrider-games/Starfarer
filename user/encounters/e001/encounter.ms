@@ -36,7 +36,7 @@ encounter.present = function(data)
 	  value + " credits."
 
 	self.showDialog data, description
-	game.money = game.money + value
+	game.money += value
 end function
 
 

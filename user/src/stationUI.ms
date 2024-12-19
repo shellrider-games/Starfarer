@@ -197,7 +197,7 @@ showShipyard = function(station,left=550, bottom=150, width=350, height=400)
 end function
 
 upgradeButtonAction = function()
-	game.money = game.money - self.system.upgradeCost
+	game.money -= self.system.upgradeCost
 	self.system.upgrade
 	for i in range(upgradeButtons.len - 1)
 		btn = upgradeButtons[i]
@@ -227,13 +227,13 @@ end function
 
 buyFuel = function()
 	game.fuel = game.fuel + 1
-	game.money = game.money - costPerFuel
+	game.money -= costPerFuel
 	if game.fuel >= game.maxFuel  or game.money < costPerFuel then buyFuelBtn.stop
 end function
 
 buyRepair = function()
 	playerShip.hp = playerShip.hp + 1
-	game.money = game.money - costPerRepair
+	game.money -= costPerRepair
 	if playerShip.hp >= playerShip.maxHp or game.money < costPerFuel then repairButton.stop
 end function
 
@@ -257,7 +257,8 @@ NPCButton.draw = function()
 	dy = 0
 	if self.state == Button.PRESSED then dy = -2
 	disp.uiPixel.drawImage NPC_PORTRAIT, self.left + 4, self.bottom + 6 + dy, 64, 64
-	fonts.ArialBlack14.printRight self.npc.name, self.right - 8, self.top - 14 + dy
+	fonts.ArialBlack14.printRight self.npc.name, self.right - 8, self.top - 14 + dy,
+			1, color.black
 end function
 
 addCantinaNPC = function(left, bottom, width, height, npc)

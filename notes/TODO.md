@@ -7,9 +7,9 @@ Longer-term features can stay in DESIGNDOCUMENT or IDEAS.
 - Shipyard tab: don't offer systems your ship already has.
 - Add more ship types (including updating Freighter and Falcon).
 - Shipyard tab: offer ships for sale (include trade-in value of current ship).
-- Market tab: add price indicators for how cheap/expensive each commodity is compared to neighboring systems.
 - Ship: when a cargo item is sold, put some kind of overlay on the crate so it's clear this one has already been sold (until a crewman can grab it and put it off the ship).
 - Show which crewman is selected, both in the floating crew list, and with some (temporary) highlight of their avatar.
+- Add random available crewmen for hire, appearing in the cantinas.  For now, this can have just an up-front cost (recurring crew expenses can come later).
  
 With the above features, you'll be able to start in a small (Wren) ship, trade and explore to earn money, then upgrade to bigger ships.
 

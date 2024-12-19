@@ -200,7 +200,7 @@ demo = function()
 	progress = 0.1    
     while not key.pressed("q")
         wait 1
-        game.money = game.money - 10
+        game.money -= 10
         if rnd < 0.3 then playerShip.hp = playerShip.hp - 1
         if rnd < 0.3 then game.fuel = game.fuel - 1
         showTravel {"name":"Demo"}, progress, false

@@ -62,7 +62,13 @@ Character.maxHealth = 10
 Character.health = 10
 Character.brain = null		// added in boardShip, so we can select the right type of Brain
 
-Character.boardShip = function(ship)
+Character.boardShip = function(ship, atPosition=null)
+	if atPosition == null then
+		c = ship.getAnyFreeCargoInCell
+		if c == null then c = ship.firstEmptyStorageCell
+		if c then atPosition = [c.col, c.row]
+	end if
+	if atPosition then self.setMapPos atPosition
 	self.ship = ship
 	ship.minions.push self
 	if self.brain == null then self.brain = charAI.Brain.make
