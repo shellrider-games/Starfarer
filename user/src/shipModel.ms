@@ -721,6 +721,13 @@ Ship.draw = function()
 		end for
 	end for
 	
+	// draw ship systems
+	for system in self.systems
+		x = (system.col * CELLSIZE) + offX
+		y = (system.row * CELLSIZE) + offY
+		gfx.drawImage system.image, x, y
+	end for
+	
 	// draw walls
 	for col in self.columnRange
 		x = (col * CELLSIZE) + offX

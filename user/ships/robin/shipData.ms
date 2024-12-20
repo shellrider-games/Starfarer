@@ -1,3 +1,7 @@
+if locals == globals then
+	import "miscUtil"
+	ensureImport "shipModel"
+end if
 
 ship = new shipModel.Ship
 ship.name = "Robin"
@@ -9,7 +13,7 @@ ship.offset = [1,2]
 ship.digRoom 0,0,6,8
 ship.digRoom 2,8,2,1
 
-ship.placeRoom 0, 7, 2, 1 // Oxygene room
+ship.placeRoom 0, 7, 2, 1 // Oxygen room
 ship.placeRoom 0, 5, 2, 2 // Weapons room
 ship.placeRoom 0, 0, 2, 4 // Bottom Left room
 ship.placeRoom 2, 0, 2, 2 // Engine room
@@ -60,5 +64,4 @@ for row in range(0,3)
 	end for
 end for
 
-
-// ship.draw
+if locals == globals then ship.draw

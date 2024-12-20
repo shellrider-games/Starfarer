@@ -1,3 +1,7 @@
+if locals == globals then
+	import "miscUtil"
+	ensureImport "shipModel"
+end if
 
 ship = new shipModel.Ship
 ship.name = "Wren"
@@ -46,5 +50,4 @@ for row in [4, 3]
 	end for
 end for
 
-
-// ship.draw
+if locals == globals then ship.draw
