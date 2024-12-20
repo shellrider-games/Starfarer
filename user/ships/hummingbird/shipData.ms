@@ -35,11 +35,22 @@ ship.placeDoor 1, 2, SOUTH
 ship.getCell(0,2).type = Celltype.CARGO_IN
 ship.getCell(2,2).type = Celltype.CARGO_OUT
 
-ship.addSystem systems.Reactor.make(0,0)
+// This ship uses hull-integrated power, i.e., an invisible
+// (and undamageable), limited power production system.
+integratedPower = systems.Reactor.make
+integratedPower.maxPower = 5
+integratedPower.width = 0
+integratedPower.height = 0
+ship.addSystem integratedPower
 ship.addSystem systems.Doors.make
-//ship.addSystem systems.Engines.make(0,0)
+ship.addSystem systems.Engines.make(0,0)
 ship.addSystem systems.Controls.make(0,4)
 ship.addSystem systems.O2.make(1,3)
+// We don't have enough power to fully power all systems;
+// so start all systems set at power 1.
+for i in range(1, ship.systems.len-1)
+	ship.systems[i].setPoint = 1
+end for
 
 ship.cargoSpots = [[2,0], [2,1]]
 

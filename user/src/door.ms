@@ -7,7 +7,7 @@ if not globals.hasIndex("sounds") then import "sounds"
 if not globals.hasIndex("listUtil") then import "listUtil"
 
 // Door: a wall that can open and close.
-Door = spriteControllers.Animated
+Door = new spriteControllers.Animated
 Door.name = "door"
 Door.isOpen = false		// closed by default...
 Door.canOpen = true		// but can be opened!

@@ -235,9 +235,10 @@ Reactor.image = file.loadImage("/usr/pics/systems/reactor.png")
 Reactor.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
 Reactor.canUpgrade = true
 
-Reactor.make = function(col, row)
+Reactor.make = function(col, row, maxPower=null)
 	noob = new Reactor
 	noob.col = col; noob.row = row
+	if maxPower then noob.maxPower = maxPower
 	return noob
 end function
 
