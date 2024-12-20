@@ -4,7 +4,7 @@
 // invaders, fires, etc.).
 
 import "miscUtil"
-import "mathUtil"
+ensureImport "mathUtil"
 ensureImport "setup"
 ensureImport "listUtil"
 ensureImport "qa"
@@ -13,11 +13,6 @@ ensureImport "spriteControllers"
 ensureImport "door"
 ensureImport "item"
 ensureImport "constants"
-
-list.insertAfter = function(afterWhat, itemToAdd)
-	idx = self.indexOf(afterWhat)
-	self.insert idx+1, itemToAdd
-end function
 
 BROKEN_CELL_IMAGE = file.loadImage("/usr/pics/brokenCell.png")
 SHIELD_GLOW_IMAGE = file.loadImage("/usr/pics/shieldGlow.png")
@@ -374,6 +369,9 @@ demo = function()
 	ensureImport "systems"
 	ensureImport "shipModel"
 	globals.shipModel = shipModel
+	globals.shipDisplay = {}
+	shipDisplay.Renderer = Renderer
+	shipDisplay.renderers = renderers
 	currentDirectory = pwd
 	cd "/usr/ships/robin"
 	import "shipData"
@@ -383,9 +381,7 @@ demo = function()
 	rend = new Renderer
 	rend.renderShip ship
 
-
-	import "character"
-	globals.character = character
+	ensureImport "character"
 	crewmember = new character.Character
 	crewmember.setScreenPos rend.mapToScreenPosition([4,6])
 	crewmember.boardShip ship
@@ -394,8 +390,7 @@ demo = function()
 	pt = {}
 	pt.col = 0
 	pt.row = 0
-	rend.breakCell(pt)
-
+	rend.breakCell pt
 
 	while not key.pressed("escape")
 		if mouse.button then
@@ -404,7 +399,7 @@ demo = function()
 			wait 0.25
 		end if
 		if mouse.button(1) then
-			crate = new shipModel.Item
+			crate = new item.FoodItem
 			rend.putItem crate, rend.screenToMapPosition(mouse)
 		end if
 		crewmember.update
@@ -427,11 +422,14 @@ runUnitTests = function()
 	qa.assertEqual testRenderer.mapToScreenPosition([0,0]), {"x":250,"y":330}
 	qa.assertEqual testRenderer.mapToScreenPosition([0,1]), {"x":250,"y":330+globals.CELLSIZE}
 	qa.assertEqual testRenderer.mapToScreenPosition([-1,0]), {"x":250-globals.CELLSIZE,"y":330}
-	
-	clear
+
+	print "shipDisplay unit tests complete"
 end function
 
 init
 
-if locals == globals then demo
+if locals == globals then
+	runUnitTests
+	demo
+end if
 

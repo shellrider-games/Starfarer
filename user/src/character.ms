@@ -4,14 +4,15 @@
 // Characters are sprites that can face in any of 4 directions, and have simple
 // animations for walking around, "working", etc.
 
-import "constants"
-import "qa"
-import "spriteUtil"
-import "spriteControllers"
-import "mathUtil"
+import "importUtil"
+ensureImport "constants"
+ensureImport "qa"
+ensureImport "spriteUtil"
+ensureImport "spriteControllers"
+ensureImport "mathUtil"
 ensureImport "charAI"
 
-// Other constants
+// OensureImportther constants
 frameSize = 16		// width and height of each frame in the sprite sheet
 
 defaultSheet = file.loadImage("/usr/pics/pixelguy.png")

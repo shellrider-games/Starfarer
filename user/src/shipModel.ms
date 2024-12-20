@@ -316,7 +316,7 @@ Ship.addCargo = function(item)
 		if not cell then return false  // (no available space; give up)
 	end if
 	cell.placeItem item
-	game.renderer.renderContents cell
+	if game.renderer then game.renderer.renderContents cell
 	return true
 end function
 
@@ -951,5 +951,7 @@ end function
 
 if locals == globals then
 	shipModel = locals
+	game = {}
+	game.renderer = null
 	runUnitTests
 end if
