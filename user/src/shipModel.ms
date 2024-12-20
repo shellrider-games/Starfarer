@@ -681,14 +681,14 @@ end function
 Ship.draw = function()
 	gfx.clear
 	
-	drawWall = function(wallOrDoor, x1, y1, x2, y2, c)
+	drawWall = function(wallOrDoor, x1, y1, x2, y2, c="#6666AA")
 		if wallOrDoor == null then return
 		if wallOrDoor isa shipModel.Wall then
-			gfx.line x1, y1, x2, y2, c
+			gfx.line x1, y1, x2, y2, c, 2
 		else if wallOrDoor.isOpen then
-			gfx.line x1, y1, x2, y2, color.aqua
+			gfx.line x1, y1, x2, y2, color.aqua, 2
 		else
-			gfx.line x1, y1, x2, y2, color.red
+			gfx.line x1, y1, x2, y2, color.red, 2
 		end if
 	end function
 
@@ -717,6 +717,9 @@ Ship.draw = function()
 				if cell.contents != null then
 					gfx.fillRect x+3, y+3, CELLSIZE-6, CELLSIZE-6, color.yellow
 				end if
+				if self.cargoSpots.contains([col, row]) then
+					gfx.print "c", x+4, y+4, "#0000FF", "small"
+				end if
 			end if
 		end for
 	end for
@@ -735,10 +738,10 @@ Ship.draw = function()
 			y = (row * CELLSIZE) + offY
 			cell = self.map[col][row]
 			if cell == null then continue
-			drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y, color.green
-			drawWall cell.walls[WEST], x, y, x, y+CELLSIZE, color.brown
-			drawWall cell.walls[NORTH], x, y+CELLSIZE-1, x+CELLSIZE, y+CELLSIZE-1, color.navy
-			drawWall cell.walls[EAST], x+CELLSIZE-1, y, x+CELLSIZE-1, y+CELLSIZE, color.purple
+			drawWall cell.walls[SOUTH], x, y, x+CELLSIZE, y
+			drawWall cell.walls[WEST], x, y, x, y+CELLSIZE
+			drawWall cell.walls[NORTH], x, y+CELLSIZE-1, x+CELLSIZE, y+CELLSIZE-1
+			drawWall cell.walls[EAST], x+CELLSIZE-1, y, x+CELLSIZE-1, y+CELLSIZE
 		end for
 	end for
 end function

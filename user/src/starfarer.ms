@@ -43,9 +43,7 @@ Starfarer.fuel = 10
 Starfarer.maxFuel = 12
 
 Starfarer.init = function()
-	// We'll directly load the freighter ship type for now:
-	globals.playerShip = shipModel.newShipOfDesign("robin")
-//	globals.playerShip = shipModel.newShipOfDesign("wren")
+	globals.playerShip = shipModel.newShipOfDesign("hummingbird")
 	playerShip.isPlayer = true
 	playerShip.name = "Player One"	// just a name, do NOT depend on this!
 	playerShip.distributePower
