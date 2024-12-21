@@ -76,7 +76,7 @@ end if
 // between them.
 xbreaks = []
 diffs = []
-for i in range(1, columnDiffs.len-2)
+for i in range(2, columnDiffs.len-3)
 	if columnDiffs[i] > columnDiffs[i-1] and
 	  columnDiffs[i] > columnDiffs[i-2] and
 	  columnDiffs[i] > columnDiffs[i+1] and
@@ -151,11 +151,11 @@ end if
 // between them.
 ybreaks = []
 diffs = []
-for i in range(1, rowDiffs.len-2)
+for i in range(2, rowDiffs.len-3)
 	if rowDiffs[i] > rowDiffs[i-1] and
-	rowDiffs[i] > rowDiffs[i-2] and
-	rowDiffs[i] > rowDiffs[i+1] and
-	rowDiffs[i] > rowDiffs[i+2] then
+	  rowDiffs[i] > rowDiffs[i-2] and
+	  rowDiffs[i] > rowDiffs[i+1] and
+	  rowDiffs[i] > rowDiffs[i+2] then
 		ybreaks.push i*2
 		print ybreaks[-1], ""
 		if ybreaks.len > 1 then 
