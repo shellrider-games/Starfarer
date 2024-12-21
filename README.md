@@ -6,11 +6,13 @@ In this game, you command a spaceship, flying from system to system buying and s
 
 ## Status
 
-Starfarer is early in development.  It's playable, but just barely.
+Starfarer is early in development.  It's playable, but just barely.  See the [Design Document](notes/DESIGNDOCUMENT.md), [Ideas](notes/IDEAS.md) and [To-Do List](notes/TODO.md).
 
 ## How to Play
 
-You can play a (possibly stale) build of it here: https://shellrider.itch.io/starfarer
+You can play a (possibly stale) build of it online here: https://shellrider.itch.io/starfarer
+
+To play on your local desktop machine, download [Mini Micro](https://miniscript.org/MiniMicro), clone this repo, and mount the "user" folder in the top disk slot.  Then `reboot` Mini Micro to play the game.
 
 Quick gameplay tips:
 
@@ -23,3 +25,7 @@ Quick gameplay tips:
 - If it comes to combat, power up your weapons and shields, if you have any!  Space combat isn't like _Star Wars_; it's a slow, methodical affair, as the weapons take some time to power up before they can fire.
 
 - If you don't have any weapons, or you just don't want to fight, click Flee.  (Enjoy the ease of your escape; this will get harder as the game develops!)
+
+## Contributing
+
+Starfarer is open-source (obviously).  Contributions are welcome!  The game is written entirely in [MiniScript](https://miniscript.org) for Mini Micro.  Join the MiniScript discord (link at the bottom of the MiniScript home page), and use the #starfarer channel to discuss how you can help.
