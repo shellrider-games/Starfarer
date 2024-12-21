@@ -37,7 +37,7 @@ ship.placeDoor 0,1, NORTH
 ship.placeDoor 3,1, NORTH
 
 ship.getCell(0,2).type = Celltype.CARGO_IN
-ship.getCell(2,2).type = Celltype.CARGO_OUT
+ship.getCell(3,2).type = Celltype.CARGO_OUT
 
 ship.addSystem systems.Reactor.make(2,0)
 ship.addSystem systems.Doors.make
