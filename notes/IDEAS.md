@@ -12,10 +12,18 @@ This document is a place to jot down ideas that may not be fully fleshed out, or
 
 * **Betazoid**: empaths that are weak on combat but both sensitive and persuasive, giving them an advantage in negotiation.  (We'll probably need to think up a different name.)
 
+# Governments
+
+* **Republic**: democratic, reasonable laws, honest cops.  Yawn.
+
+* **Theocrat**: an oppressive dictatorship; many commodities are illegal, but with widespread corruption, officials can frequently be bribed.
+
+* **Anarchist**: no laws, anything goes, foul hives of scum and villany.
+
 
 # Commodities
 
-* **Robots**: buy on high-tech worlds, sell on low-tech ones.  But illegal on some (Luddite) worlds.  Also, trading in these makes any robot crewmembers unhappy, and they may refuse to participate.
+* **Robots**: buy on high-tech worlds, sell on low-tech ones.  But illegal on some (Luddite or machine-intelligence) worlds.  Also, trading in these makes any robot crewmembers unhappy, and they may refuse to participate.
 
 
 # Ship Equipment/Features
