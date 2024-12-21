@@ -35,6 +35,7 @@ ship.placeDoor 0,2, WEST
 ship.placeDoor 3,2, EAST
 ship.placeDoor 0,1, NORTH
 ship.placeDoor 3,1, NORTH
+ship.placeDoor 1,0, EAST
 
 ship.getCell(0,2).type = Celltype.CARGO_IN
 ship.getCell(3,2).type = Celltype.CARGO_OUT
