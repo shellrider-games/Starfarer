@@ -43,9 +43,8 @@ Starfarer.fuel = 10
 Starfarer.maxFuel = 12
 
 Starfarer.init = function()
-	globals.playerShip = shipModel.newShipOfDesign("hummingbird")
+	globals.playerShip = shipModel.newShipOfDesign("Wren")
 	playerShip.isPlayer = true
-	playerShip.name = "Player One"	// just a name, do NOT depend on this!
 	playerShip.distributePower
 
 	// give us a character

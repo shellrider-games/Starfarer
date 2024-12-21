@@ -9,7 +9,7 @@ ensureImport "qa"
 ensureImport "uiWidgets"
 ensureImport "item"
 ensureImport "stationModel"
-
+ensureImport "dialogs"
 
 costPerFuel = 10
 costPerRepair = 15
@@ -17,8 +17,6 @@ costPerRepair = 15
 SHOW_MARKET = 0
 SHOW_CANTINA = 1
 SHOW_SHIPYARD = 2
-
-NPC_PORTRAIT = file.loadImage("/usr/pics/portraits/person_male01.png") 
 
 currentTab = 0
 tabs = []
@@ -177,7 +175,7 @@ showShipyard = function(station,left=550, bottom=150, width=350, height=400)
 	font = fonts.ArialBlack14
 	y = top - 40
 	
-	font.print "System Upgrades:", left+20, y;	y = y - 50
+	font.print "System Upgrades:", left+20, y, 1, color.black;	y -= 50
 	col = 0
 	outer.upgradeButtons = []
 	for sys in playerShip.systems
@@ -191,12 +189,31 @@ showShipyard = function(station,left=550, bottom=150, width=350, height=400)
 		button.action = @upgradeButtonAction
 		button.start
 		upgradeButtons.push button
+		activeButtons.push button
 		col = 1 - col
-		if col == 0 then y = y - 32
+		if col == 0 then y -= 32
+	end for
+	
+	y -= 48
+	font.print "Ships For Sale:", left+20, y, 1, color.black; y -= 50
+	col = 0
+	// For now, we'll just have all ships available at all stations.
+	for ship in shipModel.allDesigns
+		button = new Button
+		if col==0 then x = midx - 160 else x = midx + 10
+		cost = ship.value	// for now; ToDo: fancier calculations
+		button.init x, y, 150, 30, ship.name + " ($" + round(cost/1000) + "K)"
+		button.backColor = background.mainColor
+		button.ship = ship
+		button.action = @buyShipButtonAction
+		button.start
+		activeButtons.push button
+		col = 1 - col
+		if col == 0 then y -= 32		
 	end for
 end function
 
-upgradeButtonAction = function()
+upgradeButtonAction = function
 	game.money -= self.system.upgradeCost
 	self.system.upgrade
 	for i in range(upgradeButtons.len - 1)
@@ -209,6 +226,47 @@ upgradeButtonAction = function()
 			btn.redraw
 		end if
 	end for
+end function
+
+buyShipButtonAction = function
+	where = "Shipyard"	// ToDo: add station name
+
+	ship = self.ship
+	if ship.name == playerShip.designName then
+		text = "You've already got a " + ship.name + 
+		  ".  I can't give you a decent trade for a new one."
+		return dialogs.showGeneric(where, text, ["OK"])
+	end if
+	
+	finalCost = ship.value - playerShip.value
+	if finalCost > 0 then
+		text = "Looking to upgrade?  You can trade in your " + 
+		  playerShip.designName + " for a brand new " +
+		  ship.name + " for the low, low, price of " +
+		  finalCost + " credits!"
+		if finalCost > game.money then
+			options = ["Too much for me."]
+		else
+			options = ["I'll take it!", "No thanks."]
+		end if
+		choice = dialogs.showGeneric(where, text, options)
+		if choice == options.len - 1 then return
+	else
+		text = "Downgrading, eh?  You must be hard up for cash. " +
+		  " Tell you what.  Trade in your " + playerShip.designName +
+		  ", and I'll give you this " + ship.name + " PLUS an extra " +
+		  (-finalCost) + " cold, hard credits."
+		options = ["It's a deal!", "No thanks."]
+		choice = dialogs.showGeneric(where, text, options)
+		if choice == options.len - 1 then return
+	end if
+
+	game.money -= finalCost
+	newShip = shipModel.newShipOfDesign(ship.name)
+	playerShip.transferContents newShip
+	globals.playerShip = newShip
+	game.renderer.stop
+	game.renderer.renderShip playerShip
 end function
 
 showNavButton = function()
@@ -256,7 +314,7 @@ NPCButton.draw = function()
 	super.draw
 	dy = 0
 	if self.state == Button.PRESSED then dy = -2
-	disp.uiPixel.drawImage NPC_PORTRAIT, self.left + 4, self.bottom + 6 + dy, 64, 64
+	disp.uiPixel.drawImage self.npc.portrait, self.left + 4, self.bottom + 6 + dy, 64, 64
 	fonts.ArialBlack14.printRight self.npc.name, self.right - 8, self.top - 14 + dy,
 			1, color.black
 end function

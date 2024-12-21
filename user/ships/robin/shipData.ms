@@ -5,6 +5,7 @@ end if
 
 ship = new shipModel.Ship
 ship.name = "Robin"
+ship.value = 20000
 
 ship.directory = file.curdir
 ship.init 6,9

@@ -5,6 +5,7 @@ end if
 
 ship = new shipModel.Ship
 ship.name = "Hummingbird"
+ship.value = 2000
 
 ship.directory = file.curdir
 ship.init 3,5
@@ -41,10 +42,14 @@ integratedPower = systems.Reactor.make
 integratedPower.maxPower = 5
 integratedPower.width = 0
 integratedPower.height = 0
+integratedPower.canUpgrade = false
 ship.addSystem integratedPower
 ship.addSystem systems.Doors.make
+ship.systems[-1].maxPower = 1
 ship.addSystem systems.Engines.make(0,0)
+ship.systems[-1].maxPower = 2
 ship.addSystem systems.Controls.make(0,4)
+ship.systems[-1].maxPower = 1
 ship.addSystem systems.O2.make(1,3)
 // We don't have enough power to fully power all systems;
 // so start all systems set at power 1.

@@ -19,6 +19,7 @@ end if
 
 npc = new stationModel.CantinaNPC
 npc.name = randomNames.human
+npc.portrait = file.loadImage("/usr/pics/portraits/human_male02.png")
 
 encounter = new encounterBase.Encounter
 

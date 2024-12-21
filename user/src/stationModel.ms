@@ -32,6 +32,7 @@ end function
 
 CantinaNPC = {}
 CantinaNPC.name = "Placeholder"
+CantinaNPC.portrait = file.loadImage("/usr/pics/portraits/human_male01.png")
 CantinaNPC.encounter = null
 
 Station.fillCantina = function()

@@ -74,7 +74,9 @@ update = function(dt)
 	if not pending then return
 	outer.elapsed = elapsed + dt
 	if elapsed > pending[0].time then
-		event = pending.pull
+		outer.event = pending.pull
+		// If you run into an encounter bug, examine encounters.event.encounter
+		// to figure out which one it is!
 		event.encounter.present event
 	end if
 end function

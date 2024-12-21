@@ -14,6 +14,7 @@ end if
 
 npc = new stationModel.CantinaNPC
 npc.name = randomNames.human
+npc.portrait = file.loadImage("/usr/pics/portraits/human_female01.png")
 
 encounter = new encounterBase.Encounter
 encounter.started = false
@@ -32,7 +33,7 @@ encounter.addNPCsToCantina = function(station)
 	end if
 	if self.started and game.station == self.starsystem then
 		dialogue = "You made the trip to " + self.starsystem.name + 
-		" as " + npc.name + " requested. You find the woman he described on the station. " + 
+		" as " + npc.name + " requested. You find the woman she described on the station. " + 
 		"She seems nervous when you approach her but after exchanging the " +
 		"datastick she relaxes a bit. She thanks you and wires you 500 credits."
 		self.showDialog game.station, dialogue
@@ -50,7 +51,7 @@ encounter.presentNPC = function(npc)
 	dialogue = "Hey, you look like someone that can relay a datastick to a friend " +
 	"of mine in the " + self.starsystem.name + " system.  " +
 	"I need to get some data there without any so-called authorities snooping " +
-	"around.  Ya get what I mean?  There are 500 credits in it for you..."
+	"around.  You know what I mean.  There are 500 credits in it for you..."
 	description = npc.name + ": " + dialogue
 	choice  = self.showDialog(npc.station, description, ["Accept", "Decline"])
 	game.station.cantina.removeVal npc

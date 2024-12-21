@@ -80,6 +80,7 @@ end function
 Ship = {}
 Ship._name = "Ship"		// (used in pprint output to represent this class)
 Ship.name = "Ship"		// actual name of the ship, as seen by players
+Ship.value = 10000		// base cost, in credits
 Ship.maxHp = 20			// hull points (basically ship health)
 Ship.hp = Ship.maxHp
 Ship.jumpFuel = 5		// how many jumps we can make before refueling
@@ -120,7 +121,11 @@ Ship.init = function(columns, rows)
 	self.systems = []
 end function
 
-Ship.distributePower = function()
+Ship.designName = function
+	return self.__isa.name
+end function
+
+Ship.distributePower = function
 	// Calculate power output from the reactor, and distribute it to
 	// all other systems, left to right, leaving any excess power
 	// in the reactor itself.
@@ -185,6 +190,34 @@ Ship.takeDamage = function(shot, mapPos)
 	// cell break check
 	if rnd < 0.10 then self.renderer.breakCell {"row":row, "col":col}
 	return true
+end function
+
+// Ship.transferContents: move everything the owner of a ship would
+// own from this ship to a new one.  This is used when the player
+// buys a new ship.  This does NOT include ship systems, but does
+// include cargo and crew.
+Ship.transferContents = function(newShip)
+	startPositions = []
+	for col in self.columnRange
+		for row in self.rowRange
+			cell = self.map[col][row]
+			if cell == null then continue			
+			crate = self.map[col][row].contents
+			if crate then
+				newShip.addPurchasedItemType crate.__isa
+				cell.contents = null
+			else if cell.walkable then
+				startPositions.push [col, row]
+			end if
+		end for
+	end for
+	startPositions = newShip.getFreeCargoInCells
+	for crewman in self.minions
+		newShip.minions.push crewman
+		crewman.ship = newShip
+		crewman.setMapPos startPositions.any
+	end for
+	self.minions = []
 end function
 
 // Ship.walkable: return whether an agent can step in the given
@@ -334,6 +367,7 @@ end function
 // a station market, and possibly other times (e.g. picked up an item in space).
 // We need to add this type to the "incoming" cargo queue.
 Ship.addPurchasedItemType = function(itemType)
+	qa.assert itemType isa item.Item
 	self.incomingTypes.push itemType
 end function
 
@@ -750,16 +784,34 @@ end function
 // Module-level utility functions
 //----------------------------------------------------------------------
 
+allDesigns = []
 
-newShipOfDesign = function(designName)
-	dir = pwd
-	cd "/usr/ships/" + designName
-	import "shipData"
-	cd dir
-	return new shipData.ship
+loadAll = function
+	outer.allDesigns = []
+	prevDir = pwd
+	for dirname in file.children("/usr/ships")
+		subdir = "/usr/ships/" + dirname
+		subfiles = file.children(subdir)
+		if not subfiles or subfiles.indexOf("shipData.ms") == null then continue
+		cd subdir
+		import "shipData"
+		allDesigns.push shipData.ship
+	end for
+	cd prevDir
 end function
 
-demo = function(shipName="freighter")
+newShipOfDesign = function(designName)
+	if not allDesigns then loadAll
+	for ship in allDesigns
+		if ship.name == designName then return new ship
+	end for
+	print "ERROR:"
+	print "shipModel.newShipOfDesign: so such design """ + designName + """"
+	exit
+	return null
+end function
+
+demo = function(shipName="robin")
 	clear
 	
 	globals.ship = newShipOfDesign(shipName)

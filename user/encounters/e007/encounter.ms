@@ -29,7 +29,7 @@ encounter.present = function(data)
 	  "Battle stations!"
 
 	// Prepare the enemy ship (with weapons!)
-	self.ship = shipModel.newShipOfDesign("robin")
+	self.ship = shipModel.newShipOfDesign("Robin")
 	self.ship.name = "Pirates"
 	self.ship.addSystem systems.Weapons.make(2,0)
 	self.ship.hp = 3	// a bit easy, but let's not take forever on a random encounter!
