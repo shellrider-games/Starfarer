@@ -200,7 +200,7 @@ Brain.update = function(character, dt=0.1)
 	for need in self.needs; need.update; end for
 	if self.doing != null then
 		// check whether we are done with this activity
-		self.doFor = self.doFor - dt
+		self.doFor -= dt
 		if self.doFor <= 0 or self.doing.isDone(character) then
 			self.applyBenefits self.doing
 			self.doing = null

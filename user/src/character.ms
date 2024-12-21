@@ -123,12 +123,10 @@ Character.update = function(dt=0.1)
 	if self.renderer == null then self.renderer = self.ship.renderer
 	// follow our path
 	if self.path then
-		moved = false
-		if self.walking then
-			moved = self.moveTowards(self.renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
-		end if
+		moved = self.moveTowards(self.renderer.mapToScreenPosition(self.path[0]), self.speed * dt)
 		if not moved then
 			// We've reached the cell we were immediately walking towards.
+			self.walking = false
 			// If we passed through a door, we're done with it now.
 			if self.usingDoor then
 				self.usingDoor.userDone self
