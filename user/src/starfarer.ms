@@ -238,6 +238,7 @@ Starfarer.handlePlayerShipClick = function(pos)
 			end if
 		end if
 		minionUI.updateSelection
+		self.renderer.updateSelectionReticles
 		return
 	end if
 	

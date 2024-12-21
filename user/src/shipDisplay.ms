@@ -96,9 +96,13 @@ end function
 Renderer.renderMinion = function(minion)
 	pos = self.mapToScreenPosition(minion)
 	minion.x = pos.x; minion.y = pos.y
+	minion.reticle.x = pos.x; minion.reticle.y = pos.y;
 	disp.shipSprites.sprites.removeVal minion
+	disp.shipSprites.sprites.removeVal minion.reticle
 	disp.shipSprites.sprites.push minion
+	disp.shipSprites.sprites.push minion.reticle
 	self.sprites.push minion
+	self.sprites.push minion.reticle
 end function
 
 Renderer.placeDoor = function(door, cell, direction)
@@ -303,6 +307,16 @@ Renderer.renderAirValues = function()
 		end for
 		self.ship.airChanged = false
 	end if
+end function
+
+Renderer.updateSelectionReticles = function()
+	for minion in self.ship.minions
+		if game.selectedMinion.contains(minion) then
+			minion.reticle.tint = color.lime
+		else
+			minion.reticle.tint = color.clear
+		end if
+	end for
 end function
 
 Renderer.stop = function()

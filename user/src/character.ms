@@ -16,6 +16,7 @@ ensureImport "charAI"
 frameSize = 16		// width and height of each frame in the sprite sheet
 
 defaultSheet = file.loadImage("/usr/pics/pixelguy.png")
+reticleImage = file.loadImage("/usr/pics/selected_unit_marker.png")
 
 getAnim = function(sheet, row=0, fromCol=0, count=1)
 	frames = []
@@ -62,6 +63,7 @@ Character.usingSystem = null
 Character.maxHealth = 10
 Character.health = 10
 Character.brain = null		// added in boardShip, so we can select the right type of Brain
+Character.reticle = null
 
 Character.boardShip = function(ship, atPosition=null)
 	if atPosition == null then
@@ -70,6 +72,10 @@ Character.boardShip = function(ship, atPosition=null)
 		if c then atPosition = [c.col, c.row]
 	end if
 	if atPosition then self.setMapPos atPosition
+	self.reticle = new Sprite
+	self.reticle.image = reticleImage
+	self.reticle.tint = color.clear
+	self.reticle.update = function(dt = 0.1); end function
 	self.ship = ship
 	ship.minions.push self
 	if self.brain == null then self.brain = charAI.Brain.make
@@ -178,6 +184,9 @@ Character.update = function(dt=0.1)
 		if ce.broken != true then self.renderer.removeBroken(mapPos)
 	else if self.usingSystem then
 		self.useSystem dt
+	end if
+	if self.reticle then
+		self.reticle.x = self.x; self.reticle.y = self.y;
 	end if
 end function
 
