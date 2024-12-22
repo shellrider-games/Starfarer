@@ -4,16 +4,19 @@ Longer-term features can stay in DESIGNDOCUMENT or IDEAS.
 
 ## Features
 
-- Shipyard tab: don't offer systems your ship already has.
-- Add more ship types (including updating Freighter and Falcon).
-- Shipyard tab: offer ships for sale (include trade-in value of current ship).
+- Shipyard tab: offer sale of new systems your ship doesn't already have.
+- Add more ship types.
 - Ship: when a cargo item is sold, put some kind of overlay on the crate so it's clear this one has already been sold (until a crewman can grab it and put it off the ship).
-- Show which crewman is selected, both in the floating crew list, and with some (temporary) highlight of their avatar.
-- Add random available crewmen for hire, appearing in the cantinas.  For now, this can have just an up-front cost (recurring crew expenses can come later).
  
-With the above features, you'll be able to start in a small (Wren) ship, trade and explore to earn money, then upgrade to bigger ships.
+With the above features, you'll be able to start in a small (Hummingbird) ship, trade and explore to earn money, then upgrade to bigger ships.
 
+Then, fleshing out the various mechanics:
 
+- Add a crewman silhouette in the power area of any ship system that can be crewed.  Having a crewmember there is equivalent to an extra bar of power.  (_Later_, some systems may have two silhouettes, supporting up to two crew.)
+- Rework system UI to better support controls.  Maybe tap the icon at bottom to switch to controls for that icon, rather than toggle power fully on/off.
+- Add a Captain's Log at bottom right (when no system controls are selected).  This keeps a log of recent major events.
+- "Ship for Sale" UI should show the ship and give stats about it, so you can make an informed purchase.
+- A "maintenance bay" UI should allow you to install, remove, or upgrade your ship systems (including invisible systems and hull upgrades) right on a map of your ship.  Maybe this is where you do repairs, too.
 
 ## Bugs
 

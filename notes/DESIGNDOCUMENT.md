@@ -141,6 +141,7 @@ While most cargo buying/selling is done at planet/station markets, you may occas
 ## Combat
 
 Ship-to-ship combat is similar to FTL: it happens in real time, with an RTS-like element of directing your crew while also managing ship resources (mainly power) and weapons.  Actions you may take during combat:
+
 - rebalance power among ship systems
 - fire weapons (each weapon has a cooldown period)
 - open/close doors
