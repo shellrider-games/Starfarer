@@ -539,6 +539,12 @@ Ship.update = function(dt)
 	self.airSimulation dt
 end function
 
+Ship.healCrew = function
+	for crewman in self.minions
+		crewman.health = crewman.maxHealth
+	end for
+end function
+
 //----------------------------------------------------------------------
 // Ship setup methods: these are used to prepare a ship map.
 //----------------------------------------------------------------------

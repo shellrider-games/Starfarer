@@ -78,6 +78,7 @@ Starfarer.enterState = function(newState)
 	self.exitState newState
 	
 	if newState == self.STATE_AT_STATION then
+		playerShip.healCrew
 		playerUI.show
 		minionUI.show playerShip.minions
 		stationUI.tabs = []
@@ -85,21 +86,21 @@ Starfarer.enterState = function(newState)
 		self.station.fillCantina
 		stationUI.show self.station
 		stationUI.navBtn.action = function()
-			game.enterState Starfarer.STATE_NAVMAP
+			self.enterState Starfarer.STATE_NAVMAP
 		end function
 		
 	else if newState == self.STATE_NAVMAP then
 		if self.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
 		starmap.draw self.stations, self.station, jumpLimit
 		starmap.backBtn.action = function()
-			game.enterState Starfarer.STATE_AT_STATION
+			self.enterState Starfarer.STATE_AT_STATION
 		end function
 		starmap.jumpCallback = function(newStation)
-			if newStation == game.station then
-				game.enterState Starfarer.STATE_AT_STATION
+			if newStation == self.station then
+				self.enterState Starfarer.STATE_AT_STATION
 			else
-				game.nextStation = newStation
-				game.enterState Starfarer.STATE_TRAVEL
+				self.nextStation = newStation
+				self.enterState Starfarer.STATE_TRAVEL
 			end if
 		end function
 	
