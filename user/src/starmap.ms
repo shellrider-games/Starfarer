@@ -33,7 +33,7 @@ jumpCallback = null
 //----------------------------------------------------------------------
 init = function()
 	// load star images
-	sheet = file.loadImage("/usr/pics/stars/starSheet.png")
+	sheet = pics.get("stars/starSheet.png")
 	qa.assert sheet != null
 	outer.starImages = list.init2d(8,3)
 	for col in range(0,7)
@@ -45,7 +45,7 @@ init = function()
 	
 	// prepare star selection sprite
 	outer.selectionSprite = new Sprite
-	selectionSprite.image = file.loadImage("/usr/pics/starCursor.png")
+	selectionSprite.image = pics.get("starCursor")
 end function
 
 //----------------------------------------------------------------------

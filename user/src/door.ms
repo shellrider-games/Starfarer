@@ -60,7 +60,7 @@ end function
 
 init = function()
 	// prepare the Door sprite subclass
-	doorSheet = file.loadImage("/usr/pics/doors.png")
+	doorSheet = pics.get("doors")
 	frames = []
 	for i in range(0,3)
 		frames.push doorSheet.getImage(i*4, 0, 4, doorSheet.height)

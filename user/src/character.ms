@@ -11,12 +11,13 @@ ensureImport "spriteUtil"
 ensureImport "spriteControllers"
 ensureImport "mathUtil"
 ensureImport "charAI"
+ensureImport "pics"
 
 // OensureImportther constants
 frameSize = 16		// width and height of each frame in the sprite sheet
 
-defaultSheet = file.loadImage("/usr/pics/pixelguy.png")
-reticleImage = file.loadImage("/usr/pics/selected_unit_marker.png")
+defaultSheet = pics.get("pixelguy")
+reticleImage = pics.get("selected_unit_marker")
 
 getAnim = function(sheet, row=0, fromCol=0, count=1)
 	frames = []

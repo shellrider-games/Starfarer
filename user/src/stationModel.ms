@@ -1,10 +1,11 @@
 
-if not globals.hasIndex("setup") then import "setup"
-if not globals.hasIndex("qa") then import "qa"
-if not globals.hasIndex("item") then import "item"
-if not globals.hasIndex("randomNames") then import "randomNames"
 if not globals.hasIndex("miscUtil") then import "miscUtil"
-import "mathUtil"
+ensureImport "setup"
+ensureImport "qa"
+ensureImport "item"
+ensureImport "randomNames"
+ensureImport "mathUtil"
+ensureImport "pics"
 
 Station = {}
 Station.name = "DEFAULT NAME"
@@ -32,7 +33,7 @@ end function
 
 CantinaNPC = {}
 CantinaNPC.name = "Placeholder"
-CantinaNPC.portrait = file.loadImage("/usr/pics/portraits/human_male01.png")
+CantinaNPC.portrait = pics.portrait.human.any
 CantinaNPC.encounter = null
 
 Station.fillCantina = function()

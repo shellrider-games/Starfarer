@@ -15,11 +15,12 @@ if not globals.hasIndex("encounterBase") then
 	import "item"
 	import "listUtil"
 	import "stationModel"
+	import "pics"
 end if
 
 npc = new stationModel.CantinaNPC
 npc.name = randomNames.human
-npc.portrait = file.loadImage("/usr/pics/portraits/human_male02.png")
+npc.portrait = pics.portrait.human.male[2]
 
 encounter = new encounterBase.Encounter
 

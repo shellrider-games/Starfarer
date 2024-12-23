@@ -51,7 +51,7 @@ System.makeInvisible = function(name="invisible", maxPower=3)
 	noob.repairLevel = maxPower
 	noob.curPower = maxPower
 	noob.setPoint = maxPower
-	noob.icon = file.loadImage("/usr/pics/systemIcons/" + name + ".png")
+	noob.icon = pics.get("systemIcons/" + name)
 	return noob
 end function
 
@@ -118,8 +118,8 @@ MedBay.name = "Med Bay"
 MedBay.maxPower = 1
 MedBay.width = 2
 MedBay.height = 2
-MedBay.image = file.loadImage("/usr/pics/systems/medbay.png")
-MedBay.icon = file.loadImage("/usr/pics/systemIcons/medbay.png")
+MedBay.image = pics.get("systems/medbay")
+MedBay.icon = pics.get("systemIcons/medbay")
 MedBay.canUpgrade = function(); return self.maxPower < 3; end function
 
 MedBay.make = function(col, row)
@@ -146,8 +146,8 @@ O2.name = "O2"
 O2.maxPower = 1
 O2.width = 2
 O2.height = 1
-O2.image = file.loadImage("/usr/pics/systems/O2.png")
-O2.icon = file.loadImage("/usr/pics/systemIcons/O2.png")
+O2.image = pics.get("systems/O2.png")
+O2.icon = pics.get("systemIcons/O2.png")
 O2.canUpgrade = function(); return self.maxPower < 3; end function
 
 O2.make = function(col, row)
@@ -173,8 +173,8 @@ Sensors._name = "Sensors"
 Sensors.name = "Sensors"
 Sensors.width = 2
 Sensors.height = 1
-Sensors.image = file.loadImage("/usr/pics/systems/sensors.png")
-Sensors.icon = file.loadImage("/usr/pics/systemIcons/sensors.png")
+Sensors.image = pics.get("systems/sensors.png")
+Sensors.icon = pics.get("systemIcons/sensors.png")
 Sensors.canUpgrade = function(); return self.maxPower < 3; end function
 
 Sensors.make = function(col, row)
@@ -195,8 +195,8 @@ Controls.name = "Controls"
 Controls.width = 2
 Controls.height = 1
 Controls.maxPower = 2
-Controls.image = file.loadImage("/usr/pics/systems/controls.png")
-Controls.icon = file.loadImage("/usr/pics/systemIcons/controls.png")
+Controls.image = pics.get("systems/controls.png")
+Controls.icon = pics.get("systemIcons/controls.png")
 
 Controls.make = function(col, row)
 	noob = new Controls
@@ -212,8 +212,8 @@ Engines._name = "Engines"
 Engines.name = "Engines"
 Engines.width = 2
 Engines.height = 2
-Engines.image = file.loadImage("/usr/pics/systems/engines.png")
-Engines.icon = file.loadImage("/usr/pics/systemIcons/engines.png")
+Engines.image = pics.get("systems/engines.png")
+Engines.icon = pics.get("systemIcons/engines.png")
 Engines.canUpgrade = function(); return self.maxPower < 3; end function
 
 Engines.make = function(col, row)
@@ -231,8 +231,8 @@ Reactor.name = "Reactor"
 Reactor.maxPower = 8
 Reactor.width = 2
 Reactor.height = 2
-Reactor.image = file.loadImage("/usr/pics/systems/reactor.png")
-Reactor.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
+Reactor.image = pics.get("systems/reactor.png")
+Reactor.icon = pics.get("systemIcons/reactor.png")
 Reactor.canUpgrade = true
 
 Reactor.make = function(col, row, maxPower=null)
@@ -253,7 +253,7 @@ Doors.width = 0
 Doors.height = 0
 Doors.maxPower = 1
 Doors.setPoint = 1
-Doors.icon = file.loadImage("/usr/pics/systemIcons/doors.png")
+Doors.icon = pics.get("systemIcons/doors.png")
 Doors.canUpgrade = function(); return self.maxPower < 3; end function
 
 Doors.make = function()
@@ -348,8 +348,8 @@ Shields.name = "Shields"
 Shields.maxPower = 2
 Shields.width = 2
 Shields.height = 2
-Shields.image = file.loadImage("/usr/pics/systems/shields.png")
-Shields.icon = file.loadImage("/usr/pics/systemIcons/shields.png")
+Shields.image = pics.get("systems/shields.png")
+Shields.icon = pics.get("systemIcons/shields.png")
 Shields.curLayers = 0	// current number of active shield layers (plus fractional charge)
 Shields.canUpgrade = function(); return self.maxPower < 6; end function
 
@@ -376,8 +376,8 @@ Weapons.powerControlClass = uiWidgets.ChargedPowerControl
 Weapons.maxPower = 4
 Weapons.width = 2
 Weapons.height = 2
-Weapons.image = file.loadImage("/usr/pics/systems/weapons.png")
-Weapons.icon = file.loadImage("/usr/pics/systemIcons/weapons.png")
+Weapons.image = pics.get("systems/weapons.png")
+Weapons.icon = pics.get("systemIcons/weapons.png")
 Weapons.curCharge = 0		// current amount of charge
 Weapons.maxCharge = 30		// charge level at which we fire
 Weapons.shots = []
@@ -430,7 +430,7 @@ Weapons.fire = function(owningShip)
 end function
 
 Shot = new Sprite
-Shot.image = file.loadImage("/usr/pics/blueShot.png")
+Shot.image = pics.get("blueShot.png")
 Shot.target = null
 Shot.travelTime = 2
 Shot.timeTravelled = 0

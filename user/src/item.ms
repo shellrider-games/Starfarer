@@ -9,7 +9,7 @@ if not globals.hasIndex("spriteUtil") then import "spriteUtil"
 
 // Item (sprite subclass)
 Item = new Sprite
-Item.image = file.loadImage("/usr/pics/crate_blank.png")
+Item.image = pics.crates.blank
 Item.name = "item"
 Item.blocksWalking = true
 Item.col = 0
@@ -50,22 +50,22 @@ end function
 
 // Now let's make a subclass for each of our commodity types.
 FoodItem = new Item
-FoodItem.image = file.loadImage("/usr/pics/crate_food.png")
+FoodItem.image = pics.crates.food
 FoodItem.name = "food"
 FoodItem.typicalValue = 50
 
 GunsItem = new Item
-GunsItem.image = file.loadImage("/usr/pics/crate_guns.png")
+GunsItem.image = pics.crates.guns
 GunsItem.name = "guns"
 GunsItem.typicalValue = 150
 
 MedsItem = new Item
-MedsItem.image = file.loadImage("/usr/pics/crate_medicine.png")
+MedsItem.image = pics.crates.medicine
 MedsItem.name = "medicine"
 MedsItem.typicalValue = 250
 
 WaterItem = new Item
-WaterItem.image = file.loadImage("/usr/pics/crate_water.png")
+WaterItem.image = pics.crates.water
 WaterItem.name = "water"
 WaterItem.typicalValue = 25
 

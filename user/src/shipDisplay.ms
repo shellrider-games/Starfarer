@@ -13,9 +13,10 @@ ensureImport "spriteControllers"
 ensureImport "door"
 ensureImport "item"
 ensureImport "constants"
+ensureImport "pics"
 
-BROKEN_CELL_IMAGE = file.loadImage("/usr/pics/brokenCell.png")
-SHIELD_GLOW_IMAGE = file.loadImage("/usr/pics/shieldGlow.png")
+BROKEN_CELL_IMAGE = pics.get("brokenCell")
+SHIELD_GLOW_IMAGE = pics.get("shieldGlow")
 
 init = function()
 	// clear the sprite display, and load the ship background
@@ -151,7 +152,7 @@ end function
 
 TargetSprite = new Sprite
 TargetSprite.update = function(dt); end function
-TargetSprite.srcImage = file.loadImage("/usr/pics/reticles.png")
+TargetSprite.srcImage = pics.get("reticles")
 TargetSprite.scale = 0.75
 TargetSprite.tint = color.red
 TargetSprite.images = []

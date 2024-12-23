@@ -5,6 +5,7 @@
 // try to at least group things under their own little maps.
 
 clear
+ensureImport "pics"
 
 // Prepare the "disp" map, containing all our displays.
 // Set up and configure those displays.
@@ -15,7 +16,7 @@ globals.disp = {}
 display(7).mode = displayMode.pixel
 disp.background = display(7)
 disp.background.clear color.black, 1920, 1280
-disp.background.drawImage(file.loadImage("/usr/pics/stars.png"), 0, 0)
+disp.background.drawImage pics.get("stars")
 
 // disp.shipSprites: a SpriteDisplay for ship maps, plus 
 // characters and objects that appear on or around the ships.

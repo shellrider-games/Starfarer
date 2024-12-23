@@ -22,7 +22,6 @@ ensureImport "playerUI"
 ensureImport "minionUI"
 ensureImport "effects"
 ensureImport "qa"
-globals.qa = qa
 ensureImport "encounters"
 
 Starfarer = {}

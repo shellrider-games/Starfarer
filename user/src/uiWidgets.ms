@@ -9,6 +9,7 @@ ensureImport "setup"
 ensureImport "qa"
 ensureImport "stringUtil"
 ensureImport "listUtil"
+ensureImport "pics"
 
 max = @miscUtil.max; min = @miscUtil.min
 
@@ -24,12 +25,7 @@ ALIGNRIGHT = 2
 // General utility methods
 //----------------------------------------------------------------------
 
-loadImage = function(name)
-	path = "/usr/pics/" + name + ".png"
-	img = file.loadImage(path)
-	if img == null then qa.abort("Image not found: " + path)
-	return img
-end function
+loadImage = @pics.get
 
 load9SliceImage = function(name, left=12, bottom=12, right=12, top=12)
 	img = loadImage(name)
@@ -932,7 +928,7 @@ demo = function()
 	horizontalSlider.start
 	
 	fakeSystem = systems.System.makeInvisible()
-	fakeSystem.icon = file.loadImage("/usr/pics/systemIcons/reactor.png")
+	fakeSystem.icon = pics.get("systemIcons/reactor")
 	energyBar = new PowerControl
 	energyBar.init 80, 0, 40, 0
 	energyBar.initSystem fakeSystem
