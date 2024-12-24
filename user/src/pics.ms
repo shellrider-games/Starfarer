@@ -76,25 +76,27 @@ demo = function
 	gfx.print "portrait.human.male:", x, y, color.silver, "small"
 	y -= 64
 	for p in portrait.human.male
-		if p == null then drawX x, y, 64, 64 else gfx.drawImage p, x, y
-		if p == null then x += 64 else x += p.width
-		if x + 64 > 960 then
+		if p == null then w = 64 else w = p.width
+		if x + w > 960 then
 			x = 960 - 64*8
 			y -= 64
 		end if
+		if p == null then drawX x, y, 64, 64 else gfx.drawImage p, x, y
+		x += w
 	end for
 	
-	y -= 100
+	y -= 24
 	x = 960 - 64*8
 	gfx.print "portrait.human.female:", x, y, color.silver, "small"
 	y -= 64
 	for p in portrait.human.female
-		if p == null then drawX x, y, 64, 64 else gfx.drawImage p, x, y
-		if p == null then x += 64 else x += p.width
-		if x + 64 > 960 then
+		if p == null then w = 64 else w = p.width
+		if x + w > 960 then
 			x = 960 - 64*8
 			y -= 64
 		end if
+		if p == null then drawX x, y, 64, 64 else gfx.drawImage p, x, y
+		x += w
 	end for
 	
 	
