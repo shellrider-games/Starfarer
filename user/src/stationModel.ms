@@ -97,7 +97,7 @@ randomStation = function()
 	else
 		result.starSize = mathUtil.randRange(0.25, 0.5)
 	end if
-	for type in [item.FoodItem, item.WaterItem, item.MedsItem, item.GunsItem]
+	for type in item.allTypes
 		if rnd < 0.1 then continue	// commodity not traded here
 		value = floor(type.typicalValue * (1 + mathUtil.randNormal/4))
 		result.addCommodityToMarket type, value

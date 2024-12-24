@@ -137,6 +137,18 @@ Some commodities are legal everywhere; others are illegal in certain systems (an
 
 While most cargo buying/selling is done at planet/station markets, you may occasionally encounter another trader in open space (i.e. when departing or arriving).  In this case the other ship presents the market UI for any items they are willing to buy or sell.  Goods may also be gained or lost (sometimes in exchange for money) by scripted events.
 
+### Commodities
+
+- Water (low tech)
+- Wood (low tech)
+- Food (low tech)
+- Ore (low tech)
+- Medicine (med/high tech)
+- Machines (high tech)
+- Robots (high tech; illegal on AI worlds)
+- Games (illegal on theocratic worlds)
+- Firearms (illegal on democratic and theocratic worlds)
+- Narcotics (illegal on all but anarchist worlds)
 
 ## Combat
 

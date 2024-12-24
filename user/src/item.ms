@@ -49,26 +49,58 @@ Item.lerpTo = function(screenPos, scale=null, duration=0.5)
 end function
 
 // Now let's make a subclass for each of our commodity types.
-FoodItem = new Item
-FoodItem.image = pics.crates.food
-FoodItem.name = "food"
-FoodItem.typicalValue = 50
-
-GunsItem = new Item
-GunsItem.image = pics.crates.guns
-GunsItem.name = "guns"
-GunsItem.typicalValue = 150
-
-MedsItem = new Item
-MedsItem.image = pics.crates.medicine
-MedsItem.name = "medicine"
-MedsItem.typicalValue = 250
-
 WaterItem = new Item
 WaterItem.image = pics.crates.water
 WaterItem.name = "water"
 WaterItem.typicalValue = 25
 
+FoodItem = new Item
+FoodItem.image = pics.crates.food
+FoodItem.name = "food"
+FoodItem.typicalValue = 115
+
+WoodItem = new Item
+WoodItem.image = pics.crates.wood
+WoodItem.name = "wood"
+WoodItem.typicalValue = 250
+
+OreItem = new Item
+OreItem.image = pics.crates.ore
+OreItem.name = "ore"
+OreItem.typicalValue = 400
+
+GamesItem = new Item
+GamesItem.image = pics.crates.games
+GamesItem.name = "games"
+GamesItem.typicalValue = 260
+
+MedsItem = new Item
+MedsItem.image = pics.crates.medicine
+MedsItem.name = "medicine"
+MedsItem.typicalValue = 500
+
+MachinesItem = new Item
+MachinesItem.image = pics.crates.machines
+MachinesItem.name = "machines"
+MachinesItem.typicalValue = 750
+
+RobotsItem = new Item
+RobotsItem.image = pics.crates.robots
+RobotsItem.name = "robots"
+RobotsItem.typicalValue = 2500
+
+GunsItem = new Item
+GunsItem.image = pics.crates.guns
+GunsItem.name = "firearms"
+GunsItem.typicalValue = 950
+
+NarcoticsItem = new Item
+NarcoticsItem.image = pics.crates.narcotics
+NarcoticsItem.name = "narcotics"
+NarcoticsItem.typicalValue = 2000
+
+allTypes = [WaterItem, FoodItem, WoodItem, OreItem, MedsItem, 
+			MachinesItem, RobotsItem, GamesItem, GunsItem, NarcoticsItem]
 
 // Item is an important enough class to push itself into the global namespace.
 globals.Item = Item

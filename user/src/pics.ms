@@ -23,7 +23,7 @@ get = function(path, failSilently=false)
 end function
 
 crates = {}	// key: "blank", "food", etc.; value: Image
-for name in "blank food guns medicine water".split
+for name in "blank food guns medicine water games machines narcotics ore robots wood".split
 	crates[name] = get("crate_" + name)
 end for
 

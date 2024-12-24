@@ -33,7 +33,7 @@ end for
 // Setup/draw the station UI.
 
 // Draw station UI according to station model
-show = function(station,left=550, bottom=150, width=350, height=400)
+show = function(station,left=550, bottom=80, width=350, height=460)
 	
 	for button in activeButtons
 		button.stop
@@ -112,10 +112,10 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 	
 	printPanelTitle "MARKET", station, left, bottom, height
 	
-	y = top - 60
+	y = top - 32
 
 	for commodity in station.market
-		y = y - 40
+		y = y - 38
 		allPrices = []
 		for st in game.stations
 			price = st.getCommoditySellPrice(commodity.itemType)
@@ -124,21 +124,6 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 		avgPrice = round(allPrices.mean)
 		addCommodity left, y, width, 40, commodity.itemType, commodity.itemPrice, avgPrice
 	end for
-	
-	// Buy (1) Fuel button
-	x = right - 20
-	if game.fuel < game.maxFuel and game.money > costPerFuel then
-		outer.buyFuelBtn = addBottomButton("Fuel ($" + costPerFuel + ")", x)
-		buyFuelBtn.action = @buyFuel
-	end if
-	x = x - 120
-	
-	// Repair (1) button
-	if playerShip.hp < playerShip.maxHp and game.money > costPerRepair then
-		outer.repairButton = addBottomButton("Repair ($" + costPerRepair + ")", x)
-		repairButton.action = @buyRepair
-	end if
-	x = x - 120
 end function
 
 printPanelTitle = function(text, station, left=550, bottom=150, height=400)
@@ -211,6 +196,21 @@ showShipyard = function(station,left=550, bottom=150, width=350, height=400)
 		col = 1 - col
 		if col == 0 then y -= 32		
 	end for
+	
+	// Buy (1) Fuel button
+	x = right - 20
+	if game.fuel < game.maxFuel and game.money > costPerFuel then
+		outer.buyFuelBtn = addBottomButton("Fuel ($" + costPerFuel + ")", x)
+		buyFuelBtn.action = @buyFuel
+	end if
+	x = x - 120
+	
+	// Repair (1) button
+	if playerShip.hp < playerShip.maxHp and game.money > costPerRepair then
+		outer.repairButton = addBottomButton("Repair ($" + costPerRepair + ")", x)
+		repairButton.action = @buyRepair
+	end if
+	x = x - 120
 end function
 
 upgradeButtonAction = function
@@ -354,7 +354,7 @@ addCommodity = function(left, bottom, width, height, itemType, price, avgPrice)
 	fonts.Arial14.print "$" + price, x[1], midY - 6, 1, color.black
 	diff = price - avgPrice
 	if diff >= 0 then sign = "+" else sign = "-"
-	fonts.Arial14.print "(" + sign + abs(diff) + ")", x[1] + 40, midY - 6, 1, color.gray
+	fonts.Arial14.print "(" + sign + abs(diff) + ")", x[1] + 48, midY - 6, 1, color.gray
 		
 	// column 3: sell button
 	sellBtn = new Button
