@@ -150,6 +150,16 @@ Renderer.renderContents = function(cell)
 	self.sprites.push item
 end function
 
+// removeCellContents: remove the sprite for the item in the given
+// cell, and also clear it from the cell.  Return the item.
+Renderer.removeCellContents = function(cell)
+	if cell == null or cell.contents == null then return null
+	item = cell.contents
+	disp.shipSprites.sprites.removeVal item
+	cell.contents = null
+	return item
+end function
+
 TargetSprite = new Sprite
 TargetSprite.update = function(dt); end function
 TargetSprite.srcImage = pics.get("reticles")

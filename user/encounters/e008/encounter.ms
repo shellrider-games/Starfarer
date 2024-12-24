@@ -27,7 +27,9 @@ encounter.present = function(data)
 	  "their unique cargo in exchange for some fuel. " +
 	  "They need 1 unit of fuel and offer you a box of cargo in exchange " 
 
-	choice = self.showDialog(data, description, ["Trade.", "Decline."])
+	opts = new DialogOptions
+	opts.buttonsPerRow = 2
+	choice = self.showDialog(data, description, ["Trade.", "Decline."], opts)
 	if choice == 1 then return	// declined
 
 	itemClasses = [item.FoodItem, item.GunsItem, item.MedsItem, item.WaterItem]

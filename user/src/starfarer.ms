@@ -85,18 +85,18 @@ Starfarer.enterState = function(newState)
 		stationUI.activeButtons = []
 		self.station.fillCantina
 		stationUI.show self.station
-		stationUI.navBtn.action = function()
-			self.enterState Starfarer.STATE_NAVMAP
+		stationUI.navBtn.action = function
+			game.enterState Starfarer.STATE_NAVMAP
 		end function
 		
 	else if newState == self.STATE_NAVMAP then
 		if self.fuel > 0 then jumpLimit = 200 else jumpLimit = 0
 		starmap.draw self.stations, self.station, jumpLimit
-		starmap.backBtn.action = function()
-			self.enterState Starfarer.STATE_AT_STATION
+		starmap.backBtn.action = function
+			game.enterState Starfarer.STATE_AT_STATION
 		end function
 		starmap.jumpCallback = function(newStation)
-			// Note: can't use 'self' in a callback
+			// (Note: can't use 'self' in a callback)
 			if newStation == game.station then
 				game.enterState Starfarer.STATE_AT_STATION
 			else

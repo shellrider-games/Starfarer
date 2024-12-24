@@ -41,6 +41,7 @@ encounter.presentNPC = function(npc)
 		npc.fee + " credits."
 	opts = new DialogOptions
 	opts.portrait = npc.portrait
+	opts.buttonsPerRow = 2
 	if game.money < npc.fee then
 		self.showDialog npc.station, description, ["(Insufficient funds)"], opts
 		return

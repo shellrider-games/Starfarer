@@ -192,6 +192,7 @@ Ship.takeDamage = function(shot, mapPos)
 	return true
 end function
 
+
 // Ship.transferContents: move everything the owner of a ship would
 // own from this ship to a new one.  This is used when the player
 // buys a new ship.  This does NOT include ship systems, but does
@@ -202,7 +203,7 @@ Ship.transferContents = function(newShip)
 		for row in self.rowRange
 			cell = self.map[col][row]
 			if cell == null then continue			
-			crate = self.map[col][row].contents
+			crate = cell.contents
 			if crate then
 				newShip.addPurchasedItemType crate.__isa
 				cell.contents = null
@@ -361,6 +362,12 @@ Ship.removeCargo = function
 		fullCargoCells[0].contents = null
 	end if
 	return removedItem
+end function
+
+// removeCellContents: remove the sprite for the item in the given
+// cell, and also clear it from the cell.  Return the item.
+Ship.removeCellContents = function(cell)
+	return self.renderer.removeCellContents(cell)
 end function
 
 // addPurchasedItemType: this method is called when the player buys an item

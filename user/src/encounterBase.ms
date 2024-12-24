@@ -98,8 +98,19 @@ end function
 
 // The player is trying to flee.  Return true if successful,
 // or false to cancel and keep them in combat.
-CombatEncounter.handleFlee = function
+CombatEncounter.handleFlee = function(dataOrStation, failMsg)
+	// ToDo: chance of success based on pilot skill.
+	if rnd < 0.5 then
+		if not failMsg then failMsg = "You try to flee, but the other ship keeps up."
+		self.showDialog dataOrStation, failMsg
+		return false
+	end if
+	self.showDialog dataOrStation, "You successfully get away."
+	self.removeOtherShip
+	return true
+end function
+
+CombatEncounter.removeOtherShip = function
 	if self.renderer then self.renderer.stop
 	self.renderer = null
-	return true
 end function
