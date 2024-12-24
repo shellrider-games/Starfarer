@@ -63,9 +63,10 @@ end function
 //	dataOrStation: data object passed from consider() to present(),
 //			OR a station object in the case of a cantina encounter
 //	text: main descriptive text to show
-//	options: optional set of options the player can choose
+//	choices: optional set of options the player can choose
+//  dialogOpts: DialogOptions for the display
 // Returns: index of the option chosen, or null if none
-Encounter.showDialog = function(dataOrStation, text, options=null)
+Encounter.showDialog = function(dataOrStation, text, choices=null, dialogOpts=null)
 	if dataOrStation isa stationModel.Station then
 		whereText = dataOrStation.name + " Cantina"
 	else if dataOrStation != null then
@@ -75,7 +76,7 @@ Encounter.showDialog = function(dataOrStation, text, options=null)
 		whereText = ""
 	end if
 	
-	return dialogs.showGeneric(whereText, text, options)
+	return dialogs.showGeneric(whereText, text, choices, dialogOpts)
 end function
 
 CombatEncounter = new Encounter

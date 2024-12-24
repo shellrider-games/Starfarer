@@ -133,7 +133,7 @@ MedBay.use = function(character, dt = 0.1)
 	// depends on our current power
 	super.use character, dt
 	regenPerSec = self.curPower
-	character.health = miscUtil.min(character.health + regenPerSec * dt,
+	character.health = min(character.health + regenPerSec * dt,
 	   character.maxHealth)
 end function
 

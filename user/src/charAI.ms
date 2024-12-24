@@ -35,7 +35,7 @@ Need.add = function(amount)
 end function
 
 Need.update = function(dt=0.1)
-	self.value = miscUtil.min(self.value + self.incPerSecond * dt, self.maxValue)
+	self.value = min(self.value + self.incPerSecond * dt, self.maxValue)
 end function
 
 // Activity: something an agent can do.  Each activity has a cost
@@ -235,7 +235,7 @@ Brain.choose = function(activities=null)
 		for kv in activity.benefit  // (kv is standard abbreviation for key-value pair)
 			if not self.hasIndex(kv.key) then continue
 			need = self[kv.key]
-			benefit = benefit + miscUtil.min(need.value, kv.value)
+			benefit = benefit + min(need.value, kv.value)
 		end for
 		// now calculate value of this activity, as benefit/cost
 		value = benefit / activity.cost
@@ -252,7 +252,7 @@ Brain.applyBenefits = function(activity)
 	for kv in activity.benefit
 		if not self.hasIndex(kv.key) then continue
 		need = self[kv.key]
-		need.value = miscUtil.max(need.value - kv.value, need.minValue)
+		need.value = max(need.value - kv.value, need.minValue)
 	end for
 end function
 

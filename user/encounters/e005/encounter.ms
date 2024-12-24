@@ -44,7 +44,9 @@ encounter.presentNPC = function(npc)
 		"Can't a guy drink in peace?"]
 	
 	description = npc.name + ": " + responses.any
-	self.showDialog npc.station, description
+	opts = new DialogOptions
+	opts.portrait = npc.portrait
+	self.showDialog npc.station, description, null, opts
 end function
 
 

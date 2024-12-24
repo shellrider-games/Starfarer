@@ -4,7 +4,7 @@
 cd "/usr/src"
 import "listUtil"
 import "stringUtil"
-import "miscUtil"; for f in ["min", "max"]; globals[f] = miscUtil[f]; end for
+import "miscUtil"
 ensureImport "constants"
 ensureImport "setup"
 ensureImport "spriteUtil"
@@ -96,11 +96,12 @@ Starfarer.enterState = function(newState)
 			self.enterState Starfarer.STATE_AT_STATION
 		end function
 		starmap.jumpCallback = function(newStation)
-			if newStation == self.station then
-				self.enterState Starfarer.STATE_AT_STATION
+			// Note: can't use 'self' in a callback
+			if newStation == game.station then
+				game.enterState Starfarer.STATE_AT_STATION
 			else
-				self.nextStation = newStation
-				self.enterState Starfarer.STATE_TRAVEL
+				game.nextStation = newStation
+				game.enterState Starfarer.STATE_TRAVEL
 			end if
 		end function
 	

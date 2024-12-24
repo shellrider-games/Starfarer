@@ -39,12 +39,14 @@ encounter.presentNPC = function(npc)
 	description = npc.baseName + " (Available For Hire):" + char(13) +
 		char(13) + "Looking for help?  I'll join your crew for " +
 		npc.fee + " credits."
+	opts = new DialogOptions
+	opts.portrait = npc.portrait
 	if game.money < npc.fee then
-		self.showDialog npc.station, description, ["(Insufficient funds)"]
+		self.showDialog npc.station, description, ["(Insufficient funds)"], opts
 		return
 	end if
-	options = ["You're hired!", "Never mind."]
-	choice = self.showDialog(npc.station, description, options)
+	choices = ["You're hired!", "Never mind."]
+	choice = self.showDialog(npc.station, description, choices, opts)
 	if choice == 1 then return
 	
 	game.money -= npc.fee

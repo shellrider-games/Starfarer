@@ -54,7 +54,10 @@ encounter.presentNPC = function(npc)
 	"I need to get some data there without any so-called authorities snooping " +
 	"around.  You know what I mean.  There are 500 credits in it for you..."
 	description = npc.name + ": " + dialogue
-	choice  = self.showDialog(npc.station, description, ["Accept", "Decline"])
+	opts = new DialogOptions
+	opts.portrait = npc.portrait
+	opts.buttonsPerRow = 2
+	choice  = self.showDialog(npc.station, description, ["Accept", "Decline"], opts)
 	game.station.cantina.removeVal npc
 	if choice == 1 then return		// declined
 	self.started = true

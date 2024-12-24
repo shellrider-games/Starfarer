@@ -11,8 +11,6 @@ ensureImport "stringUtil"
 ensureImport "listUtil"
 ensureImport "pics"
 
-max = @miscUtil.max; min = @miscUtil.min
-
 //----------------------------------------------------------------------
 // Constants
 //----------------------------------------------------------------------
@@ -33,7 +31,7 @@ load9SliceImage = function(name, left=12, bottom=12, right=12, top=12)
 end function
 
 // clearAll: clear all widgets (and the entire uiPixel display).
-clearAll = function()
+clearAll = function
 	if _allWidgets then
 		for i in range(_allWidgets.len-1, 0)
 			_allWidgets[i].stop
@@ -44,7 +42,7 @@ clearAll = function()
 end function
 
 // redrawAll: redraw all widgets
-redrawAll = function()
+redrawAll = function
 	for widget in _allWidgets
 		widget.redraw
 	end for
@@ -138,13 +136,13 @@ Widget.init = function(left, bottom, width, height, name="")
 	self.name = name
 end function
 
-Widget.start = function()
+Widget.start = function
 	if _allWidgets.indexOf(self) == null then _allWidgets.push self
 //	print "started " + self.name + " with index " + _allWidgets.indexOf(self)
 	self.draw
 end function
 
-Widget.stop = function()
+Widget.stop = function
 	_allWidgets.removeVal self
 	self.erase
 end function
@@ -153,27 +151,33 @@ Widget.update = function(dt = 0.1)
 	// (overridden in most subclasses)
 end function
 
-Widget.left = function()
+Widget.left = function
 	return self.bounds.x - self.bounds.width/2
 end function
 
-Widget.right = function()
+Widget.right = function
 	return self.bounds.x + self.bounds.width/2
 end function
 
-Widget.bottom = function()
+Widget.bottom = function
 	return self.bounds.y - self.bounds.height/2
 end function
 
-Widget.top = function()
+Widget.setBottom = function(newBottom)
+	diff = newBottom - self.bottom
+	self.bounds.height += diff
+	self.bounds.y += diff/2
+end function
+
+Widget.top = function
 	return self.bounds.y + self.bounds.height/2
 end function
 
-Widget.width = function()
+Widget.width = function
 	return self.bounds.width
 end function
 
-Widget.height = function()
+Widget.height = function
 	return self.bounds.height
 end function
 
@@ -181,15 +185,15 @@ Widget.contains = function(x,y)
 	return self.bounds.contains(x,y)
 end function
 
-Widget.draw = function()
+Widget.draw = function
 	disp.uiPixel.fillRect self.left, self.bottom, self.width, self.height, color.fuchsia
 end function
 
-Widget.erase = function()
+Widget.erase = function
 	disp.uiPixel.fillRect self.left, self.bottom, self.width, self.height, self.backColor
 end function
 
-Widget.redraw = function()
+Widget.redraw = function
 	self.erase
 	self.draw
 end function
@@ -212,7 +216,7 @@ Panel.init = function(left, bottom, width, height, name, image)
 	self.mainColor = src.pixel(src.width/2, src.height/2)
 end function
 
-Panel.draw = function()
+Panel.draw = function
 	if self.image isa Image then
 		disp.uiPixel.drawImage self.image, self.left, self.bottom, self.width, self.height
 	else if self.image isa Image9Slice then
@@ -264,7 +268,11 @@ Label.wrap = function(wrapWidth=null)
 	if h > self.bounds.height then self.bounds.height = h
 end function
 
-Label.draw = function()
+Label.resetHeight = function
+	self.bounds.height = self.lines.len * (self.font.lineHeight + self.leading)
+end function
+
+Label.draw = function
 	if self.hasIndex("lines") then data = self.lines else data = [self.text]
 	y = self.bounds.y + 1 - self.font.sizeInner/2 + (data.len/2 - 1) * (self.font.lineHeight + self.leading)
 	for line in data
@@ -305,7 +313,7 @@ Bar.color = color.gray
 Bar.backColor = color.clear
 Bar.value = 0.5
 
-Bar.draw = function()
+Bar.draw = function
 	left = self.bounds.x - self.bounds.width/2 + 1
 	bottom = self.bounds.y - self.bounds.height/2 + 1
 	width = self.bounds.width - 2
@@ -347,7 +355,7 @@ end function
 ThinBar = new Bar
 ThinBar.secondaryColor = "#333333"
 
-ThinBar.draw = function()
+ThinBar.draw = function
 	left = self.bounds.x - self.bounds.width/2
 	bottom = self.bounds.y - self.bounds.height/2
 	width = self.bounds.width
@@ -382,7 +390,7 @@ HorizontalSlider.init = function(left, bottom, width, height, name="")
 	super.init left, bottom, width, height, name
 end function
 
-HorizontalSlider.draw = function()
+HorizontalSlider.draw = function
 	left = self.bounds.x - self.bounds.width/2
 	bottom = self.bounds.y - self.bounds.height/2
 	width = self.bounds.width
@@ -433,12 +441,12 @@ PowerControl.barHeight = 10		// height of individual bar
 PowerControl.barGap = 2			// gap between bars
 PowerControl.powerColor = "#00FF00"
 PowerControl.disabledColor = color.aqua
-PowerControl.onChange = null	// function() called when set point changed
+PowerControl.onChange = null	// function called when set point changed
 
 // onIconTap: invoked when user taps the icon.
 // Default just toggles the set point between 0 and full.
 // May be overridden for other functions.
-PowerControl.onIconTap = function()
+PowerControl.onIconTap = function
 	if self.system.setPoint > self.system.maxPower/2 then
 		self.system.setPoint = 0
 	else
@@ -452,7 +460,7 @@ end function
 // Internal properties -- only subclasses should mess with these:
 PowerControl.leftMargin = 4		// gap on left before power bars
 
-PowerControl.stop = function()
+PowerControl.stop = function
 	super.stop
 	if self.system then
 		self.system.powerControl = null
@@ -507,7 +515,7 @@ PowerControl.drawBar = function(barNum, repairLevel, powered, disabled)
 	disp.uiPixel.drawRect left, bottom, width, height, frameColor
 end function	
 
-PowerControl.draw = function()
+PowerControl.draw = function
 	// draw icon
 	sys = self.system
 	if sys.icon != null then
@@ -566,7 +574,7 @@ ChargedPowerControl = new PowerControl
 ChargedPowerControl.width = PowerControl.width + 10
 ChargedPowerControl.leftMargin = PowerControl.leftMargin + 10
 
-ChargedPowerControl.draw = function()
+ChargedPowerControl.draw = function
 	super.draw
 	bottomY = self.bottom + 40
 	topY = self.top - 20
@@ -595,23 +603,23 @@ ValuedBar.maxValue = 10
 ValuedBar.value = 10
 ValuedBar.roundDigits = 0
 
-ValuedBar.updateBar = function()
+ValuedBar.updateBar = function
 	self.bar.setValue self.value/self.maxValue
 end function
 
-ValuedBar.updateLabel = function()
+ValuedBar.updateLabel = function
 	text = round(self.value, self.roundDigits) + "/" + round(self.maxValue, self.roundDigits)
 	self.label.setText text
 end function
 
-ValuedBar.draw = function()
+ValuedBar.draw = function
 	self.updateBar
 	self.updateLabel
 	self.bar.redraw
 	self.label.redraw
 end function
 
-ValuedBar.initBarAndLabel = function()
+ValuedBar.initBarAndLabel = function
 	fontDistance = 20
 	self.bar = new Bar
 	self.bar.init self.left, self.bottom+fontDistance, self.width, self.height-fontDistance
@@ -677,11 +685,11 @@ Button.init = function(left, bottom, width, height, caption="")
 end function
 
 // action function, invoked upon click (buttons should override this)
-Button.action = function()			
+Button.action = function			
 	print "Button """ + self.name + """ clicked!"
 end function
 
-Button.draw = function()
+Button.draw = function
 	y = self.bounds.y + 1
 	if self.state == Button.PRESSED then
 		self.downImg.draw self.left, self.bottom, self.width, self.height
@@ -746,7 +754,7 @@ TabButton.update = function(dt = 0.1)
 	end if
 end function
 
-TabButton.action = function()
+TabButton.action = function
 	print "TabButton: " + self.name + " clicked. State was: " + self.state
 end function
 
@@ -774,7 +782,7 @@ LineEdit.init = function(left, bottom, width, align=0)
 	self.maxTextLength = floor((width-2)/self.font.width("m"))-1
 end function
 
-LineEdit.draw = function()
+LineEdit.draw = function
 	tempColor = disp.uiPixel.color
 	if self.active then
 		disp.uiPixel.color = self.activeBackColor
@@ -846,7 +854,7 @@ update = function(dt = 0.1)
 	outer.mouseWasPressed = mousePressed
 end function
 
-reset = function()
+reset = function
 	for w in _allWidgets
 		w.erase
 	end for
@@ -856,7 +864,7 @@ end function
 //----------------------------------------------------------------------
 // Demo/testing functions
 //----------------------------------------------------------------------
-demo = function()
+demo = function
 	import "systems"
 	
 	disp.text.clear; disp.text.row = 0
@@ -960,19 +968,19 @@ demo = function()
 
 	tabButtons.push tabButton3
 
-	tabButton1.action = function()
+	tabButton1.action = function
 		for button in tabButtons
 			if button != self then button.state = Button.NORMAL
 			button.redraw
 		end for
 	end function
-	tabButton2.action = function()
+	tabButton2.action = function
 		for button in tabButtons
 			if button != self then button.state = Button.NORMAL
 			button.redraw
 		end for
 	end function
-	tabButton3.action = function()
+	tabButton3.action = function
 		for button in tabButtons
 			if button != self then button.state = Button.NORMAL
 			button.redraw
@@ -989,7 +997,7 @@ demo = function()
 	
 end function
 
-runUnitTests = function()
+runUnitTests = function
 	w = new Widget
 	w.init 100, 50, 60, 30
 	qa.assertEqual w.left, 100
