@@ -684,6 +684,11 @@ Button.init = function(left, bottom, width, height, caption="")
 	end if
 end function
 
+Button.setEnabled = function(nowEnabled)
+	self.enabled = nowEnabled
+	self.draw
+end function
+
 // action function, invoked upon click (buttons should override this)
 Button.action = function			
 	print "Button """ + self.name + """ clicked!"

@@ -73,10 +73,11 @@ encounter.present = function(data)
 	
 	// show the dialog
 	text = "Police hail you and demand to inspect your cargo."
-	choices = ["Yield", "Flee", "Fight!"]
+	choices = ["Yield", "Flee", "Bribe", "Fight!"]
+	if game.money < 10 then choices.removeVal "Bribe"
 	opts = new DialogOptions
 	opts.portrait = pics.get("policeBadge")
-	opts.buttonsPerRow = 3
+	opts.buttonsPerRow = choices.len
 	choice = self.showDialog(data, text, choices, opts)
 
 	if choices[choice] == "Yield" then
@@ -97,6 +98,23 @@ encounter.present = function(data)
 	else if choices[choice] == "Flee" then
 		failMsg = "You try to flee, but the police catch you!"
 		if not self.handleFlee(data, failMsg) then game.beginCombat self
+	else if choices[choice] == "Bribe" then
+		// ToDo: some nifty UI to let the user choose how much
+		// they want to offer, for a certain % chance of success.
+		// For now, we'll just hard-code it:
+		offer = max(0, max(1000, game.money))
+		chanceOfSuccess = 100 * (offer / 2000)
+		if rnd * 100 < chanceOfSuccess then
+			self.showDialog data,
+			   "The police accept your credit transfer and quietly move away."
+			game.money -= offer
+			self.removeOtherShip
+		else
+			self.showDialog data,
+			   "The police seem offended by your offer of " + offer + 
+			   " credits, and power up their weapons!"
+			game.beginCombat self
+		end if
 	else
 		game.beginCombat self
 	end if

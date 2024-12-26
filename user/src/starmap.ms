@@ -87,15 +87,27 @@ draw = function(stationList, curStation=null, jumpLimit=200)
 	// actually let's just have the player UI draw that
 	// a bit of a hack, I know, but...
 	playerUI.fuelBar.draw
+
+	// jump (travel to the selected station) button
+	outer.jumpBtn = new uiWidgets.Button
+	jumpBtn.init 900, 610, 60, 30, "JUMP"
+	jumpBtn.backColor = color.black
+	jumpBtn.enabled = false
+	jumpBtn.action = @jump
+	jumpBtn.start
 	
 	// cancel (back) button
 	outer.backBtn = new uiWidgets.Button
-	backBtn.init 900, 610, 60, 30, "BACK"
+	backBtn.init 0, 610, 60, 30, "BACK"
 	backBtn.backColor = color.black
 	backBtn.start
 end function
 
-hide = function()
+jump = function
+	if @jumpCallback != null then jumpCallback target
+end function
+	
+hide = function
 	uiWidgets.clearAll
 	disp.uiSprites.sprites.removeVal selectionSprite
 	gfx.clear color.clear
@@ -140,11 +152,10 @@ update = function(dt = 0.1)
 				yield
 			end while
 			if selectionSprite.tint != normalColor then
-				// Jump!
-				if @jumpCallback != null then 
-					jumpCallback closest
-				end if
+				outer.target = closest
+				jumpBtn.setEnabled canJump
 			end if
+//				if @jumpCallback != null then jumpCallback closest
 		end if
 	end if
 end function
