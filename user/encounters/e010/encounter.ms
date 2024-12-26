@@ -1,4 +1,4 @@
-// Our very first ship encounter!
+// The police pull you over to search your cargo for contraband.
 
 if not globals.hasIndex("encounterBase") then
 	if env.importPaths.indexOf("/usr/src") == null then
@@ -17,24 +17,29 @@ end if
 encounter = new encounterBase.CombatEncounter
 
 encounter.consider = function(station, arriving)
-	probability = 0.10		// probability (on 0-1 scale) of this encounter
+	probability = 0.1		// probability (on 0-1 scale) of this encounter
 	if rnd > probability then return null
+	
+	self.illegalTypes = ["guns", "narcotics"]
+	
 	return self.consideration(station, arriving)
 end function
 
-// Pirates take the player's cargo.  Return true if this is sufficient,
-// or false if we couldn't find any decent cargo.
+// Take any illegal items from the player's cargo.
+// Return how many crates were taken.
 encounter.takeCargo = function
 	cratesTaken = 0
 	for col in playerShip.columnRange
 		for row in playerShip.rowRange
 			cell = playerShip.map[col][row]
-			if cell == null then continue			
-			crate = playerShip.removeCellContents(cell)
-			if crate then cratesTaken += 1
+			if cell == null or cell.contents == null then continue
+			if self.illegalTypes.contains(cell.contents.name) then
+				crate = playerShip.removeCellContents(cell)
+				if crate then cratesTaken += 1
+			end if
 		end for
 	end for
-	return cratesTaken > 0
+	return cratesTaken
 end function
 
 // If the host app decides to present this encounter, then it will call
@@ -42,12 +47,12 @@ end function
 encounter.present = function(data)
 	// Prepare the enemy ship (with weapons!)
 	self.ship = shipModel.newShipOfDesign("Robin")
-	self.ship.name = "Pirates"
+	self.ship.name = "Police"
 	self.ship.addSystem systems.Weapons.make(2,0)
 	self.ship.hp = 3	// a bit easy, but let's not take forever on a random encounter!
 
 	// add some crew
-	pirates = ["female09", "female10", "female11", "male13", "male14", "male15"]
+	pirates = ["female00", "female03", "female07", "female14", "male05", "male09"]
 	pirates.shuffle
 	minion = new character.Character
 	minion.name = "Pirate1"
@@ -67,26 +72,30 @@ encounter.present = function(data)
 	self.renderer.renderShip self.ship
 	
 	// show the dialog
-	text = "Heave to and prepare to be boarded!  Yer cargo, or yer life!"
-	choices = ["Surrender", "Flee", "Fight!"]
+	text = "Police hail you and demand to inspect your cargo."
+	choices = ["Yield", "Flee", "Fight!"]
 	opts = new DialogOptions
-	opts.portrait = minion.portrait
-	opts.onScreen = true
+	opts.portrait = pics.get("policeBadge")
 	opts.buttonsPerRow = 3
 	choice = self.showDialog(data, text, choices, opts)
 
-	if choices[choice] == "Surrender" then
-		if self.takeCargo then
+	if choices[choice] == "Yield" then
+		taken = self.takeCargo
+		if taken > 0 then
+			fine = taken * 1000
 			self.showDialog data,
-			   "The pirates take all your cargo, but leave your ship intact."
-			self.removeOtherShip
+			   "The police confiscate " + taken + " crate" + "s" * (taken != 1) +
+			   " of contraband, and fine you " + fine + " credits for " +
+			   "transport of illegal goods.", [], opts
+			game.money -= fine		// ToDo: animate this
 		else
 			self.showDialog data,
-			   "When they realize you have no cargo, the pirates power up their weapons!"
-			game.beginCombat self
+			   "The police find nothing illegal in your holds, " +
+			   "and apologize for the inconvenience.", [], opts
 		end if
+		self.removeOtherShip
 	else if choices[choice] == "Flee" then
-		failMsg = "You try to flee, but the pirates catch you!"
+		failMsg = "You try to flee, but the police catch you!"
 		if not self.handleFlee(data, failMsg) then game.beginCombat self
 	else
 		game.beginCombat self

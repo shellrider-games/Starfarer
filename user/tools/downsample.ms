@@ -1,6 +1,7 @@
 // This tool does a "smart" downsampling of pixely
 // (but imprecise) images.
 
+import "listUtil"
 
 img = file.loadImage("/usr2/image_big.png")
 
@@ -52,6 +53,61 @@ rowDiff = function(y0, y1)
 	return sum
 end function
 
+// Find the positions of local maxima in the given set of column/row diffs.
+findBreaks = function(allDiffs)
+	breaks = []
+	diffs = []
+	mean = allDiffs.mean
+	for i in range(2, allDiffs.len-3)
+		if allDiffs[i] > mean and
+		  allDiffs[i] > allDiffs[i-1] and
+		  allDiffs[i] > allDiffs[i-2] and
+		  allDiffs[i] > allDiffs[i+1] and
+		  allDiffs[i] > allDiffs[i+2] then
+			breaks.push i*2
+			print breaks[-1], ""
+			if breaks.len > 1 then 
+				diffs.push breaks[-1] - breaks[-2]
+				print " (diff: " + diffs[-1] + ")"
+			else
+				print
+			end if
+		end if
+	end for
+	
+	print diffs.len + " peaks found."
+	mode = diffs.mode
+	print "Mode gap: " + mode
+	
+	// Now, look for gaps of twice the mode or more, and split 'em.
+	//for i in diffs.indexes
+	//	d = diffs[i]
+	//	if d >= mode * 2 then
+	//		diffs[i] = d/2
+	//		diffs.insert i+1, d/2
+	//		breaks.insert i+1, breaks[i] + d/2
+	//		print "Split at " + i
+	//		print "Diffs: " + diffs[i-2:i+4]
+	//		print "breaks: " + breaks[i-2:i+4]
+	//	end if
+	//end for
+	//
+	//// And look for gaps that are too small, and take one out.
+	//for i in range(diffs.len-2)
+	//d = diffs[i]
+	//if d < mode * 0.6 then
+	//	diffs.remove i
+	//	diffs[i-1] += d
+	//	breaks.remove i
+	//	print "Removed at " + i
+	//	print "Diffs: " + diffs[i-2:i+4]
+	//	print "breaks: " + breaks[i-2:i+4]
+	//end if
+	//end for
+	
+	return breaks
+end function
+
 // Find column differences (every 2 pixels, for speed)
 gfx.color = color.white
 if globals.hasIndex("foundDiffs") then
@@ -72,55 +128,8 @@ else
 	foundDiffs = columnDiffs
 end if
 
-// Now, find the positions of local maxima, and the spacing
-// between them.
-xbreaks = []
-diffs = []
-for i in range(2, columnDiffs.len-3)
-	if columnDiffs[i] > columnDiffs[i-1] and
-	  columnDiffs[i] > columnDiffs[i-2] and
-	  columnDiffs[i] > columnDiffs[i+1] and
-	  columnDiffs[i] > columnDiffs[i+2] then
-		xbreaks.push i*2
-		print xbreaks[-1], ""
-		if xbreaks.len > 1 then 
-			diffs.push xbreaks[-1] - xbreaks[-2]
-			print " (diff: " + diffs[-1] + ")"
-		else
-			print
-		end if
-	end if
-end for
-
-print diffs.len + " peaks found."
-mode = diffs.mode
-print "Mode gap: " + mode
-
-// Now, look for gaps of twice the mode or more, and split 'em.
-for i in diffs.indexes
-	d = diffs[i]
-	if d >= mode * 2 then
-		diffs[i] = d/2
-		diffs.insert i+1, d/2
-		xbreaks.insert i+1, xbreaks[i] + d/2
-		print "Split at " + i
-		print "Diffs: " + diffs[i-2:i+4]
-		print "Xbreaks: " + xbreaks[i-2:i+4]
-	end if
-end for
-
-// And look for gaps that are too small, and take one out.
-for i in range(diffs.len-2)
-	d = diffs[i]
-	if d < mode * 0.6 then
-		diffs.remove i
-		diffs[i-1] += d
-		xbreaks.remove i
-		print "Removed at " + i
-		print "Diffs: " + diffs[i-2:i+4]
-		print "Xbreaks: " + xbreaks[i-2:i+4]
-	end if
-end for
+// Now, find the positions of local maxima for the columns.
+xbreaks = findBreaks(columnDiffs)
 
 gfx.color = "#FF00FF"
 for x in xbreaks
@@ -147,55 +156,7 @@ else
 	foundYDiffs = rowDiffs
 end if
 
-// Now, find the positions of local maxima, and the spacing
-// between them.
-ybreaks = []
-diffs = []
-for i in range(2, rowDiffs.len-3)
-	if rowDiffs[i] > rowDiffs[i-1] and
-	  rowDiffs[i] > rowDiffs[i-2] and
-	  rowDiffs[i] > rowDiffs[i+1] and
-	  rowDiffs[i] > rowDiffs[i+2] then
-		ybreaks.push i*2
-		print ybreaks[-1], ""
-		if ybreaks.len > 1 then 
-			diffs.push ybreaks[-1] - ybreaks[-2]
-			print " (diff: " + diffs[-1] + ")"
-		else
-			print
-		end if
-	end if
-end for
-
-print diffs.len + " peaks found."
-mode = diffs.mode
-print "Mode gap: " + mode
-
-// Now, look for gaps of twice the mode or more, and split 'em.
-for i in diffs.indexes
-	d = diffs[i]
-	if d >= mode * 2 then
-		diffs[i] = d/2
-		diffs.insert i+1, d/2
-		ybreaks.insert i+1, ybreaks[i] + d/2
-		print "Split at " + i
-		print "Diffs: " + diffs[i-2:i+4]
-		print "Xbreaks: " + ybreaks[i-2:i+4]
-	end if
-end for
-
-// And look for gaps that are too small, and take one out.
-for i in range(diffs.len-2)
-	d = diffs[i]
-	if d < mode * 0.6 then
-		diffs.remove i
-		diffs[i-1] += d
-		ybreaks.remove i
-		print "Removed at " + i
-		print "Diffs: " + diffs[i-2:i+4]
-		print "Xbreaks: " + ybreaks[i-2:i+4]
-	end if
-end for
+ybreaks = findBreaks(rowDiffs)
 
 gfx.color = "#FF00FF"
 for y in ybreaks
