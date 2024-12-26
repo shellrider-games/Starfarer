@@ -204,6 +204,7 @@ end function
 Panel = new Widget
 Panel._name = "Panel"
 Panel.image = load9SliceImage("panel")		// may be an Image or an Image9Slice
+Panel.capture = null		// captured  background, if any
 
 Panel.init = function(left, bottom, width, height, name, image)
 	super.init left, bottom, width, height, name
@@ -222,6 +223,15 @@ Panel.draw = function
 	else if self.image isa Image9Slice then
 		self.image.draw self.left, self.bottom, self.width, self.height
 	end if
+end function
+
+Panel.captureBackground = function
+	self.capture = gfx.getImage(self.left, self.bottom, self.width, self.height)
+end function
+
+Panel.stop = function
+	super.stop
+	if self.capture then gfx.drawImage self.capture, self.left, self.bottom
 end function
 
 //----------------------------------------------------------------------

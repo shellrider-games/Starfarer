@@ -87,14 +87,6 @@ draw = function(stationList, curStation=null, jumpLimit=200)
 	// actually let's just have the player UI draw that
 	// a bit of a hack, I know, but...
 	playerUI.fuelBar.draw
-
-	// jump (travel to the selected station) button
-	outer.jumpBtn = new uiWidgets.Button
-	jumpBtn.init 900, 610, 60, 30, "JUMP"
-	jumpBtn.backColor = color.black
-	jumpBtn.enabled = false
-	jumpBtn.action = @jump
-	jumpBtn.start
 	
 	// cancel (back) button
 	outer.backBtn = new uiWidgets.Button
@@ -113,7 +105,66 @@ hide = function
 	gfx.clear color.clear
 end function
 
+curInfoPanel = false
+
+drawSystemInfoPanel = function(target)
+	eraseInfoPanel
+	
+	width = 300
+	height = 200
+	if target.x > 480 then x = 0 else x = 960 - width
+	panel = new uiWidgets.Panel
+	panel.init x, 0, width, height
+	title = new uiWidgets.Label
+	title.init x, height-20, width, 20, target.name
+	title.alignment = uiWidgets.ALIGNCENTER
+	
+	rows = []  // each entry a [label, value] pair
+	jumpDist = mathUtil.distance(target, curStation)
+	rows.push ["Distance", ceil(jumpDist)]
+	rows.push ["Government", target.government]
+	rows.push ["Tech Level", target.techLevel]
+	
+	panel.captureBackground
+	panel.draw
+	title.draw
+
+	y = panel.top - 50
+	x1 = x + panel.width * 0.5
+	for row in rows
+		label = new uiWidgets.Label
+		label.init x+10, y, x1 - x - 10, 20, row[0]
+		label.draw
+		value = new uiWidgets.Label
+		value.init x1, y, x + width - x1, 20, row[1]
+		value.draw
+		y -= 20
+	end for
+
+	outer.jumpBtn = new uiWidgets.Button
+	jumpBtn.init panel.bounds.x - 60/2, panel.bottom + 10, 60, 30, "JUMP"
+	jumpBtn.backColor = color.black
+	jumpBtn.enabled = false
+	jumpBtn.action = @jump
+	jumpBtn.start
+	
+	outer.curInfoPanel = panel
+end function
+
+eraseInfoPanel = function
+	if curInfoPanel then
+		jumpBtn.stop
+		curInfoPanel.stop
+		curInfoPanel = false
+	end if
+end function
+
 update = function(dt = 0.1)
+	if curInfoPanel and curInfoPanel.contains(mouse) then
+		// mousing over info panel, skip map-tracking stuff
+		return
+	end if
+	
 	// Find the station the mouse is over
 	closest = stationModel.closestStation(mouse, stations)
 	if closest != null and mathUtil.distance(closest, mouse) > 32 then closest = null
@@ -139,23 +190,19 @@ update = function(dt = 0.1)
 	
 	// if mouse goes down, track until up, then handle accordingly
 	if mouse.button then
-		if not canJump then
-			while mouse.button; yield; end while
-		else
-			normalColor = selectionSprite.tint
-			while mouse.button
-				if mathUtil.distance(closest, mouse) > 32 then
-					selectionSprite.tint = normalColor
-				else
-					selectionSprite.tint = color.lerp(normalColor, color.gray, 0.5)
-				end if
-				yield
-			end while
-			if selectionSprite.tint != normalColor then
-				outer.target = closest
-				jumpBtn.setEnabled canJump
+		normalColor = selectionSprite.tint
+		while mouse.button
+			if closest and mathUtil.distance(closest, mouse) > 32 then
+				selectionSprite.tint = normalColor
+			else
+				selectionSprite.tint = color.lerp(normalColor, color.gray, 0.5)
 			end if
-//				if @jumpCallback != null then jumpCallback closest
+			yield
+		end while
+		if selectionSprite.tint != normalColor then
+			outer.target = closest
+			drawSystemInfoPanel target
+			jumpBtn.setEnabled canJump
 		end if
 	end if
 end function

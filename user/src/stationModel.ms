@@ -7,12 +7,18 @@ ensureImport "randomNames"
 ensureImport "mathUtil"
 ensureImport "pics"
 
+governments = ["Anarchy", "Democracy", "Technocracy", "Theocracy"]
+techLevels = ["Primitive", "Agrarian", "Industrial", "Post-Industrial", "Modern"]
+
 Station = {}
 Station.name = "DEFAULT NAME"
 Station.market = null		// a list of Commodity instances
 Station.cantina = null		// a list of NPCs currently in cantina
 Station.x = null
 Station.y = null
+Station.government = governments[1]
+Station.techLevel = techLevels[-1]
+Station.illegalTypes = []
 
 Station.init = function(name, x, y)
 	if x == null then x = floor(rnd * 100)
@@ -22,6 +28,18 @@ Station.init = function(name, x, y)
 	self.cantina = []
 	self.x = x
 	self.y = y
+	self.government = governments.any
+	self.techLevel = techLevels.any
+	if self.government == "Technocracy" then self.techLevel = "Modern"
+	if self.government == "Theocracy" then
+		self.illegalTypes = ["games", "firearms", "narcotics"]
+	else if self.government == "Democracy" then
+		self.illegalTypes = ["firearms", "narcotics"]
+	else if self.government == "Anarchy" then
+		self.illegalTypes = []
+	else
+		self.illegalTypes == ["narcotics"]
+	end if
 end function
 
 Commodity = {}
