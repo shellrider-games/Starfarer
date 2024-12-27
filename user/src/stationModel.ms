@@ -19,6 +19,7 @@ Station.y = null
 Station.government = governments[1]
 Station.techLevel = techLevels[-1]
 Station.illegalTypes = []
+Station.exportTypes = []
 
 Station.init = function(name, x, y)
 	if x == null then x = floor(rnd * 100)
@@ -30,11 +31,30 @@ Station.init = function(name, x, y)
 	self.y = y
 	self.government = governments.any
 	self.techLevel = techLevels.any
-	if self.government == "Technocracy" then self.techLevel = "Modern"
-	if self.government == "Theocracy" then
+	
+	self.exportTypes = []
+	if self.techLevel == "Primitive" then
+		self.exportTypes.push ["water", "wood", "ore"].any
+	else if self.techLevel == "Agrarian" then
+		self.exportTypes.push ["water", "food"].any
+	else if self.techLevel == "Industrial" then
+		self.exportTypes.push ["water", "food", "wood", "ore"].any
+	else if self.techLevel == "Post-Industrial" then
+		self.exportTypes.push ["water", "food", "ore", "medicine", "machines"].any
+	else
+		self.exportTypes.push ["medicine", "games", "machines", "robots"].any
+	end if
+	
+	if self.government == "Technocracy" then
+		self.techLevel = "Modern"
+		self.illegalTypes = ["robots", "narcotics"]
+		self.exportTypes = ["machines"]
+	else if self.government == "Theocracy" then
 		self.illegalTypes = ["games", "firearms", "narcotics"]
 	else if self.government == "Democracy" then
 		self.illegalTypes = ["firearms", "narcotics"]
+		self.exportTypes = []
+		self.exportTypes.push ["medicine", "games", "machines", "robots"].any
 	else if self.government == "Anarchy" then
 		self.illegalTypes = []
 	else
@@ -45,6 +65,7 @@ end function
 Commodity = {}
 Commodity.itemType = null // an Item subclass defining the commodity type
 Commodity.itemPrice = 0
+Commodity.soldHere = true
 Commodity.name = function()
 	return self.itemType.name
 end function
@@ -59,10 +80,15 @@ Station.fillCantina = function()
 	encounters.addNPCsToCantina self
 end function
 
-Station.addCommodityToMarket = function(itemType, itemPrice)
+Station.addCommodityToMarket = function(itemType, unadjustedPrice, isSold)
+	qa.assert itemType isa Item and unadjustedPrice isa number
+	itemPrice = unadjustedPrice
+	if self.exportTypes.contains(itemType.name) then  itemPrice *= mathUtil.randRange(0.5, 0.9)
+	if self.illegalTypes.contains(itemType.name) then itemPrice *= mathUtil.randRange(1.1, 2)
 	newCommodity = new Commodity
 	newCommodity.itemType = itemType
-	newCommodity.itemPrice = itemPrice
+	newCommodity.itemPrice = round(itemPrice)
+	newCommodity.soldHere = isSold
 	qa.assert self.market isa list
 	self.market.push newCommodity
 end function
@@ -116,9 +142,11 @@ randomStation = function()
 		result.starSize = mathUtil.randRange(0.25, 0.5)
 	end if
 	for type in item.allTypes
-		if rnd < 0.1 then continue	// commodity not traded here
+		isSold = (rnd < 0.9)
+		if result.exportTypes.contains(type.name) then isSold = true
+		if result.illegalTypes.contains(type.name) then isSold = false
 		value = floor(type.typicalValue * (1 + mathUtil.randNormal/4))
-		result.addCommodityToMarket type, value
+		result.addCommodityToMarket type, value, isSold
 	end for
 	return result
 end function

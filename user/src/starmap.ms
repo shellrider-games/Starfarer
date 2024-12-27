@@ -109,6 +109,7 @@ curInfoPanel = false
 
 drawSystemInfoPanel = function(target)
 	eraseInfoPanel
+	if target == null then return
 	
 	width = 300
 	height = 200
@@ -124,6 +125,8 @@ drawSystemInfoPanel = function(target)
 	rows.push ["Distance", ceil(jumpDist)]
 	rows.push ["Government", target.government]
 	rows.push ["Tech Level", target.techLevel]
+	rows.push ["Exports", target.exportTypes]
+	rows.push ["Illegal", target.illegalTypes]
 	
 	panel.captureBackground
 	panel.draw
@@ -135,15 +138,22 @@ drawSystemInfoPanel = function(target)
 		label = new uiWidgets.Label
 		label.init x+10, y, x1 - x - 10, 20, row[0]
 		label.draw
-		value = new uiWidgets.Label
-		value.init x1, y, x + width - x1, 20, row[1]
-		value.draw
+		if row[1] isa list then
+			for i in row[1].indexes
+				itemType = item.getByName(row[1][i])
+				gfx.drawImage itemType.image, x1 + i * 20, y + 2
+			end for
+		else
+			value = new uiWidgets.Label
+			value.init x1, y, x + width - x1, 20, row[1]
+			value.draw
+		end if
 		y -= 20
 	end for
 
 	outer.jumpBtn = new uiWidgets.Button
 	jumpBtn.init panel.bounds.x - 60/2, panel.bottom + 10, 60, 30, "JUMP"
-	jumpBtn.backColor = color.black
+	jumpBtn.backColor = panel.mainColor
 	jumpBtn.enabled = false
 	jumpBtn.action = @jump
 	jumpBtn.start
@@ -155,7 +165,8 @@ eraseInfoPanel = function
 	if curInfoPanel then
 		jumpBtn.stop
 		curInfoPanel.stop
-		curInfoPanel = false
+		outer.curInfoPanel = null
+		outer.jumpBtn = null
 	end if
 end function
 
@@ -202,7 +213,7 @@ update = function(dt = 0.1)
 		if selectionSprite.tint != normalColor then
 			outer.target = closest
 			drawSystemInfoPanel target
-			jumpBtn.setEnabled canJump
+			if jumpBtn != null then jumpBtn.setEnabled canJump
 		end if
 	end if
 end function

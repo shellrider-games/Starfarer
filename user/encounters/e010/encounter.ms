@@ -17,10 +17,10 @@ end if
 encounter = new encounterBase.CombatEncounter
 
 encounter.consider = function(station, arriving)
-	probability = 0.1		// probability (on 0-1 scale) of this encounter
+	probability = 0.91		// probability (on 0-1 scale) of this encounter
 	if rnd > probability then return null
 	
-	self.illegalTypes = ["guns", "narcotics"]
+	self.illegalTypes = station.illegalTypes
 	
 	return self.consideration(station, arriving)
 end function

@@ -122,7 +122,7 @@ showMarket = function(station,left=550, bottom=150, width=350, height=400)
 			if price != null then allPrices.push price
 		end for
 		avgPrice = round(allPrices.mean)
-		addCommodity left, y, width, 40, commodity.itemType, commodity.itemPrice, avgPrice
+		addCommodity left, y, width, 40, commodity, avgPrice
 	end for
 end function
 
@@ -336,7 +336,10 @@ addCantinaNPC = function(left, bottom, width, height, npc)
 end function
 
 // Add a row of widgets for one market commodity.
-addCommodity = function(left, bottom, width, height, itemType, price, avgPrice)
+addCommodity = function(left, bottom, width, height, commodity, avgPrice)
+	qa.assert commodity isa stationModel.Commodity
+	itemType = commodity.itemType
+	price = commodity.itemPrice
 	qa.assert itemType isa item.Item
 	
 	// column positions:
@@ -369,18 +372,20 @@ addCommodity = function(left, bottom, width, height, itemType, price, avgPrice)
 	end function
 	activeButtons.push sellBtn
 	
-	// column 2: buy button
-	buyBtn = new Button
-	buyBtn.init x[2], bottom + 4, btnWidth, height - 8, "Buy"
-	buyBtn.backColor = background.mainColor
-	buyBtn.start
-	buyBtn.action = function
-		playerShip.addPurchasedItemType itemType
-		sellBtn.enabled = playerShip.qtyOwnedOfType(itemType) > 0
-		sellBtn.draw
-	end function
-	activeButtons.push buyBtn
-
+	// column 2: buy button (if commodity is sold here)
+	if commodity.soldHere then
+		buyBtn = new Button
+		buyBtn.init x[2], bottom + 4, btnWidth, height - 8, "Buy"
+		buyBtn.backColor = background.mainColor
+		buyBtn.start
+		buyBtn.action = function
+			playerShip.addPurchasedItemType itemType
+			sellBtn.enabled = playerShip.qtyOwnedOfType(itemType) > 0
+			sellBtn.draw
+		end function
+		activeButtons.push buyBtn
+	end if
+	
 end function
 
 

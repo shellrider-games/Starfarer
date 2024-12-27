@@ -102,6 +102,14 @@ NarcoticsItem.typicalValue = 2000
 allTypes = [WaterItem, FoodItem, WoodItem, OreItem, MedsItem, 
 			MachinesItem, RobotsItem, GamesItem, GunsItem, NarcoticsItem]
 
+getByName = function(typeName)
+	qa.assert typeName isa string
+	for itemType in allTypes
+		if itemType.name == typeName then return itemType
+	end for
+	qa.assert false, "Item type name """ + typeName + """ not found"
+end function
+
 // Item is an important enough class to push itself into the global namespace.
 globals.Item = Item
 
