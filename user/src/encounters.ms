@@ -41,19 +41,24 @@ planEncounters = function(sourceStation, destStation)
 	possibilities = []
 	for enc in encounterList
 		cons = enc.consider(sourceStation, false)
-		if cons != null then
-			cons.time = cons.distance * 2
-			cons.encounter = enc
-			possibilities.push cons
-			//print enc.sourcePath + " at " + cons.time + " while departing " + sourceStation.name
-		end if
+		if cons isa map then cons = [cons]
+		if cons == null then cons = []
+		for c in cons
+			c.time = c.distance * 2
+			c.encounter = enc
+			possibilities.push c
+			//print enc.sourcePath + " at " + c.time + " while departing " + sourceStation.name
+		end for
 		cons = enc.consider(destStation, true)
-		if cons != null then
-			cons.time = 4 - cons.distance * 2
-			cons.encounter = enc
-			possibilities.push cons
-			//print enc.sourcePath + " at " + cons.time + " while approaching " + destStation.name
-		end if
+		if cons isa map then cons = [cons]
+		if cons == null then cons = []
+		for c in cons
+			c.time = c.distance * 2
+			c.time = 4 - c.distance * 2
+			c.encounter = enc
+			possibilities.push c
+			//print enc.sourcePath + " at " + c.time + " while approaching " + destStation.name
+		end for
 	end for
 		
 	// then pick which ones to actually present, and sort them by time

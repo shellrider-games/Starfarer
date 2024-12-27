@@ -9,6 +9,7 @@ ensureImport "pics"
 
 governments = ["Anarchy", "Democracy", "Technocracy", "Theocracy"]
 techLevels = ["Primitive", "Agrarian", "Industrial", "Post-Industrial", "Modern"]
+howMany = ["None", "Few", "Some", "Many", "Swarms"]  // how many police/pirates, 0-4
 
 Station = {}
 Station.name = "DEFAULT NAME"
@@ -20,6 +21,8 @@ Station.government = governments[1]
 Station.techLevel = techLevels[-1]
 Station.illegalTypes = []
 Station.exportTypes = []
+Station.police = 0		// 0-4
+Station.pirates = 0		// 0-4
 
 Station.init = function(name, x, y)
 	if x == null then x = floor(rnd * 100)
@@ -31,6 +34,8 @@ Station.init = function(name, x, y)
 	self.y = y
 	self.government = governments.any
 	self.techLevel = techLevels.any
+	self.police = round(mathUtil.randRange(0, 4))
+	self.pirates = round(mathUtil.randRange(0, 4))
 	
 	self.exportTypes = []
 	if self.techLevel == "Primitive" then
@@ -51,15 +56,18 @@ Station.init = function(name, x, y)
 		self.exportTypes = ["machines"]
 	else if self.government == "Theocracy" then
 		self.illegalTypes = ["games", "firearms", "narcotics"]
+		self.police = 4
 	else if self.government == "Democracy" then
 		self.illegalTypes = ["firearms", "narcotics"]
 		self.exportTypes = []
 		self.exportTypes.push ["medicine", "games", "machines", "robots"].any
 	else if self.government == "Anarchy" then
 		self.illegalTypes = []
+		self.police = 0
 	else
 		self.illegalTypes == ["narcotics"]
 	end if
+	
 end function
 
 Commodity = {}

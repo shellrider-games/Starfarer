@@ -17,12 +17,16 @@ end if
 encounter = new encounterBase.CombatEncounter
 
 encounter.consider = function(station, arriving)
-	probability = 0.91		// probability (on 0-1 scale) of this encounter
-	if rnd > probability then return null
-	
 	self.illegalTypes = station.illegalTypes
-	
-	return self.consideration(station, arriving)
+	result = []
+	for i in range(1, station.police, 1)
+		// ToDo: make this probability depend on your police record
+		probability = 0.5		// probability (on 0-1 scale) of this encounter
+		if rnd > probability then continue
+		data = self.consideration(station, arriving)
+		result.push data
+	end for	
+	return result
 end function
 
 // Take any illegal items from the player's cargo.

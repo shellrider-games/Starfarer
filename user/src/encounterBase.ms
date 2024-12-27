@@ -17,6 +17,8 @@ Encounter.ship = null  // ShipModel we have encountered, if any
 // certain game conditions are met.  Return null if you don't want to
 // present; otherwise, return self.consideration (a little map that
 // wraps up this encounter with other data that may be needed).
+// Or, in the rare case you want to run this encounter more than once
+// for the same station, return a list of Consideration maps.
 Encounter.consider = function(station, arriving)
 	if rnd < 0.2 then return null
 	return self.consideration(station, arriving)

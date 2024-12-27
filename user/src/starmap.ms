@@ -112,7 +112,7 @@ drawSystemInfoPanel = function(target)
 	if target == null then return
 	
 	width = 300
-	height = 200
+	height = 220
 	if target.x > 480 then x = 0 else x = 960 - width
 	panel = new uiWidgets.Panel
 	panel.init x, 0, width, height
@@ -127,6 +127,8 @@ drawSystemInfoPanel = function(target)
 	rows.push ["Tech Level", target.techLevel]
 	rows.push ["Exports", target.exportTypes]
 	rows.push ["Illegal", target.illegalTypes]
+	rows.push ["Police", stationModel.howMany[target.police]]
+	rows.push ["Pirates", stationModel.howMany[target.pirates]]
 	
 	panel.captureBackground
 	panel.draw

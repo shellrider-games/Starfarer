@@ -1,4 +1,4 @@
-// Our very first ship encounter!
+// Our very first ship encounter -- Pirates!
 
 if not globals.hasIndex("encounterBase") then
 	if env.importPaths.indexOf("/usr/src") == null then
@@ -17,9 +17,14 @@ end if
 encounter = new encounterBase.CombatEncounter
 
 encounter.consider = function(station, arriving)
-	probability = 0.10		// probability (on 0-1 scale) of this encounter
-	if rnd > probability then return null
-	return self.consideration(station, arriving)
+	result = []
+	for i in range(1, station.pirates, 1)
+		probability = 0.5		// probability (on 0-1 scale) of this encounter
+		if rnd > probability then continue
+		data = self.consideration(station, arriving)
+		result.push data
+	end for	
+	return result
 end function
 
 // Pirates take the player's cargo.  Return true if this is sufficient,
