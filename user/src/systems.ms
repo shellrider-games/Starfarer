@@ -184,10 +184,9 @@ Sensors.make = function(col, row)
 end function
 
 //----------------------------------------------------------------------
-// Controls: allows the player to see what's happening, by power level:
-//		1 bar: see in your own ship, even where there is no crew.
-//		2 bars: see inside opponent ship
-//		3 bars: also see opponent's weapon charge status
+// Controls: required to fly your ship.  By power:
+//		1 bar: basic flight is possible.
+//		2 bars: better chase/evasion (or maybe auto-pilot)?
 //----------------------------------------------------------------------
 Controls = new System
 Controls._name = "Controls"

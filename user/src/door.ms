@@ -2,9 +2,11 @@
 // It is both model and view: that is, it contains the data which is part
 // of a shipModel, but it's also a Sprite that can be loaded by shipDisplay.
 
-if not globals.hasIndex("spriteControllers") then import "spriteControllers"
-if not globals.hasIndex("sounds") then import "sounds"
-if not globals.hasIndex("listUtil") then import "listUtil"
+import "miscUtil"
+ensureImport "spriteControllers"
+ensureImport "sounds"
+ensureImport "listUtil"
+ensureImport "pics"
 
 // Door: a wall that can open and close.
 Door = new spriteControllers.Animated
