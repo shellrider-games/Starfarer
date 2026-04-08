@@ -42,7 +42,7 @@ There are many different ways to play the game.  These are not "classes" you hav
 		- selecting certain event options
 2. Select another planet/star system to travel to.
 	- On the way, encounter other ships either while departing your origin system, or approaching the destination.
-	- These encounters can result in combat, trade, or scripted events, which can impact your ship, cargo, crew, and/or money.
+	- These encounters can result in combat, trade, or scripted events, which can impact your ship, cargo, crew, and/or money.  Combat is RTS: direct your crew, fire weapons, and allocate power to ship systems in real time as combat unfolds.
 3. Repeat.
 
 

@@ -27,7 +27,7 @@ loadImage = @pics.get
 
 load9SliceImage = function(name, left=12, bottom=12, right=12, top=12)
 	img = loadImage(name)
-	return Image9Slice.make(img, left, bottom, right, top)
+	return Image9Slice.Make(img, left, bottom, right, top)
 end function
 
 // clearAll: clear all widgets (and the entire uiPixel display).
@@ -46,72 +46,6 @@ redrawAll = function
 	for widget in _allWidgets
 		widget.redraw
 	end for
-end function
-
-//----------------------------------------------------------------------
-// Image9Slice class: an image wrapper with margins that are not stretched,
-// and a middle that is stretched when drawn to any size.
-//----------------------------------------------------------------------
-
-Image9Slice = {}
-Image9Slice.image = null		// (an Image instance)
-Image9Slice.leftMargin = 0
-Image9Slice.bottomMargin = 0
-Image9Slice.rightMargin = 0
-Image9Slice.topMargin = 0
-
-Image9Slice.make = function(image, left=12, bottom=12, right=12, top=12)
-	noob = new Image9Slice
-	noob.image = image
-	noob.leftMargin = left
-	noob.bottomMargin = bottom
-	noob.rightMargin = right
-	noob.topMargin = top
-	return noob
-end function
-
-Image9Slice.draw = function(left, bottom, width, height, tint="#FFFFFF")
-	midH = height - self.bottomMargin - self.topMargin
-	srcH = self.image.height - self.bottomMargin - self.topMargin
-	nearTop = bottom + height - self.topMargin
-	srcNearTop = self.image.height - self.topMargin
-	midW = width - self.leftMargin - self.rightMargin
-	srcW = self.image.width - self.leftMargin - self.rightMargin
-	nearRight = left + width - self.rightMargin
-	srcNearRight = self.image.width - self.rightMargin
-	
-	// left side (bottom, middle, top)
-	disp.uiPixel.drawImage self.image, 
-		left, bottom, self.leftMargin, self.bottomMargin,
-		0, 0, self.leftMargin, self.bottomMargin, tint
-	disp.uiPixel.drawImage self.image, 
-		left, bottom + self.bottomMargin, self.leftMargin, midH,
-		0, self.bottomMargin, self.leftMargin, srcH, tint
-	disp.uiPixel.drawImage self.image, 
-		left, nearTop, self.leftMargin, self.topMargin,
-		0, srcNearTop, self.leftMargin, self.topMargin, tint
-	
-	// center section (bottom, middle, top)
-	disp.uiPixel.drawImage self.image, 
-		left + self.leftMargin, bottom, midW, self.bottomMargin,
-		self.leftMargin, 0, srcW, self.bottomMargin, tint
-	disp.uiPixel.drawImage self.image, 
-		left + self.leftMargin, bottom + self.bottomMargin, midW, midH,
-		self.leftMargin, self.bottomMargin, srcW, srcH, tint
-	disp.uiPixel.drawImage self.image, 
-		left + self.leftMargin, nearTop, midW, self.topMargin,
-		self.leftMargin, srcNearTop, srcW, self.topMargin, tint
-	
-	// right section (bottom, middle, top)
-	disp.uiPixel.drawImage self.image, 
-		nearRight, bottom, self.rightMargin, self.bottomMargin,
-		srcNearRight, 0, self.rightMargin, self.bottomMargin, tint
-	disp.uiPixel.drawImage self.image, 
-		nearRight, bottom + self.bottomMargin, self.rightMargin, midH,
-		srcNearRight, self.bottomMargin, self.rightMargin, srcH, tint
-	disp.uiPixel.drawImage self.image, 
-		nearRight, nearTop, self.rightMargin, self.topMargin,
-		srcNearRight, srcNearTop, self.rightMargin, self.topMargin, tint
 end function
 
 //----------------------------------------------------------------------

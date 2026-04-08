@@ -157,6 +157,27 @@ setup = function
 	
 	boldFont.printCentered "Maintenance Bay", left+width/2, top-20
 	
+	// draw work area
+	outer.workPanel = new uiWidgets.Panel
+	workPanel.init left+20, bottom + 60, 150, 100, 
+	   "workPanel", pics.get9slice("maintenancePanel")
+	workPanel.draw
+	font.print "Work Area", workPanel.left+4, workPanel.top + 2
+	outer.sellBtn = new uiWidgets.Button
+	sellBtn.init workPanel.left, workPanel.bottom-8-24, 70, 24, "Sell"
+	sellBtn.start
+	outer.upgradeBtn = new uiWidgets.Button
+	upgradeBtn.init sellBtn.right+10, workPanel.bottom-8-24, 70, 24, "Upgrade"
+	upgradeBtn.start
+	
+	
+	// draw for-sale systems
+	outer.forSalePanel = new uiWidgets.Panel
+	forSalePanel.init left+20, bottom + 200, 150, 280, 
+	   "forSalePanel", pics.get9slice("maintenancePanel")
+	forSalePanel.draw
+	font.print "Available For Sale", forSalePanel.left+4, forSalePanel.top + 2
+	
 	// prepare ship map position, and draw the ship
 	outer.ship = playerShip
 	outer.shipImage = file.loadImage(file.child(ship.directory, "map.png"))

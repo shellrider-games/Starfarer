@@ -92,18 +92,18 @@ findBreaks = function(allDiffs)
 	//	end if
 	//end for
 	//
-	//// And look for gaps that are too small, and take one out.
-	//for i in range(diffs.len-2)
-	//d = diffs[i]
-	//if d < mode * 0.6 then
-	//	diffs.remove i
-	//	diffs[i-1] += d
-	//	breaks.remove i
-	//	print "Removed at " + i
-	//	print "Diffs: " + diffs[i-2:i+4]
-	//	print "breaks: " + breaks[i-2:i+4]
-	//end if
-	//end for
+	// And look for gaps that are too small, and take one out.
+	for i in range(diffs.len-2)
+		d = diffs[i]
+		if d < mode * 0.6 then
+			diffs.remove i
+			diffs[i-1] += d
+			breaks.remove i
+			print "Removed at " + i
+			print "Diffs: " + diffs[i-2:i+4]
+			print "breaks: " + breaks[i-2:i+4]
+		end if
+	end for
 	
 	return breaks
 end function
