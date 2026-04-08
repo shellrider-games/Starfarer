@@ -24,11 +24,26 @@ Encounter.consider = function(station, arriving)
 	return self.consideration(station, arriving)
 end function
 
-// This function creates the little map that returns this encounter for
-// consideration on a particular journey.  Subclasses will not usually
+// EncounterEvent: an encounter at a given time and location.
+EncounterEvent = {}
+EncounterEvent.encounter = null
+EncounterEvent.time = 0
+EncounterEvent.priority = 1
+EncounterEvent.distance = 0.5
+EncounterEvent.station = null
+EncounterEvent.arriving = false
+EncounterEvent.str = function
+	encName = self.encounter.sourcePath.split("/")[-2]  // E.g. "e007"
+	return "Encounter " + encName + " at " + self.time + " while " +
+	  ("approaching" * self.arriving + "departing" * (not self.arriving)) +
+	  " " + self.station.name
+end function
+
+// This function creates the EncounterEvent that represents this encounter
+// for consideration on a particular journey.  Subclasses will not usually
 // need to override this.
 Encounter.consideration = function(station, arriving, priority=1, distance=null)
-	data = {}
+	data = new EncounterEvent
 	data.encounter = self
 	data.priority = priority
 	if distance == null then distance = 0.2 + 0.6 * rnd
@@ -69,6 +84,7 @@ end function
 //  dialogOpts: DialogOptions for the display
 // Returns: index of the option chosen, or null if none
 Encounter.showDialog = function(dataOrStation, text, choices=null, dialogOpts=null)
+	disp.curtain.clear = color.clear
 	if dataOrStation isa stationModel.Station then
 		whereText = dataOrStation.name + " Cantina"
 	else if dataOrStation != null then
@@ -102,7 +118,12 @@ end function
 // or false to cancel and keep them in combat.
 CombatEncounter.handleFlee = function(dataOrStation, failMsg)
 	// ToDo: chance of success based on pilot skill.
-	if rnd < 0.5 then
+	failed = rnd < 0.5
+	if key.pressed("left alt") then
+		log.warn "Debug cheat used: alt-FLEE always succeeds"
+		failed = false
+	end if
+	if failed then
 		if not failMsg then failMsg = "You try to flee, but the other ship keeps up."
 		self.showDialog dataOrStation, failMsg
 		return false

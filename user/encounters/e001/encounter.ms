@@ -29,7 +29,7 @@ end function
 // If the host app decides to present this encounter, then it will call
 // this present method, with the data returned from consider():
 encounter.present = function(data)
-	value = floor(rnd * 10) + 5
+	value = floor(rnd * 100) + 50
 	description = "You have encountered an anomaly.  It hangs in front of your " +
 	  "ship like a particularly empty region of space.  " +
 	  "Analyzing it with your ship sensors yields data worth " +

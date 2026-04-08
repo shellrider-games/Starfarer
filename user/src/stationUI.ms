@@ -53,6 +53,12 @@ show = function(station,left=550, bottom=80, width=350, height=460)
 	
 end function
 
+update = function(deltaTime = 0.016)
+	for button in activeButtons
+		if button.hasIndex("updateEnabled") then button.updateEnabled
+	end for
+end function
+
 setCurrentTab = function(currentTab)
 	outer.currentTab = currentTab
 end function
@@ -367,8 +373,12 @@ addCommodity = function(left, bottom, width, height, commodity, avgPrice)
 	sellBtn.start
 	sellBtn.action = function()
 		playerShip.noteItemSold itemType
-		sellBtn.enabled = playerShip.qtyOwnedOfType(itemType) > 0
-		sellBtn.draw
+	end function
+	sellBtn.updateEnabled = function
+		nowEnabled = playerShip.qtyOwnedOfType(itemType) > 0
+		if nowEnabled == self.enabled then return
+		self.enabled = nowEnabled
+		self.draw
 	end function
 	activeButtons.push sellBtn
 	
@@ -380,8 +390,12 @@ addCommodity = function(left, bottom, width, height, commodity, avgPrice)
 		buyBtn.start
 		buyBtn.action = function
 			playerShip.addPurchasedItemType itemType
-			sellBtn.enabled = playerShip.qtyOwnedOfType(itemType) > 0
-			sellBtn.draw
+		end function
+		buyBtn.updateEnabled = function
+			nowEnabled = game.money >= price
+			if nowEnabled == self.enabled then return
+			self.enabled = nowEnabled
+			self.draw
 		end function
 		activeButtons.push buyBtn
 	end if

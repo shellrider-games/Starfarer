@@ -29,6 +29,8 @@ Image9Slice.Make = function(image, left=12, bottom=12, right=12, top=12)
 end function
 
 Image9Slice.draw = function(left, bottom, width, height, tint="#FFFFFF")
+	left = floor(left); bottom = floor(bottom)
+	width = round(width); height = round(height)
 	midH = height - self.bottomMargin - self.topMargin
 	srcH = self.image.height - self.bottomMargin - self.topMargin
 	nearTop = bottom + height - self.topMargin

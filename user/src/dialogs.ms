@@ -55,8 +55,8 @@ showGeneric = function(whereText, text, choices=null, options=null)
 	responseButtons = []
 	totalButtonHeight = 0
 	if choices then
-		btnWidth = (fullWidth - margin*2 - gap*(options.buttonsPerRow-1)) /
-		   options.buttonsPerRow
+		btnWidth = round((fullWidth - margin*2 - gap*(options.buttonsPerRow-1)) /
+		   options.buttonsPerRow)
 		maxHeightThisRow = 0
 		for i in choices.indexes
 			opt = choices[i]

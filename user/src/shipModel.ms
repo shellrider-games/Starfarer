@@ -409,6 +409,7 @@ end function
 Ship.qtyOwnedOfType = function(type)
 	// Owned includes all types in the ship, plus any incoming items of that type,
 	// minus any outgoing (sold) items of that type.
+	qa.assert type isa item.Item
 	count = 0
 	for col in self.columnRange
 		for row in self.rowRange

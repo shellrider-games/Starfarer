@@ -6,7 +6,7 @@ Longer-term features can stay in DESIGNDOCUMENT or IDEAS.
 
 - Shipyard tab: offer sale of new systems your ship doesn't already have.
 - Add more ship types.
-- Ship: when a cargo item is sold, put some kind of overlay on the crate so it's clear this one has already been sold (until a crewman can grab it and put it off the ship).
+- Ship: when a cargo item is sold, put some kind of overlay or tint on the crate so it's clear this one has already been sold (until a crewman can grab it and put it off the ship).
  
 With the above features, you'll be able to start in a small (Hummingbird) ship, trade and explore to earn money, then upgrade to bigger ships.
 
@@ -22,5 +22,5 @@ Then, fleshing out the various mechanics:
 
 - Sometimes when I tell my crewman to place a crate down on the right side of the ship, he starts to do it, then changes his mind and plops it down in the left cargo hold instead.  Haven't quite pinned down the circumstances but it seems easy to reproduce.
 - When I have two crewmembers and sell something, both crewmen try to go get it and put it out the airlock.  They should coordinate better (one crewman "claim" the task, and nobody else tries to do it).
-- If you click a doors "Open All" or "Close All" control button, it _also_ moves the targeting reticle (into empty space!).
+- If you click a doors "Open All" or "Close All" control button, it _also_ moves the targeting reticle (into empty space!).  The "Flee" button may do this too.
 - Encounters happen too quickly back to back.  There should always be at least a little bit of flight (a second or so of real time) between encounters.

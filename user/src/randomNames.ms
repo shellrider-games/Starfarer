@@ -6,23 +6,22 @@ import "listUtil"
 import "stringUtil"
 
 addWordList = function(path)
-	outer.words = outer.words + file.readLines(path)
+	outer.words += file.readLines(path)
 end function
 
 words = []
 
-addWordList("/sys/data/englishWords.txt")
-addWordList("/usr/data/german_nouns.txt")
+addWordList "/sys/data/englishWords.txt"
 
 
 // Generate a generic name we can use when we don't have anything better.
-generic = function()
+generic = function
 	// For now, we'll just pick a random word and capitalize it.
 	return words.any.titleCase
 end function
 
 // Generate a good name for a star/planet/station.
-station = function()
+station = function
 	return generic	// ToDo: something better here.
 end function
 
@@ -35,7 +34,7 @@ human = function()
 end function
 
 demo = function()
-
+	print "Generic names:"
 	for i in range(9)
 		print "  - " + generic
 	end for

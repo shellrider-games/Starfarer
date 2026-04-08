@@ -23,6 +23,7 @@ ensureImport "minionUI"
 ensureImport "effects"
 ensureImport "qa"
 ensureImport "encounters"
+ensureImport "log"
 
 Starfarer = {}
 
@@ -112,7 +113,8 @@ Starfarer.enterState = function(newState)
 		end if
 		minionUI.show playerShip.minions
 		playerUI.showCombat
-		
+		self.fleeAttempts = 0
+
 	else if newState == self.STATE_COMBAT_OVER then
 		playerUI.showContinueJump
 		
@@ -183,12 +185,27 @@ end function
 Starfarer.beginCombat = function(encounter)
 	self.combatEncounter = encounter
 	encounter.ship.distributePower
+	// Set up one target spot per player weapon system (none if unarmed).
+	encounter.ship.targetSpots = []
+	for sys in playerShip.systems
+		if sys isa systems.Weapons then
+			encounter.ship.targetSpots.push [round(encounter.ship.columns/2), round(encounter.ship.rows/2)]
+		end if
+	end for
+	// Re-render targets now that targetSpots is finalized (the encounter's
+	// present() already called renderShip with the default 1-spot list).
+	if encounter.renderer != null then encounter.renderer.renderTargets
 	self.enterState Starfarer.STATE_COMBAT
 end function
 
 Starfarer.fleeCombat = function
 	if self.combatEncounter.handleFlee then
 		self.enterState Starfarer.STATE_TRAVEL
+	else
+		self.fleeAttempts += 1
+		if self.fleeAttempts >= 2 and playerUI.fleeButton != null then
+			playerUI.fleeButton.stop
+		end if
 	end if
 end function
 
@@ -276,13 +293,9 @@ Starfarer.handleEnemyShipClick = function(pos)
 	mapPos = enemy.renderer.screenToMapPosition(pos)
 	if mapPos == null then return
 	
-	// For now, the only thing a click on an enemy ship can do
-	// is change the target for weapon 0.
-	if not enemy.targetSpots then
-		enemy.targetSpots = [mapPos]
-	else
-		enemy.targetSpots[0] = mapPos
-	end if
+	// Change the target for weapon 0 (if we have any weapons).
+	if not enemy.targetSpots then return
+	enemy.targetSpots[0] = mapPos
 	enemy.renderer.renderTargets
 end function
 
@@ -321,6 +334,7 @@ end function
 // Start Game/Main loop
 Starfarer.run = function()
 	//Main Loop
+	log.info "Game launched"
 	currentTime = time
 	while true
 		lastTime = currentTime
@@ -343,9 +357,10 @@ Starfarer.run = function()
 			starmap.update deltaTime
 		else if self.state == self.STATE_TRAVEL then
 			self.updateTravel deltaTime
-		end if
-		if self.state == self.STATE_COMBAT then
+		else if self.state == self.STATE_COMBAT then
 			self.combatEncounter.updateCombat deltaTime
+		else if self.state == self.STATE_AT_STATION then
+			stationUI.update deltaTime
 		end if
 		yield
 	end while

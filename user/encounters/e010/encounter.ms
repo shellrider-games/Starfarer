@@ -97,6 +97,12 @@ encounter.present = function(data)
 			self.showDialog data,
 			   "The police find nothing illegal in your holds, " +
 			   "and apologize for the inconvenience.", [], opts
+			enc = self
+			st = data.station
+			filter = function(d)
+				return d.encounter == enc and d.station == data.station
+			end function
+			encounters.cancelPending @filter
 		end if
 		self.removeOtherShip
 	else if choices[choice] == "Flee" then
