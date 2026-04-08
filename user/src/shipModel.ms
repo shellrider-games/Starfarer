@@ -2,9 +2,10 @@
 // NPC ship).  It contains everything we need to know about its layout,
 // equipment, and current status.
 
-import "constants"
-import "qa"
-import "listUtil"
+ensureImport "constants"
+ensureImport "qa"
+ensureImport "listUtil"
+ensureImport "mapUtil"
 if not globals.hasIndex("Door") then import "door"
 if not globals.hasIndex("Item") then import "item"
 if not globals.hasIndex("Character") then import "character"
@@ -669,6 +670,109 @@ Ship.renderer = function()
 		if rend.ship == self then return rend
 	end for
 	return null
+end function
+
+// Ship.applySaveData: restore runtime state from a save-data map produced
+// by getSaveData.  Call this on a freshly constructed ship (via
+// newShipOfDesign) before creating its renderer.  Crew must be restored
+// separately by the caller after this returns.
+Ship.applySaveData = function(data)
+	self.hp = data.hp
+
+	// Systems: match by name and overwrite mutable fields
+	globals.shipData = data
+	for sysData in data.systems
+		print "sysData: " + sysData
+		for sys in self.systems
+			print "comparing " + sys.get("name", "???") + " to " + sysData.get("name", "???")
+			if sys.name != sysData.name then continue
+			sys.maxPower = sysData.maxPower
+			sys.setPoint = sysData.setPoint
+			sys.repairLevel = sysData.repairLevel
+			sys.disabled = sysData.disabled
+			break
+		end for
+	end for
+	self.distributePower
+
+	// Cargo: place saved items back into their cells
+	for cargoEntry in data.cargo
+		itemType = item.getByName(cargoEntry.itemType)
+		if itemType == null then continue
+		cell = self.getCell(cargoEntry.col, cargoEntry.row)
+		if cell != null and cell.contents == null then cell.placeItem new itemType
+	end for
+
+	// Pending item transactions
+	self.incomingTypes = []
+	for typeName in data.incomingTypes
+		t = item.getByName(typeName)
+		if t != null then self.incomingTypes.push t
+	end for
+	self.outgoingTypes = []
+	for typeName in data.outgoingTypes
+		t = item.getByName(typeName)
+		if t != null then self.outgoingTypes.push t
+	end for
+end function
+
+// Ship.getSaveData: return a map of all runtime state needed to save
+// and later restore this ship.  The ship's layout is reconstructed from
+// its design; only state that changes during play is included here.
+Ship.getSaveData = function
+	result = {}
+	result.designName = self.designName
+	result.hp = self.hp
+
+	// Systems: save mutable state (upgrades and damage)
+	result.systems = []
+	for sys in self.systems
+		sysData = {}
+		sysData.name = sys.name
+		sysData.maxPower = sys.maxPower
+		sysData.setPoint = sys.setPoint
+		sysData.repairLevel = sys.repairLevel
+		sysData.disabled = sys.disabled
+		result.systems.push sysData
+	end for
+
+	// Cargo: items currently sitting in cells
+	result.cargo = []
+	for col in self.columnRange
+		for row in self.rowRange
+			cell = self.map[col][row]
+			if cell == null or cell.contents == null then continue
+			cargoEntry = {}
+			cargoEntry.col = col
+			cargoEntry.row = row
+			cargoEntry.itemType = cell.contents.name
+			result.cargo.push cargoEntry
+		end for
+	end for
+
+	// Pending item transactions (bought/sold but not yet loaded/unloaded)
+	result.incomingTypes = []
+	for t in self.incomingTypes
+		result.incomingTypes.push t.name
+	end for
+	result.outgoingTypes = []
+	for t in self.outgoingTypes
+		result.outgoingTypes.push t.name
+	end for
+
+	// Crew
+	result.crew = []
+	for minion in self.minions
+		crewData = {}
+		crewData.name = minion.name
+		crewData.health = minion.health
+		crewData.maxHealth = minion.maxHealth
+		crewData.col = minion.col
+		crewData.row = minion.row
+		result.crew.push crewData
+	end for
+
+	return result
 end function
 
 //----------------------------------------------------------------------

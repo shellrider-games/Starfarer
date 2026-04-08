@@ -24,6 +24,7 @@ ensureImport "effects"
 ensureImport "qa"
 ensureImport "encounters"
 ensureImport "log"
+ensureImport "grfon"
 
 Starfarer = {}
 
@@ -42,34 +43,102 @@ Starfarer.money = 1000
 Starfarer.fuel = 10
 Starfarer.maxFuel = 12
 
-Starfarer.init = function()
-	globals.playerShip = shipModel.newShipOfDesign("Wren")
-	playerShip.isPlayer = true
-	playerShip.distributePower
+Starfarer.init = function(gameFilePath)
+	saveData = null
+	if file.exists(gameFilePath) then
+		lines = file.readLines(gameFilePath)
+		if lines then
+			saveData = grfon.parse(lines.join(char(10)))
+			log.info "Read " + lines.len + " lines from " + gameFilePath
+		end if
+	end if
+	
+	if saveData != null then
+		// --- Restore from save file ---
+		self.money = saveData.money
+		self.fuel = saveData.fuel
+		self.maxFuel = saveData.maxFuel
 
-	// give us a character
-	minion = new character.Character
-	minion.health = 9
-	minion.setMapPos [2, 2]
-	minion.boardShip playerShip
-	globals.arthur = minion // for debugging!
+		// Rebuild player ship from its design, then apply saved state
+		shipData = saveData.playerShip
+		globals.playerShip = shipModel.newShipOfDesign(shipData.designName)
+		playerShip.isPlayer = true
+		playerShip.applySaveData shipData
 
-	// generate a random galaxy full of stations
-	self.stations = stationModel.manyRandomStations(30)
-	self.station = self.stations.any
+		// Restore crew
+		for crewData in shipData.crew
+			minion = new character.Character
+			minion.name = crewData.name
+			minion.health = crewData.health
+			minion.maxHealth = crewData.maxHealth
+			minion.boardShip playerShip, [crewData.col, crewData.row]
+		end for
+
+		// Restore galaxy
+		self.stations = []
+		for stationData in saveData.stations
+			self.stations.push stationModel.stationFromSaveData(stationData)
+		end for
+
+		// Find the station we were docked at
+		self.station = self.stations[0]
+		for s in self.stations
+			if s.name == saveData.currentStation then
+				self.station = s
+				break
+			end if
+		end for
+	else
+		// --- New random game ---
+		globals.playerShip = shipModel.newShipOfDesign("Wren")
+		playerShip.isPlayer = true
+		playerShip.distributePower
+
+		// give us a character
+		minion = new character.Character
+		minion.health = 9
+		minion.setMapPos [2, 2]
+		minion.boardShip playerShip
+		globals.arthur = minion // for debugging!
+
+		// generate a random galaxy full of stations
+		self.stations = stationModel.manyRandomStations(30)
+		self.station = self.stations.any
+	end if
 
 	// And render that thing!
 	self.renderer = new shipDisplay.Renderer
 	self.renderer.renderShip playerShip
-	
+
 	self.mouseWasDownPrimary = false
 	self.mouseWasDownSecondary = false
-	
+
 	self.enterState self.STATE_AT_STATION
 end function
 
+Starfarer.saveGame = function(path)
+	// Gather save data for all game state we need to save
+	saveData = {}
+	saveData.money = self.money
+	saveData.fuel = self.fuel
+	saveData.maxFuel = self.maxFuel
+	saveData.playerShip = playerShip.getSaveData
+	saveData.stations = []
+	for station in self.stations
+		saveData.stations.push station.getSaveData
+	end for
+	saveData.currentStation = self.station.name
+	
+	// Write to disk
+	f = file.open(path, "w")
+	f.write grfon.toGRFON(saveData)
+	f.close
+	log.info "Saved game state to " + path
+end function
+
+
 // cleanup before exit.
-Starfarer.cleanup = function()
+Starfarer.cleanup = function
 	clear
 	key.clear
 end function
@@ -209,7 +278,7 @@ Starfarer.fleeCombat = function
 	end if
 end function
 
-Starfarer.continueJump = function()
+Starfarer.continueJump = function
 	self.enterState Starfarer.STATE_TRAVEL
 end function
 
@@ -316,7 +385,7 @@ end function
 
 
 // Process all available input
-Starfarer.processInput = function()
+Starfarer.processInput = function
 	mouseIsDownPrimary = mouse.button(0)
 	mouseIsDownSecondary = mouse.button(1)
 	if mouseIsDownPrimary and not self.mouseWasDownPrimary then
@@ -332,9 +401,8 @@ Starfarer.processInput = function()
 end function
 
 // Start Game/Main loop
-Starfarer.run = function()
+Starfarer.run = function
 	//Main Loop
-	log.info "Game launched"
 	currentTime = time
 	while true
 		lastTime = currentTime
@@ -366,6 +434,7 @@ Starfarer.run = function()
 	end while
 end function
 
+log.info "Game launched"
 game = new Starfarer
-game.init
+game.init "/usr/saveData/game1.grfon"
 game.run

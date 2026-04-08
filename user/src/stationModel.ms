@@ -117,6 +117,68 @@ Station.getCommoditySellPrice = function(itemType)
 	return null
 end function
 
+// Station.getSaveData: return a map of all state needed to save and
+// later restore this station.  The cantina is excluded since it is
+// repopulated dynamically each time the player docks.
+Station.getSaveData = function
+	result = {}
+	result.name = self.name
+	result.x = self.x
+	result.y = self.y
+	result.government = self.government
+	result.techLevel = self.techLevel
+	result.police = self.police
+	result.pirates = self.pirates
+	result.illegalTypes = self.illegalTypes[:]
+	result.exportTypes = self.exportTypes[:]
+	result.starIsGiant = self.starIsGiant
+	result.starTypeRow = self.starTypeRow
+	result.starTypeCol = self.starTypeCol
+	result.starSize = self.starSize
+
+	result.market = []
+	for commodity in self.market
+		comm = {}
+		comm.itemType = commodity.itemType.name
+		comm.itemPrice = commodity.itemPrice
+		comm.soldHere = commodity.soldHere
+		result.market.push comm
+	end for
+
+	return result
+end function
+
+// stationFromSaveData: reconstruct a Station from a save-data map produced
+// by Station.getSaveData.
+stationFromSaveData = function(data)
+	s = new Station
+	s.name = data.name
+	s.x = data.x
+	s.y = data.y
+	s.government = data.government
+	s.techLevel = data.techLevel
+	s.police = data.police
+	s.pirates = data.pirates
+	s.illegalTypes = data.illegalTypes[:]
+	s.exportTypes = data.exportTypes[:]
+	s.starIsGiant = data.starIsGiant
+	s.starTypeRow = data.starTypeRow
+	s.starTypeCol = data.starTypeCol
+	s.starSize = data.starSize
+	s.cantina = []
+	s.market = []
+	for comm in data.market
+		itemType = item.getByName(comm.itemType)
+		if itemType == null then continue
+		commodity = new Commodity
+		commodity.itemType = itemType
+		commodity.itemPrice = comm.itemPrice
+		commodity.soldHere = comm.soldHere
+		s.market.push commodity
+	end for
+	return s
+end function
+
 // closestStation: return the station in stationList closest to the given
 // point (a map containing x and y properties)
 closestStation = function(xyPoint, stationList)
